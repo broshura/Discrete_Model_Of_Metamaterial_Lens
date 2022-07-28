@@ -1,5 +1,5 @@
 class Ring():
-    def __int__(self, x, y, z, pos):
+    def __init__(self, x, y, z, pos):
         self.x = x      # x position of the ring
         self.y = y      # y position of the ring
         self.z = z      # z position of the ring
