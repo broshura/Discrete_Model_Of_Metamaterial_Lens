@@ -1,10 +1,4 @@
-from Parameters import Number, Radius, Thickness
-
 class Ring():
-    N = Number   # Number of rings in system
-    r = Radius   # Radius of the rings
-    h = Thickness   # Thickness of the rings
-
     def __int__(self, x, y, z, pos):
         self.x = x      # x position of the ring
         self.y = y      # y position of the ring

@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0e90ac02-3a6c-49a0-9d65-4c9fc872107e" name="Changes" comment="Simple_Method" />
+    <list default="true" id="0e90ac02-3a6c-49a0-9d65-4c9fc872107e" name="Changes" comment="Some useful files">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Code/Ring_Class.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Ring_Class.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Code/Simple_Method.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Simple_Method.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -82,7 +86,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1658921422923</updated>
-      <workItem from="1658921425081" duration="7553000" />
+      <workItem from="1658921425081" duration="9351000" />
     </task>
     <task id="LOCAL-00001" summary="First Steps">
       <created>1658922570485</created>
@@ -140,7 +144,14 @@
       <option name="project" value="LOCAL" />
       <updated>1659011013934</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Some useful files">
+      <created>1659011996062</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1659011996062</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -161,7 +172,8 @@
     <MESSAGE value="First Steps" />
     <MESSAGE value="Initial commit" />
     <MESSAGE value="Simple_Method" />
-    <option name="LAST_COMMIT_MESSAGE" value="Simple_Method" />
+    <MESSAGE value="Some useful files" />
+    <option name="LAST_COMMIT_MESSAGE" value="Some useful files" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Simple_Method.coverage" NAME="Simple_Method Coverage Results" MODIFIED="1659006826691" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
