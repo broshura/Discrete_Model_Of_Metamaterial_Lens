@@ -6,4 +6,4 @@ class Ring():
         self.pos = pos  # orientation of the ring - "xy" or "xz" or "zy"
 
     def __repr__(self):
-        return "x = " + str(self.x) + " y = " + str(self.y) + " z = " + str(self.z) + " orientation: " + self.pos
+        return "x = " + str(round(self.x, 1)) + " y = " + str(round(self.y, 1)) + " z = " + str(round(self.y, 1)) + " orientation: " + self.pos

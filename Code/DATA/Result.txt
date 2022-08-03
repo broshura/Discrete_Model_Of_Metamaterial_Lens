@@ -1,0 +1,20 @@
+Calculated eletricity in each ring 
+Number of ring: 6Parameters of ring:
+Resistance: 10 $\Omega$ 
+Self-capacitance: 1 mF 
+Self-Inductance: 1 Hn 
+Voltage and electricity on each ring:
+ 
+¹ 0 x = 0.0 y = 0.0 z = 0.0 orientation: xy U = 1 I = 0.08333332925276751 
+¹ 1 x = 0.0 y = 0.0 z = 2.2 orientation: xy U = 1 I = 0.08333332925276751 
+¹ 2 x = 0.0 y = 2.2 z = 0.0 orientation: xy U = 1 I = 0.08333332893047682 
+¹ 3 x = 0.0 y = 2.2 z = 2.2 orientation: xy U = 1 I = 0.08333332893047682 
+¹ 4 x = 2.2 y = 0.0 z = 0.0 orientation: xy U = 1 I = 0.0833333289304768 
+¹ 5 x = 2.2 y = 0.0 z = 2.2 orientation: xy U = 1 I = 0.08333332893047682 
+Impedance matrix
+12 0 0 0 0 0
+0 12 0 0 0 0
+0 0 12 0 0 0
+0 0 0 12 0 0
+0 0 0 0 12 0
+0 0 0 0 0 12
