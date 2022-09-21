@@ -1,20 +1,80 @@
 Calculated eletricity in each ring 
-Number of ring: 6Parameters of ring:
-Resistance: 10 $\Omega$ 
-Self-capacitance: 1 mF 
-Self-Inductance: 1 Hn 
+Number of ring: 36Parameters of ring:
+Resistance: 0.0465 $\Omega$ 
+Self-capacitance: 4.7e-10 mF 
+Self-Inductance: 1.35e-08 Hn 
+Impedance matrix
+854j 27149j 32880j 590j 1136j 1096j 590j 1136j 1096j 714j 759j 685j -967j 709j 967j -709j -93j -250j 22j 177j -22j -177j -65j -159j 0j 0j -62j -335j 0j 0j -62j -335j 0j 0j -44j -108j
+27149j 854j 27149j 1136j 590j 1136j 1136j 590j 1136j 759j 714j 759j 967j -967j -967j 967j 93j -93j -22j 22j 22j -22j 65j -65j 0j 0j 62j -62j 0j 0j 62j -62j 0j 0j 44j -44j
+32880j 27149j 854j 1096j 1136j 590j 1096j 1136j 590j 685j 759j 714j -709j 967j 709j -967j 250j 93j -177j -22j 177j 22j 159j 65j 0j 0j 335j 62j 0j 0j 335j 62j 0j 0j 108j 44j
+590j 1136j 1096j 854j 27149j 32880j 714j 759j 685j 590j 1136j 1096j 93j 250j -967j 709j 967j -709j 65j 159j 22j 177j -22j -177j 62j 335j 0j 0j 62j 335j 0j 0j 44j 108j 0j 0j
+1136j 590j 1136j 27149j 854j 27149j 759j 714j 759j 1136j 590j 1136j -93j 93j 967j -967j -967j 967j -65j 65j -22j 22j 22j -22j -62j 62j 0j 0j -62j 62j 0j 0j -44j 44j 0j 0j
+1096j 1136j 590j 32880j 27149j 854j 685j 759j 714j 1096j 1136j 590j -250j -93j -709j 967j 709j -967j -159j -65j -177j -22j 177j 22j -335j -62j 0j 0j -335j -62j 0j 0j -108j -44j 0j 0j
+590j 1136j 1096j 714j 759j 685j 854j 27149j 32880j 590j 1136j 1096j 22j 177j -22j -177j -65j -159j -967j 709j 967j -709j -93j -250j 0j 0j -44j -108j 0j 0j -62j -335j 0j 0j -62j -335j
+1136j 590j 1136j 759j 714j 759j 27149j 854j 27149j 1136j 590j 1136j -22j 22j 22j -22j 65j -65j 967j -967j -967j 967j 93j -93j 0j 0j 44j -44j 0j 0j 62j -62j 0j 0j 62j -62j
+1096j 1136j 590j 685j 759j 714j 32880j 27149j 854j 1096j 1136j 590j -177j -22j 177j 22j 159j 65j -709j 967j 709j -967j 250j 93j 0j 0j 108j 44j 0j 0j 335j 62j 0j 0j 335j 62j
+714j 759j 685j 590j 1136j 1096j 590j 1136j 1096j 854j 27149j 32880j 65j 159j 22j 177j -22j -177j 93j 250j -967j 709j 967j -709j 44j 108j 0j 0j 62j 335j 0j 0j 62j 335j 0j 0j
+759j 714j 759j 1136j 590j 1136j 1136j 590j 1136j 27149j 854j 27149j -65j 65j -22j 22j 22j -22j -93j 93j 967j -967j -967j 967j -44j 44j 0j 0j -62j 62j 0j 0j -62j 62j 0j 0j
+685j 759j 714j 1096j 1136j 590j 1096j 1136j 590j 32880j 27149j 854j -159j -65j -177j -22j 177j 22j -250j -93j -709j 967j 709j -967j -108j -44j 0j 0j -335j -62j 0j 0j -335j -62j 0j 0j
+-967j 967j -709j 93j -93j -250j 22j -22j -177j 65j -65j -159j 854j 27149j 590j 1136j 532j 510j 590j 1136j 714j 759j 469j 448j 0j -442j 0j -176j 0j -442j 0j -176j 0j -61j 0j -81j
+709j -967j 967j 250j 93j -93j 177j 22j -22j 159j 65j -65j 27149j 854j 1136j 590j 510j 532j 1136j 590j 759j 714j 448j 469j 442j 0j 176j 0j 442j 0j 176j 0j 61j 0j 81j 0j
+967j -967j 709j -967j 967j -709j -22j 22j 177j 22j -22j -177j 590j 1136j 854j 27149j 590j 1136j 714j 759j 590j 1136j 714j 759j 0j 442j 0j -442j 0j 442j 0j -442j 0j 61j 0j -61j
+-709j 967j -967j 709j -967j 967j -177j -22j 22j 177j 22j -22j 1136j 590j 27149j 854j 1136j 590j 759j 714j 1136j 590j 759j 714j -442j 0j 442j 0j -442j 0j 442j 0j -61j 0j 61j 0j
+-93j 93j 250j 967j -967j 709j -65j 65j 159j -22j 22j 177j 532j 510j 590j 1136j 854j 27149j 469j 448j 714j 759j 590j 1136j 0j 176j 0j 442j 0j 176j 0j 442j 0j 81j 0j 61j
+-250j -93j 93j -709j 967j -967j -159j -65j 65j -177j -22j 22j 510j 532j 1136j 590j 27149j 854j 448j 469j 759j 714j 1136j 590j -176j 0j -442j 0j -176j 0j -442j 0j -81j 0j -61j 0j
+22j -22j -177j 65j -65j -159j -967j 967j -709j 93j -93j -250j 590j 1136j 714j 759j 469j 448j 854j 27149j 590j 1136j 532j 510j 0j -61j 0j -81j 0j -442j 0j -176j 0j -442j 0j -176j
+177j 22j -22j 159j 65j -65j 709j -967j 967j 250j 93j -93j 1136j 590j 759j 714j 448j 469j 27149j 854j 1136j 590j 510j 532j 61j 0j 81j 0j 442j 0j 176j 0j 442j 0j 176j 0j
+-22j 22j 177j 22j -22j -177j 967j -967j 709j -967j 967j -709j 714j 759j 590j 1136j 714j 759j 590j 1136j 854j 27149j 590j 1136j 0j 61j 0j -61j 0j 442j 0j -442j 0j 442j 0j -442j
+-177j -22j 22j 177j 22j -22j -709j 967j -967j 709j -967j 967j 759j 714j 1136j 590j 759j 714j 1136j 590j 27149j 854j 1136j 590j -61j 0j 61j 0j -442j 0j 442j 0j -442j 0j 442j 0j
+-65j 65j 159j -22j 22j 177j -93j 93j 250j 967j -967j 709j 469j 448j 714j 759j 590j 1136j 532j 510j 590j 1136j 854j 27149j 0j 81j 0j 61j 0j 176j 0j 442j 0j 176j 0j 442j
+-159j -65j 65j -177j -22j 22j -250j -93j 93j -709j 967j -967j 448j 469j 759j 714j 1136j 590j 510j 532j 1136j 590j 27149j 854j -81j 0j -61j 0j -176j 0j -442j 0j -176j 0j -442j 0j
+0j 0j 0j 62j -62j -335j 0j 0j 0j 44j -44j -108j 0j 442j 0j -442j 0j -176j 0j 61j 0j -61j 0j -81j 854j 27149j 590j 1136j 590j 1136j 714j 759j 532j 510j 469j 448j
+0j 0j 0j 335j 62j -62j 0j 0j 0j 108j 44j -44j -442j 0j 442j 0j 176j 0j -61j 0j 61j 0j 81j 0j 27149j 854j 1136j 590j 1136j 590j 759j 714j 510j 532j 448j 469j
+-62j 62j 335j 0j 0j 0j -44j 44j 108j 0j 0j 0j 0j 176j 0j 442j 0j -442j 0j 81j 0j 61j 0j -61j 590j 1136j 854j 27149j 714j 759j 590j 1136j 469j 448j 532j 510j
+-335j -62j 62j 0j 0j 0j -108j -44j 44j 0j 0j 0j -176j 0j -442j 0j 442j 0j -81j 0j -61j 0j 61j 0j 1136j 590j 27149j 854j 759j 714j 1136j 590j 448j 469j 510j 532j
+0j 0j 0j 62j -62j -335j 0j 0j 0j 62j -62j -335j 0j 442j 0j -442j 0j -176j 0j 442j 0j -442j 0j -176j 590j 1136j 714j 759j 854j 27149j 590j 1136j 590j 1136j 714j 759j
+0j 0j 0j 335j 62j -62j 0j 0j 0j 335j 62j -62j -442j 0j 442j 0j 176j 0j -442j 0j 442j 0j 176j 0j 1136j 590j 759j 714j 27149j 854j 1136j 590j 1136j 590j 759j 714j
+-62j 62j 335j 0j 0j 0j -62j 62j 335j 0j 0j 0j 0j 176j 0j 442j 0j -442j 0j 176j 0j 442j 0j -442j 714j 759j 590j 1136j 590j 1136j 854j 27149j 714j 759j 590j 1136j
+-335j -62j 62j 0j 0j 0j -335j -62j 62j 0j 0j 0j -176j 0j -442j 0j 442j 0j -176j 0j -442j 0j 442j 0j 759j 714j 1136j 590j 1136j 590j 27149j 854j 759j 714j 1136j 590j
+0j 0j 0j 44j -44j -108j 0j 0j 0j 62j -62j -335j 0j 61j 0j -61j 0j -81j 0j 442j 0j -442j 0j -176j 532j 510j 469j 448j 590j 1136j 714j 759j 854j 27149j 590j 1136j
+0j 0j 0j 108j 44j -44j 0j 0j 0j 335j 62j -62j -61j 0j 61j 0j 81j 0j -442j 0j 442j 0j 176j 0j 510j 532j 448j 469j 1136j 590j 759j 714j 27149j 854j 1136j 590j
+-44j 44j 108j 0j 0j 0j -62j 62j 335j 0j 0j 0j 0j 81j 0j 61j 0j -61j 0j 176j 0j 442j 0j -442j 469j 448j 532j 510j 714j 759j 590j 1136j 590j 1136j 854j 27149j
+-108j -44j 44j 0j 0j 0j -335j -62j 62j 0j 0j 0j -81j 0j -61j 0j 61j 0j -176j 0j -442j 0j 442j 0j 448j 469j 510j 532j 759j 714j 1136j 590j 1136j 590j 27149j 854j
 Voltage and electricity on each ring:
  
-¹ 0 x = 0.0 y = 0.0 z = 0.0 orientation: xy U = 1 I = 0.08333332925276751 
-¹ 1 x = 0.0 y = 0.0 z = 2.2 orientation: xy U = 1 I = 0.08333332925276751 
-¹ 2 x = 0.0 y = 2.2 z = 0.0 orientation: xy U = 1 I = 0.08333332893047682 
-¹ 3 x = 0.0 y = 2.2 z = 2.2 orientation: xy U = 1 I = 0.08333332893047682 
-¹ 4 x = 2.2 y = 0.0 z = 0.0 orientation: xy U = 1 I = 0.0833333289304768 
-¹ 5 x = 2.2 y = 0.0 z = 2.2 orientation: xy U = 1 I = 0.08333332893047682 
-Impedance matrix
-12 0 0 0 0 0
-0 12 0 0 0 0
-0 0 12 0 0 0
-0 0 0 12 0 0
-0 0 0 0 12 0
-0 0 0 0 0 12
+¹ 1 x = 1 y = 1 z = 0 orientation: xy U = 1 I = (1.4714636887505587e-05+0j) 
+¹ 2 x = 1 y = 1 z = 2 orientation: xy U = 1 I = (1.2476864227683236e-05+0j) 
+¹ 3 x = 1 y = 1 z = 4 orientation: xy U = 1 I = (1.7398173895547503e-05+0j) 
+¹ 4 x = 1 y = 3 z = 0 orientation: xy U = 1 I = (1.73981738955475e-05+0j) 
+¹ 5 x = 1 y = 3 z = 2 orientation: xy U = 1 I = (1.247686422768324e-05+0j) 
+¹ 6 x = 1 y = 3 z = 4 orientation: xy U = 1 I = (1.471463688750559e-05+0j) 
+¹ 7 x = 3 y = 1 z = 0 orientation: xy U = 1 I = (1.4714636887505586e-05+0j) 
+¹ 8 x = 3 y = 1 z = 2 orientation: xy U = 1 I = (1.2476864227683248e-05+0j) 
+¹ 9 x = 3 y = 1 z = 4 orientation: xy U = 1 I = (1.7398173895547517e-05+0j) 
+¹ 10 x = 3 y = 3 z = 0 orientation: xy U = 1 I = (1.7398173895547506e-05+0j) 
+¹ 11 x = 3 y = 3 z = 2 orientation: xy U = 1 I = (1.2476864227683231e-05+0j) 
+¹ 12 x = 3 y = 3 z = 4 orientation: xy U = 1 I = (1.4714636887505586e-05+0j) 
+¹ 13 x = 1 y = 0 z = 1 orientation: xz U = 1 I = (2.645573034541624e-05+0j) 
+¹ 14 x = 1 y = 0 z = 3 orientation: xz U = 1 I = (3.109223514195422e-05+0j) 
+¹ 15 x = 1 y = 2 z = 1 orientation: xz U = 1 I = (2.7411228397379913e-05+0j) 
+¹ 16 x = 1 y = 2 z = 3 orientation: xz U = 1 I = (2.741122839737992e-05+0j) 
+¹ 17 x = 1 y = 4 z = 1 orientation: xz U = 1 I = (3.1092235141954214e-05+0j) 
+¹ 18 x = 1 y = 4 z = 3 orientation: xz U = 1 I = (2.6455730345416245e-05+0j) 
+¹ 19 x = 3 y = 0 z = 1 orientation: xz U = 1 I = (2.645573034541625e-05+0j) 
+¹ 20 x = 3 y = 0 z = 3 orientation: xz U = 1 I = (3.109223514195422e-05+0j) 
+¹ 21 x = 3 y = 2 z = 1 orientation: xz U = 1 I = (2.7411228397379923e-05+0j) 
+¹ 22 x = 3 y = 2 z = 3 orientation: xz U = 1 I = (2.7411228397379906e-05+0j) 
+¹ 23 x = 3 y = 4 z = 1 orientation: xz U = 1 I = (3.109223514195422e-05+0j) 
+¹ 24 x = 3 y = 4 z = 3 orientation: xz U = 1 I = (2.645573034541624e-05+0j) 
+¹ 25 x = 0 y = 1 z = 1 orientation: zy U = 1 I = (2.8212450039836147e-05+0j) 
+¹ 26 x = 0 y = 1 z = 3 orientation: zy U = 1 I = (2.9228342392194036e-05+0j) 
+¹ 27 x = 0 y = 3 z = 1 orientation: zy U = 1 I = (2.9228342392194036e-05+0j) 
+¹ 28 x = 0 y = 3 z = 3 orientation: zy U = 1 I = (2.8212450039836147e-05+0j) 
+¹ 29 x = 2 y = 1 z = 1 orientation: zy U = 1 I = (2.6596675423593388e-05+0j) 
+¹ 30 x = 2 y = 1 z = 3 orientation: zy U = 1 I = (2.8051390831812612e-05+0j) 
+¹ 31 x = 2 y = 3 z = 1 orientation: zy U = 1 I = (2.80513908318126e-05+0j) 
+¹ 32 x = 2 y = 3 z = 3 orientation: zy U = 1 I = (2.6596675423593395e-05+0j) 
+¹ 33 x = 4 y = 1 z = 1 orientation: zy U = 1 I = (2.8212450039836147e-05+0j) 
+¹ 34 x = 4 y = 1 z = 3 orientation: zy U = 1 I = (2.922834239219404e-05+0j) 
+¹ 35 x = 4 y = 3 z = 1 orientation: zy U = 1 I = (2.9228342392194033e-05+0j) 
+¹ 36 x = 4 y = 3 z = 3 orientation: zy U = 1 I = (2.8212450039836147e-05+0j) 

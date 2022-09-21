@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="0e90ac02-3a6c-49a0-9d65-4c9fc872107e" name="Changes" comment="First steps">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Code/DATA/Result.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Code/DATA/Result.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Code/Parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Parameters.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Code/Ring_Class.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Ring_Class.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Code/Simple_Method.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Simple_Method.py" afterDir="false" />
@@ -88,7 +89,15 @@
       <option name="presentableId" value="Default" />
       <updated>1658921422923</updated>
       <workItem from="1658921425081" duration="14770000" />
-      <workItem from="1659177721879" duration="8934000" />
+      <workItem from="1659177721879" duration="10348000" />
+      <workItem from="1662037915304" duration="1406000" />
+      <workItem from="1662040050089" duration="4252000" />
+      <workItem from="1662406121462" duration="11000" />
+      <workItem from="1662468981860" duration="2391000" />
+      <workItem from="1663097870221" duration="14000" />
+      <workItem from="1663097898178" duration="1710000" />
+      <workItem from="1663594566166" duration="520000" />
+      <workItem from="1663753327736" duration="11993000" />
     </task>
     <task id="LOCAL-00001" summary="First Steps">
       <created>1658922570485</created>
@@ -167,7 +176,14 @@
       <option name="project" value="LOCAL" />
       <updated>1659022299492</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="First steps">
+      <created>1659521356546</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1659521356546</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -193,6 +209,6 @@
     <option name="LAST_COMMIT_MESSAGE" value="First steps" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Simple_Method.coverage" NAME="Simple_Method Coverage Results" MODIFIED="1659192315210" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
+    <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Simple_Method.coverage" NAME="Simple_Method Coverage Results" MODIFIED="1663767569063" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
   </component>
 </project>

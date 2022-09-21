@@ -5,5 +5,5 @@ class Ring():
         self.z = z      # z position of the ring
         self.pos = pos  # orientation of the ring - "xy" or "xz" or "zy"
 
-    def __repr__(self):
-        return "x = " + str(round(self.x, 1)) + " y = " + str(round(self.y, 1)) + " z = " + str(round(self.y, 1)) + " orientation: " + self.pos
+    def __str__(self):
+        return f"x = {self.x} y = {self.y} z = {self.z} orientation: {self.pos}"
