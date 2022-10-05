@@ -42,7 +42,7 @@ def Sphere_Packing(Nr, type = "closed"):
     else:
         pass
 
-Nx, Ny, Nz = 2, 2, 2                    # Number of cell on each row
+Nx, Ny, Nz = 18, 18, 2                    # Number of cell on each row
 a = 15 * 10 ** -3                       # Length of cell
 Rings = Rectangle_packing(Nx, Ny, Nz)   # List of Rings with their coordinates
 Number  = len(Rings)                    # Number of Rings
@@ -53,7 +53,6 @@ L = 13.5 * 10 ** -9                     # Self-inductance
 C = 470 * 10 ** -12                     # Capacitance
 R = 0.0465                              # Resistance
 omega = 63.28 * 10 ** 9                 # Frequency of resonance in free space
-
 Thickness = 0
 Z_0 = R + 1j * omega * L + 1/(1j * omega * C) # Self-impedance
 Z_0 = round(Z_0.real) + 1j*round(Z_0.imag)
