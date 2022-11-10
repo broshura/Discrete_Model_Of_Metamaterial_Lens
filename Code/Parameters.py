@@ -3,22 +3,23 @@
 from math import pi
 from Ring_Class import Ring
 import numpy as np
+import matplotlib.pyplot as plt
 
-def Rectangle_packing(nx, ny, nz, type = "closed"):
+def Rectangle_packing(nx, ny, nz, r,  type = "closed"):
     rings = []
     if type == "closed":
         for i in range(nx):
             for j in range(ny):
                 for k in range(nz + 1):
-                    rings.append(Ring(i * 2 + 1, j * 2 + 1, k * 2, "xy"))
+                    rings.append(Ring(i * 2 + 1 - nx, j * 2 + 1 - ny, k * 2 - nz, "xy", r))
         for i in range(nx):
             for j in range(ny + 1):
                 for k in range(nz):
-                    rings.append(Ring(i * 2 + 1, j * 2, k * 2 + 1, "xz"))
+                    rings.append(Ring(i * 2 + 1 - nx, j * 2 - ny, k * 2 + 1 - nz, "xz", r))
         for i in range(nx + 1):
             for j in range(ny):
                 for k in range(nz):
-                    rings.append(Ring(i * 2, j * 2 + 1, k * 2 + 1, "zy"))
+                    rings.append(Ring(i * 2 - nx, j * 2 + 1 - ny, k * 2 + 1 - nz, "zy", r))
     elif type == "open":
         for i in range(nx):
             for j in range(ny):
@@ -42,20 +43,41 @@ def Sphere_Packing(Nr, type = "closed"):
     else:
         pass
 
-Nx, Ny, Nz = 18, 18, 2                    # Number of cell on each row
-a = 15 * 10 ** -3                       # Length of cell
-Rings = Rectangle_packing(Nx, Ny, Nz)   # List of Rings with their coordinates
-Number  = len(Rings)                    # Number of Rings
-Radius  = 4.9 * 10 ** -3 / a * 2        # Mean radius of rings
-w = 2.2 * 10 ** -3 / a * 2  * 0         # Width of strip
-mu_0 = 4 * pi * 10 ** -7                # Permeability of vacuum
+
+
+
 L = 13.5 * 10 ** -9                     # Self-inductance
 C = 470 * 10 ** -12                     # Capacitance
 R = 0.0465                              # Resistance
-omega = 63.28 * 10 ** 9                 # Frequency of resonance in free space
-Thickness = 0
-Z_0 = R + 1j * omega * L + 1/(1j * omega * C) # Self-impedance
-Z_0 = round(Z_0.real) + 1j*round(Z_0.imag)
-V = np.array([1 for x in range(Number)])      # Voltage on each ring
+omega_0 = 63.28 * 10 ** 6               # Frequency of resonance in free space
 
 
+Nx, Ny, Nz = 18, 2, 18                    # Number of cell on each row
+a = 15 * 10 ** -3                       # Length of cell
+#a = 2
+Radius  = 0.33 * a                     # Mean radius of rings
+w =    0.15 * a                        # Width of strip
+mu_0 = 4 * pi * 10 ** -7               # Permeability of vacuum
+
+
+Rings = Rectangle_packing(Nx, Ny, Nz, Radius)   # List of Rings with their coordinates
+
+Number  = len(Rings)+1                     # Number of Rings
+Rings = np.append(Rings, Ring(0, -4, 0, "xz", 7.62/1.5))
+V = [0 for x in range(Number-1)] + [1]      # Voltage on each ring
+
+
+fig = plt.figure(figsize = (20, 20))
+
+ax = fig.add_subplot(1, 1, 1, projection = '3d')
+
+surf = ax.scatter(
+[ring.x for ring in Rings if ring.pos=="xz"], [ring.y for ring in Rings if ring.pos=="xz"], [ring.z for ring in Rings if ring.pos=="xz"],
+color = "b")
+plt.title("Centers of all xz oriented rings", size = 36)
+ax.set_ylim(-18, 18)
+ax.set_xlabel("x", size = 36)
+ax.set_ylabel("y", size = 36)
+ax.set_zlabel("z", size = 36)
+plt.show()
+#print(len(Rings))

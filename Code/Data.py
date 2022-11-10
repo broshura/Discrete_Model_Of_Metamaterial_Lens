@@ -20,7 +20,7 @@ def L_parallel(dx, dy, dz, r_1, r_2):
         A = sqrt(r_1/dp) * ((2 - kappa ** 2) * K(kappa) - 2 * E(kappa))/kappa
         return A * r_2 * (r_2 + db * cos(alpha))/dp
     L, err = integrate.quad(dl, 0, 2 * pi, args= (dx, dy, dz, r_1, r_2))
-    return mu_0 * L / (4 * pi)
+    return L / (4 * pi)
 
 def L_orthogonal(dx, dy ,dz, r_1, r_2):
     def dl(alpha, dx, dy, dz, r_1, r_2):
@@ -29,7 +29,7 @@ def L_orthogonal(dx, dy ,dz, r_1, r_2):
         A = sqrt(r_1/dp) * ((2 - kappa ** 2) * K(kappa) - 2 * E(kappa))/kappa
         return A * r_2 * dy * cos(alpha) / dp
     L, err = integrate.quad(dl, 0, 2 * pi, args=(dx, dy, dz, r_1, r_2))
-    return mu_0 * L / (4 * pi)
+    return L / (4 * pi)
 
 def Mnm(First_ring, Second_ring, Data):
     dx = Second_ring.x - First_ring.x
@@ -39,39 +39,48 @@ def Mnm(First_ring, Second_ring, Data):
     if id in Data:
         return Data[id]
     if w == 0:
-        r = Radius
+        r1 = First_ring.r
+        r2 = Second_ring.r
         if First_ring.pos == Second_ring.pos:
-            l = L_parallel(dx, dy, dz, r, r)
+            l = L_parallel(dx, dy, dz, r1, r2)
             Data[id] = l
             return l
         else:
-            l = L_orthogonal(dx, dy, dz, r, r)
+            l = L_orthogonal(dx, dy, dz, r1, r2)
             Data[id] = l
             return l
     else:
-        R = Radius + w/2
-        r = Radius - w/2
+        R1 = First_ring.r + w/2
+        r1 = First_ring.r - w/2
+        R2 = Second_ring.r + w/2
+        r2 = Second_ring.r - w/2
         if First_ring.pos == Second_ring.pos:
-            return (L_parallel(dx, dy, dz, r, r) + L_parallel(dx, dy, dz, R, r) + L_parallel(dx, dy, dz, r, R) + L_parallel(dx, dy, dz, R, R))/4
+            l = (L_parallel(dx, dy, dz, r1, r2) + L_parallel(dx, dy, dz, R1, r2) + L_parallel(dx, dy, dz, r1, R2) + L_parallel(dx, dy, dz, R1, R2))/4
+            Data[id] = l
+            return l
         else:
-            return (L_orthogonal(dx, dy, dz, r, r) + L_orthogonal(dx, dy, dz, R, r) + L_orthogonal(dx, dy, dz, r, R) + L_orthogonal(dx, dy, dz, R, R))/4
+            l = (L_orthogonal(dx, dy, dz, r1, r2) + L_orthogonal(dx, dy, dz, R1, r2) + L_orthogonal(dx, dy, dz, r1, R2) + L_orthogonal(dx, dy, dz, R1, R2))/4
+            Data[id] = l
+            return l
 
-Z = np.eye(Number) * Z_0 - np.eye(Number) * Z_0
+M = np.eye(Number) * 0
 Data = {}
 for n in range(Number):
     for m in range(Number):
         if n > m:
+            if n % 100 == 0 and m%100 == 0:
+                print(n, m)
             R1 = Rings[n]
             R2 = Rings[m]
-            Z[n][m] = 1j * omega * Mnm(R1, R2, Data)
-            Z[n][m] = round(Z[n][m].real) + 1j * round(Z[n][m].imag)
-            Z[m][n] = Z[n][m]
+            M[n][m] = Mnm(R1, R2, Data)
+            M[m][n] = M[n][m]
 
 with open("DATA/Data.txt", "w") as res:
     for i in range(Number):
-        res.write(" ".join(map(str, Z[i])) + "\n")
+        res.write(" ".join(map(str, M[i])) + "\n")
     pass
-
+print(Data)
+print(M[1])
 # with open("DATA/Result.txt", "w") as res:
 #     res.write("Calculated eletricity in each ring \n")
 #     res.write(f"Number of ring: {Number}")
