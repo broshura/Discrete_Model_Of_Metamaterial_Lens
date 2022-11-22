@@ -15,21 +15,26 @@ E = special.ellipe       #  Сomplete elliptic integral of the second kind
 def L_parallel(dx, dy, dz, r_1, r_2):
     def dl(alpha, dx, dy, dz, r_1, r_2):
         db = sqrt(dx ** 2 + dy ** 2)
+        #print(f"db = {db}")
         dp = sqrt(r_2 ** 2 + db ** 2 + 2 * r_2 * db * cos(alpha))
+        #print(f"dp = {dp}, r_1 = {r_1}, r_2 = {r_2}")
         kappa = sqrt(4 * r_1 * dp / ((dp + r_1) ** 2 + dz ** 2))
-        A = sqrt(r_1/dp) * ((2 - kappa ** 2) * K(kappa) - 2 * E(kappa))/kappa
+        #print(f"kappa = {kappa}, K(kappa) = {K(kappa)}, E(kappa) = {E(kappa)}")
+        A = 10 ** -7* sqrt(r_1/dp) * ((2 - kappa ** 2) * K(kappa ** 2) - 2 * E(kappa ** 2))/kappa
+        #print(f"A = {A}")
+        #print("")
         return A * r_2 * (r_2 + db * cos(alpha))/dp
     L, err = integrate.quad(dl, 0, 2 * pi, args= (dx, dy, dz, r_1, r_2))
-    return L / (4 * pi)
+    return L
 
 def L_orthogonal(dx, dy ,dz, r_1, r_2):
     def dl(alpha, dx, dy, dz, r_1, r_2):
         dp = sqrt((dx - r_2 * sin(alpha)) ** 2 + dy ** 2)
         kappa = sqrt(4 * r_1 * dp / ((dp + r_1) ** 2 + (dz - r_2 * cos(alpha)) ** 2))
-        A = sqrt(r_1/dp) * ((2 - kappa ** 2) * K(kappa) - 2 * E(kappa))/kappa
+        A = 10 ** -7*sqrt(r_1/dp) * ((2 - kappa ** 2) * K(kappa ** 2) - 2 * E(kappa ** 2))/kappa
         return A * r_2 * dy * cos(alpha) / dp
     L, err = integrate.quad(dl, 0, 2 * pi, args=(dx, dy, dz, r_1, r_2))
-    return L / (4 * pi)
+    return L
 
 def Mnm(First_ring, Second_ring, Data):
     dx = Second_ring.x - First_ring.x
@@ -80,7 +85,7 @@ with open("DATA/Data.txt", "w") as res:
         res.write(" ".join(map(str, M[i])) + "\n")
     pass
 print(Data)
-print(M[1])
+print(M[0])
 # with open("DATA/Result.txt", "w") as res:
 #     res.write("Calculated eletricity in each ring \n")
 #     res.write(f"Number of ring: {Number}")
