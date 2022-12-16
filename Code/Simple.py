@@ -20,9 +20,9 @@ def Z_coil(omega, matrix_M, matrix_I):
 with open("DATA/Data.txt", "r") as res:
     RES = res.read()
     M = [[k for k in x.split(" ")] for x in RES.split("\n")]
-M = [[float(M[i][k])*(a1/2) ** 1 for k in range(len(M[i]))] for i in range(len(M)-1)]
+M = [[float(M[i][k])*(a1/2) ** 1 * 9.6 * 10 ** -7 for k in range(len(M[i]))] for i in range(len(M)-1)]
 for omega_0 in range(30, 90, 2):
-    omega = omega_0 * 10 ** 5
+    omega = omega_0 * 10 ** 6
     print(omega_0)
     #Zi = [[1j*omega*M[i][k] for k in range(len(M[i]))] for i in range(len(M))]
     M_0 = R/(1j*omega) + L - 1/(omega ** 2 * C)
