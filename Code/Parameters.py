@@ -31,7 +31,7 @@ def Rectangle_packing(nx, ny, nz, r):
 
 # Parameters for system used in modeling
 
-L = 13.5 * 10 ** -9                     # Self-inductance
+L = 13.46 * 10 ** -9                     # Self-inductance
 C = 470 * 10 ** -12                     # Capacitance
 R = 0.0465                              # Resistance
 omega_0 = 63.28 * 10 ** 6               # Frequency of resonance in free space
@@ -51,7 +51,7 @@ Rings = Rectangle_packing(Nx, Ny, Nz, Radius)   # List of Rings with their coord
 
 # Adding responding ring to identify resonance frequency
 
-Rings = np.append(Rings, Ring(0, -4, 0, "y", 7.62/1.5/3*5))
+Rings = np.append(Rings, Ring(0, -4, 0, "y", 2.54/1.5*5))
 
 Number = len(Rings)                             # Number of Rings
 

@@ -36,6 +36,7 @@ for i in range(len(M1)):
                 print(f"Indexes and ratio :{i, j, id}")
                 print(f"Values: {M2[i][j], M1[i][j]}")
                 print(f'Parameters for integrate: dx = {Rings[j].x-Rings[i].x}, dy = {Rings[j].y-Rings[i].y}, dz = {Rings[j].z-Rings[i].z} \n')
+print(cnt_abs)
 
 print("Comparing signs of values \n")
 for i in range(len(M1)):
@@ -43,10 +44,10 @@ for i in range(len(M1)):
         # Avoid zero division on diagonal
         if i != j:
             id = M2[i][j]/M1[i][j]
-            if not id < 0:
+            if id < 0:
                 cnt_sign += 1
                 print(f"Indexes and ratio :{i, j, id}")
                 print(f"Values: {M2[i][j], M1[i][j]}")
                 print(f'Parameters for integrate: dx = {Rings[j].x-Rings[i].x}, dy = {Rings[j].y-Rings[i].y}, dz = {Rings[j].z-Rings[i].z} \n')
 
-
+print(cnt_sign)

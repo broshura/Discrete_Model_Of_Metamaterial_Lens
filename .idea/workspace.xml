@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0e90ac02-3a6c-49a0-9d65-4c9fc872107e" name="Changes" comment="Second try">
+    <list default="true" id="0e90ac02-3a6c-49a0-9d65-4c9fc872107e" name="Changes" comment="Final comments">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Code/Comparing_matrix.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Comparing_matrix.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Code/Data.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Data.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Code/Parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Parameters.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Code/Plotting.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Plotting.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Code/Ring_Class.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Ring_Class.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Code/Simple.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Simple.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -60,6 +60,28 @@
     </key>
   </component>
   <component name="RunManager" selected="Python.Simple">
+    <configuration name="Comparing_matrix" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Discrete_Model_Of_Metamaterial_Lens" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Code" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Code/Comparing_matrix.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="Data (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Discrete_Model_Of_Metamaterial_Lens" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -82,7 +104,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="Data" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="Plotting" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Discrete_Model_Of_Metamaterial_Lens" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -95,29 +117,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="C:\Users\Shura\Documents\Discrete_Model_Of_Metamaterial_Lens\Code\Data.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="Parameters" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="Discrete_Model_Of_Metamaterial_Lens" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Code" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Code/Parameters.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Code/Plotting.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -173,10 +173,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.Simple" />
-        <item itemvalue="Python.munik" />
+        <item itemvalue="Python.Plotting" />
         <item itemvalue="Python.Data (1)" />
-        <item itemvalue="Python.Parameters" />
-        <item itemvalue="Python.Data" />
+        <item itemvalue="Python.Comparing_matrix" />
+        <item itemvalue="Python.munik" />
       </list>
     </recent_temporary>
   </component>
@@ -220,7 +220,8 @@
       <workItem from="1670484566750" duration="9939000" />
       <workItem from="1671185718705" duration="310000" />
       <workItem from="1671435381672" duration="2311000" />
-      <workItem from="1671580282844" duration="7020000" />
+      <workItem from="1671580282844" duration="16710000" />
+      <workItem from="1671607021213" duration="7389000" />
     </task>
     <task id="LOCAL-00001" summary="First Steps">
       <created>1658922570485</created>
@@ -383,7 +384,28 @@
       <option name="project" value="LOCAL" />
       <updated>1671185975165</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="Final comments">
+      <created>1671587998998</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1671587998998</updated>
+    </task>
+    <task id="LOCAL-00025" summary="Final comments">
+      <created>1671588003559</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1671588003559</updated>
+    </task>
+    <task id="LOCAL-00026" summary="Final comments">
+      <created>1671588017982</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1671588017982</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -410,14 +432,17 @@
     <MESSAGE value="One more" />
     <MESSAGE value="First plots" />
     <MESSAGE value="Second try" />
-    <option name="LAST_COMMIT_MESSAGE" value="Second try" />
+    <MESSAGE value="Final comments" />
+    <option name="LAST_COMMIT_MESSAGE" value="Final comments" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Data.coverage" NAME="Data Coverage Results" MODIFIED="1669630095468" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
-    <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Simple.coverage" NAME="Simple Coverage Results" MODIFIED="1671447159189" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
+    <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Simple.coverage" NAME="Simple Coverage Results" MODIFIED="1671627294538" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
     <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Simple_Method.coverage" NAME="Data Coverage Results" MODIFIED="1664969082350" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
     <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$munik.coverage" NAME="munik Coverage Results" MODIFIED="1670500349453" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
-    <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Data__1_.coverage" NAME="Data (1) Coverage Results" MODIFIED="1670418196486" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
+    <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Data__1_.coverage" NAME="Data (1) Coverage Results" MODIFIED="1671594006264" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
     <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Parameters.coverage" NAME="Parameters Coverage Results" MODIFIED="1670417768027" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
+    <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Plotting.coverage" NAME="Plotting Coverage Results" MODIFIED="1671625437412" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
+    <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Comparing_matrix.coverage" NAME="Comparing_matrix Coverage Results" MODIFIED="1671591861058" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
   </component>
 </project>
