@@ -107,7 +107,7 @@ def Mnm(First_ring, Second_ring, Data = {}):
     #Consider responding ring
 
     if r2 != r:
-        wid = R
+        wid = r2
         L_p = L_rp
         L_o = L_ro
     else:
@@ -161,10 +161,11 @@ Data = {}
 
 print(f"Modeling impedance matrix for {name} set of parameters")
 print(f"Number of rings: {Number}")
+import Rings_visualize
 for n in range(Number):
     for m in range(Number):
         if n > m:
-            if n % (Number*10) == 0:
+            if n % (Number//25) == 0 and m % (Number) == 0:
                 print(f"String number {n}")
             R1 = Rings[n]
             R2 = Rings[m]
@@ -173,11 +174,17 @@ for n in range(Number):
 
 # Writing table in Data-file, divide string by \n and elements by " "
 
+print("Saving data...")
 with open(f"DATA/Data-{name}.txt", "w") as res:
     for i in range(Number):
         res.write(" ".join(map(str, M[i])) + "\n")
 
 # Sum of matrix M elements to calculate permeability
 with open(f"DATA/SumM-{name}.txt", "w") as res:
-    SumM = sum(M)
+    SumM = 0
+    for m in M:
+        for mi in m:
+            SumM +=mi
+
     res.write(str(SumM))
+print("Ended")

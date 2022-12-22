@@ -3,9 +3,14 @@
   <component name="ChangeListManager">
     <list default="true" id="0e90ac02-3a6c-49a0-9d65-4c9fc872107e" name="Changes" comment="Final comments">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Code/3D-Ring-Plotting.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Rings_visualize.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Code/Data.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Code/Parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Parameters.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Code/Parameters_anisotropic.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Parameters_anisotropic.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Code/Permeability_anisotropic.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Permeability_anisotropic.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Code/Plots/Anisotropic-muim.png" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Plots/Anisotropic-muim.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Code/Plots/Anisotropic-mureal.png" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Plots/Anisotropic-mureal.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Code/Plots/Anisotropic2-rings.png" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Plots/Anisotropic2-rings.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Code/Plotting.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Plotting.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Code/Simple.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Simple.py" afterDir="false" />
     </list>
@@ -59,29 +64,7 @@
       <recent name="C:\Users\Shura\Documents\Discrete_Model_Of_Metamaterial_Lens\Code" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.Plotting">
-    <configuration name="Comparing_matrix" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="Discrete_Model_Of_Metamaterial_Lens" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Code" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Code/Comparing_matrix.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Python.Permeability_anisotropic">
     <configuration name="Data (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Discrete_Model_Of_Metamaterial_Lens" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -148,7 +131,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="Simple" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="Rings_visualize (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Discrete_Model_Of_Metamaterial_Lens" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -161,7 +144,29 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Code/Simple.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Code/Rings_visualize.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Rings_visualize" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Discrete_Model_Of_Metamaterial_Lens" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Code" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="C:\Users\Shura\Documents\Discrete_Model_Of_Metamaterial_Lens\Code\Rings_visualize.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -172,11 +177,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.Plotting" />
-        <item itemvalue="Python.Data (1)" />
-        <item itemvalue="Python.Simple" />
         <item itemvalue="Python.Permeability_anisotropic" />
-        <item itemvalue="Python.Comparing_matrix" />
+        <item itemvalue="Python.Data (1)" />
+        <item itemvalue="Python.Rings_visualize (1)" />
+        <item itemvalue="Python.Rings_visualize" />
+        <item itemvalue="Python.Plotting" />
       </list>
     </recent_temporary>
   </component>
@@ -222,7 +227,7 @@
       <workItem from="1671435381672" duration="2311000" />
       <workItem from="1671580282844" duration="16710000" />
       <workItem from="1671607021213" duration="23028000" />
-      <workItem from="1671690670960" duration="14866000" />
+      <workItem from="1671690670960" duration="30518000" />
     </task>
     <task id="LOCAL-00001" summary="First Steps">
       <created>1658922570485</created>
@@ -427,7 +432,14 @@
       <option name="project" value="LOCAL" />
       <updated>1671700350946</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="Final comments">
+      <created>1671706874763</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1671706874763</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -459,13 +471,16 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Data.coverage" NAME="Data Coverage Results" MODIFIED="1669630095468" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
-    <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Simple.coverage" NAME="Simple Coverage Results" MODIFIED="1671704803126" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
+    <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Simple.coverage" NAME="Simple Coverage Results" MODIFIED="1671717761295" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
+    <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$3D_Ring_Plotting.coverage" NAME="Rings_visualize Coverage Results" MODIFIED="1671719805627" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
+    <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Rings_visualize__1_.coverage" NAME="Rings_visualize (1) Coverage Results" MODIFIED="1671721750690" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
     <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Simple_Method.coverage" NAME="Data Coverage Results" MODIFIED="1664969082350" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
     <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$munik.coverage" NAME="munik Coverage Results" MODIFIED="1670500349453" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
-    <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Permeability_anisotropic.coverage" NAME="Permeability_anisotropic Coverage Results" MODIFIED="1671703568408" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
-    <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Data__1_.coverage" NAME="Data (1) Coverage Results" MODIFIED="1671705148528" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
+    <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Data__1_.coverage" NAME="Data (1) Coverage Results" MODIFIED="1671722294875" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
+    <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Permeability_anisotropic.coverage" NAME="Permeability_anisotropic Coverage Results" MODIFIED="1671722580182" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
+    <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Parameters_anisotropic.coverage" NAME="Parameters_anisotropic Coverage Results" MODIFIED="1671707069329" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
     <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Parameters.coverage" NAME="Parameters Coverage Results" MODIFIED="1670417768027" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
-    <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Plotting.coverage" NAME="Plotting Coverage Results" MODIFIED="1671706063782" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
+    <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Plotting.coverage" NAME="Plotting Coverage Results" MODIFIED="1671718201323" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
     <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Comparing_matrix.coverage" NAME="Comparing_matrix Coverage Results" MODIFIED="1671591861058" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
   </component>
 </project>

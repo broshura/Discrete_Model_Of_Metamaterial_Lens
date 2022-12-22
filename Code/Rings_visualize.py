@@ -52,23 +52,37 @@ def plot_circle(ring):
 
 #from Parameters import Rings
 
-from Parameters_anisotropic import Rings
+from Parameters_anisotropic import Rings, a, b
 
 fig = plt.figure(figsize = (20, 20))
 ax = fig.add_subplot(1, 1, 1, projection = '3d')
 
-Orientation = "z"                                               # Orientation of ring that will be shown
+
+# Draw only one orientation (any for all)
+# and show only bordered rings
+# to decrease number of rings
+
+Orientation = "z"
+OnlyBorder = True
+
+Border_x = max([ring.x for ring in Rings])
+Border_y = min([ring.y for ring in Rings])
+Border_z = max([ring.z for ring in Rings])
 
 for ring in Rings[:len(Rings)]:
-    if ring.pos == Orientation and ring.z < 5:
+    id_d = ring.pos == Orientation or Orientation == "any"
+
+    id_x = ring.x == Border_x
+    id_y = ring.y == Border_y
+    id_z = ring.z == Border_z
+
+    if id_d and (id_x or id_y or id_z):
         plot_circle(ring)
 
 # Other parameters of plot
 plt.title(f"Anisotropic structure", size = 36) #Size
-ax.set_ylim(0, 9*12)
 ax.set_xlabel("x", size = 36)
 ax.set_ylabel("y", size = 36)
 ax.set_zlabel("z", size = 36)
-
 plt.savefig(f"Plots/Anisotropic2-rings")
 plt.show()

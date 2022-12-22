@@ -48,8 +48,8 @@ w = 0.7*0.15 * a                       # Width of strip in packing units
 
 
 R_coil = 1.5                           # Resistance of responding ring
-L_coil = 1.8*10**-7                    # Self-inductance of responding  ring
-#L_coil = 2.6*10**-7                   # Another parameter for responding ring
+#L_coil = 1.8*10**-7                    # Self-inductance of responding  ring
+L_coil = 2.6*10**-7                   # Another parameter for responding ring
 
 
 
@@ -57,7 +57,7 @@ Rings = Rectangle_packing(Nx, Ny, Nz, Radius)   # List of Rings with their coord
 
 # Adding responding ring to identify resonance frequency
 
-Rings = np.append(Rings, Ring(0, -4, 0, "y", 2.54/1.5*5))
+Rings = np.append(Rings, Ring(0, -4, 0, "y", 2.54/1.5*3))
 
 Number = len(Rings)                         # Number of Rings
 

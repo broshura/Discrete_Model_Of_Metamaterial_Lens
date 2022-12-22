@@ -15,22 +15,35 @@ import numpy as np
 def Rectangle_packing(nx, ny, nz, r, a, b, orientation = "z", shift_x = 0, shift_y = 0):
     rings = []
 
-    for i in range(nx):
-        for j in range(ny):
-            for k in range(nz):
+    for k in range(nz):
+        for i in range(nx):
+            for j in range(ny):
                 rings.append(
                     Ring(
                         # Prevent rings from getting out of the borders
-                        (i*a + shift_x * k)%((nx-1)*a),
-                        (j*a + shift_y * k)%((ny-1)*a),
+                        (i*a + shift_x * k)%((nx)*a),
+                        (j*a + shift_y * k)%((ny)*a),
                         k*b,
                         orientation,
                         r)
                 )
     return np.array(rings, dtype=Ring)
 
-def Hexagonal_packing(nx, ny, nz, r, a, b, shif_x = 0, shift_y = 0):
-    pass
+def Hexagonal_packing(nx, ny, nz, r, a, b, orientation, shif_x = 0, shift_y = 0):
+    rings = []
+
+    for k in range(nz):
+        for i in range(nx):
+            for j in range(ny):
+                rings.append(
+                    Ring(
+                        # Prevent rin gs from getting out of the borders
+                        (i * a + shift_x * k) % ((nx - 1) * a),
+                        (j * a + shift_y * k) % ((ny - 1) * a),
+                        k * b,
+                        orientation,
+                        r)
+                )
 
 # Parameters for system used in modeling
 
@@ -44,9 +57,9 @@ Nx, Ny, Nz = 15, 12, 34                # Number of cell on each dimension
 a1 = 4.5 * 10 ** -3                    # Length of cell
 b1 = 1 * 10 ** -3                      # Distance between layers
 a = 9                                  # Length of cell in packing units
-b = 2                                  # Distance between layers in packing units
-shift_x = a / 2                        # Shifting of next layer along x axes
-shift_y = a / 2                        # Shifting of next layer along y axes
+b = 1                                  # Distance between layers in packing units
+shift_x = a/8                          # Shifting of next layer along x axes
+shift_y = a/8                          # Shifting of next layer along y axes
 
 Radius1 = a1/3                         # Mean radius of rings
 Radius = a/3                           # Mean radius of rings in packing units
@@ -58,4 +71,4 @@ w = 0.7*Radius/3                       # Width of strip in packing units
 Rings = Rectangle_packing(Nx, Ny, Nz, Radius, a, b, "z", shift_x, shift_y)
 Number = len(Rings)
 
-name = "Anisotropic-shifted-cube"   # Name of Data file with this parameter set
+name = "Anisotropic-Nonshifted-cube"   # Name of Data file with this parameter set

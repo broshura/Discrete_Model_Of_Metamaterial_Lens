@@ -15,13 +15,13 @@ def mu(R, L, SumM, omega, r_0, a, b):
     return (Z_0 + Z + 2/3*const)/(Z_0 + Z - 1/3 * const)
 
 
-Omega = np.logspace(-1, 10, 1000)
+Omega = np.logspace(-1, 6, 1000)
 
 # Using data for calculation
 
-#with open(f"DATA/SumM-{name}.txt", "r") as res:
-#    SumM = float(res.read())
-SumM = 8 * 10 ** -6
+with open(f"DATA/SumM-{name}.txt", "r") as res:
+    SumM = complex(res.read()) * a1 *mu_0
+
 MuReal = []
 MuImag = []
 for omega in Omega:
@@ -30,8 +30,6 @@ for omega in Omega:
 
 # Plots of magnetic permeability of system
 
-with open(f"DATA/SumM-{name}.txt", "r") as res:
-   SumM = int(res.read())
 
 fig, ax = plt.subplots(figsize = (10, 6))
 ax.set_xlabel("Frequency, Gz")
@@ -50,7 +48,7 @@ ax.set_xscale("log")
 ax.set_ylabel("Imaginary part of magnetic permeability")
 plt.grid(True)
 
-plt.scatter(Omega, MuImag, label=r'Imaginary part', color='blue')
+plt.plot(Omega, MuImag, label=r'Imaginary part', color='blue')
 plt.savefig(f"Plots/Anisotropic-muim")
 plt.show()
 
