@@ -47,15 +47,17 @@ R_coil = 1.5                           # Resistance of responding ring
 L_coil = 1.8*10**-7                    # Self-inductance of responding  ring
 #L_coil = 2.6*10**-7                   # Another parameter for responding ring
 
+
+
 Rings = Rectangle_packing(Nx, Ny, Nz, Radius)   # List of Rings with their coordinates
 
 # Adding responding ring to identify resonance frequency
 
-Rings = np.append(Rings, Ring(0, -4, 0, "y", 2.54/1.5*5))
+#Rings = np.append(Rings, Ring(0, -4, 0, "y", 2.54/1.5*5))
 
 Number = len(Rings)                             # Number of Rings
 
 
-V = [0 for x in range(Number-1)] + [1]      # Voltage on each ring (only at responding)
+#V = [0 for x in range(Number-1)] + [1]      # Voltage on each ring (only at responding)
 
 

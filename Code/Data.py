@@ -5,7 +5,7 @@ from numpy import sqrt, cos, sin, pi
 from scipy import integrate
 from scipy import special
 
-from Parameters import *
+from Parameters_anisotropic import *
 
 K = special.ellipk       #  Сomplete elliptic integral of the first kind
 E = special.ellipe       #  Сomplete elliptic integral of the second kind
