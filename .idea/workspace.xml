@@ -5,9 +5,7 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Code/Data.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Data.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Code/Parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Parameters.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Code/Plots/X-rings.png" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Plots/X-rings.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Code/Plots/Y-rings.png" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Plots/Y-rings.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Code/Plots/Z-rings.png" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Plots/Z-rings.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Code/Parameters_anisotropic.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Parameters_anisotropic.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Code/Plotting.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Plotting.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Code/Simple.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Simple.py" afterDir="false" />
     </list>
@@ -224,6 +222,7 @@
       <workItem from="1671435381672" duration="2311000" />
       <workItem from="1671580282844" duration="16710000" />
       <workItem from="1671607021213" duration="23028000" />
+      <workItem from="1671690670960" duration="8452000" />
     </task>
     <task id="LOCAL-00001" summary="First Steps">
       <created>1658922570485</created>
@@ -414,7 +413,14 @@
       <option name="project" value="LOCAL" />
       <updated>1671627834847</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="Final comments">
+      <created>1671690741370</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1671690741370</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -446,12 +452,12 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Data.coverage" NAME="Data Coverage Results" MODIFIED="1669630095468" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
-    <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Simple.coverage" NAME="Simple Coverage Results" MODIFIED="1671684121922" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
+    <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Simple.coverage" NAME="Simple Coverage Results" MODIFIED="1671695379883" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
     <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Simple_Method.coverage" NAME="Data Coverage Results" MODIFIED="1664969082350" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
     <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$munik.coverage" NAME="munik Coverage Results" MODIFIED="1670500349453" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
-    <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Data__1_.coverage" NAME="Data (1) Coverage Results" MODIFIED="1671673220944" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
+    <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Data__1_.coverage" NAME="Data (1) Coverage Results" MODIFIED="1671695340282" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
     <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Parameters.coverage" NAME="Parameters Coverage Results" MODIFIED="1670417768027" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
-    <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Plotting.coverage" NAME="Plotting Coverage Results" MODIFIED="1671684233148" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
+    <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Plotting.coverage" NAME="Plotting Coverage Results" MODIFIED="1671699292124" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
     <SUITE FILE_PATH="coverage/Discrete_Model_Of_Metamaterial_Lens$Comparing_matrix.coverage" NAME="Comparing_matrix Coverage Results" MODIFIED="1671591861058" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Code" />
   </component>
 </project>

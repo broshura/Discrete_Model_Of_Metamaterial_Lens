@@ -1,11 +1,11 @@
 # Visualization of each part of modeling
 
 import matplotlib.pyplot as plt
-from Parameters_anisotropic import Rings
+
 from matplotlib import rcParams
 import numpy as np
 from numpy import sqrt
-from Simple import Impedance_real, Impedance_imag, Omega, MuReal, MuImag
+from Permeability_anisotropic import Omega, MuReal, MuImag
 
 # Function for drawing circles in 3D
 
@@ -53,45 +53,76 @@ rcParams['font.family'] = 'Times New Roman'
 
 # Repeating plots for MRI lenz of 3 x 18 x 18 lenz
 
-# Making subplots and figure of Real part of Impedance on responding ring
-#
+#from Simple import Impedance_real, Impedance_imag, Omega
+
+# Making subplots and figure for Real part of Impedance on responding ring
+
+from Simple import Omega, Impedance_imag, Impedance_real
+
 fig, ax = plt.subplots(figsize = (10, 6))
 ax.set_xlabel("Frequency, Gz")
-ax.set_xscale("log")
-ax.set_ylabel("Real part of magnetic permeability")
+ax.set_ylabel("Real part impedance, Ohm")
 plt.grid(True)
 
-#Plotting dots of data
-
-plt.scatter(Omega, MuReal, label=r'Dots label', color='blue')
-plt.savefig(f"Plots/Anisotropic-mureal")
+plt.plot(Omega, Impedance_real, label=r'Real part', color='blue')
+plt.savefig(f"Plots/Responding_Impedance_Real")
 plt.show()
 
 #Making subplots and figure of Imaginary part of Impedance on responding ring
 
 fig, ax = plt.subplots(figsize = (10, 6))
 ax.set_xlabel("Frequency, Gz")
-ax.set_xscale("log")
-ax.set_ylabel("Imaginary part of magnetic permeability")
+ax.set_ylabel("Imaginary part of impedance, ohm")
 plt.grid(True)
 
-#Plotting dots of data
-plt.scatter(Omega, MuImag, label=r'Dots label', color='blue')
-plt.savefig(f"Plots/Anisotropic-muim")
+plt.plot(Omega, Impedance_imag, label=r'Imaginary part', color='red')
+plt.savefig(f"Plots/Responding_Impedance_Im")
 plt.show()
 
+# Plots of magnetic permeability of system
 
+# Cj
+
+#from Permeability_anistotropic import Omega, MuReal, MuImag, name
+
+#with open(f"DATA/SumM-{name}.txt", "r") as res:
+#    SumM = int(res.read())
+#
+# fig, ax = plt.subplots(figsize = (10, 6))
+# ax.set_xlabel("Frequency, Gz")
+# ax.set_xscale("log")
+# ax.set_ylabel("Real part of magnetic permeability")
+# plt.grid(True)
+#
+# plt.plot(Omega, MuReal, label=r'Real part', color='blue')
+# plt.savefig(f"Plots/Anisotropic-mureal")
+# plt.show()
+#
+#
+# fig, ax = plt.subplots(figsize = (10, 6))
+# ax.set_xlabel("Frequency, Gz")
+# ax.set_xscale("log")
+# ax.set_ylabel("Imaginary part of magnetic permeability")
+# plt.grid(True)
+#
+# plt.scatter(Omega, MuImag, label=r'Imaginary part', color='blue')
+# plt.savefig(f"Plots/Anisotropic-muim")
+# plt.show()
 
 # 3D plot of structure with dots in middles of each ring
 
+# Choosing set of parameters
+
+##from Parameters import Rings
+
+##from Parameters_anisotropic import Rings
+
 # fig = plt.figure(figsize = (20, 20))
-#
 # ax = fig.add_subplot(1, 1, 1, projection = '3d')
 #
 # Orientation = "z"                                               # Orientation of ring that will be shown
 #
-
-# for ring in Rings[:len(Rings)]:                                              # Coloring and so one
+# for ring in Rings[:len(Rings)]:
 #     if ring.pos == Orientation:
 #         plot_circle(ring)
 #

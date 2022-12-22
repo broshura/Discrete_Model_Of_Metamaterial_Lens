@@ -31,7 +31,9 @@ def Rectangle_packing(nx, ny, nz, r):
 
 # Parameters for system used in modeling
 
-L = 13.46 * 10 ** -9                     # Self-inductance
+mu_0 = 4 * pi * 10 ** -7               # Permeability of vacuum
+
+L = 13.5 * 10 ** -9                     # Self-inductance
 C = 470 * 10 ** -12                     # Capacitance
 R = 0.0465                              # Resistance
 omega_0 = 63.28 * 10 ** 6               # Frequency of resonance in free space
@@ -39,9 +41,11 @@ omega_0 = 63.28 * 10 ** 6               # Frequency of resonance in free space
 Nx, Ny, Nz = 18, 2, 18                 # Number of cell on each row
 a1 = 15 * 10 ** -3                     # Length of cell
 a = 2                                  # Length of cell in packing units
-Radius = 0.33*a                        # Mean radius of rings
-w = 0.7*0.15 * a                       # Width of strip
-mu_0 = 4 * pi * 10 ** -7               # Permeability of vacuum
+Radius1 = 0.33*a1                      # Mean radius of rings
+Radius = 0.33*a                        # Mean radius of rings in packing units
+w1 = 0.7 * 0.15 * a1                   # Width of strip
+w = 0.7*0.15 * a                       # Width of strip in packing units
+
 
 R_coil = 1.5                           # Resistance of responding ring
 L_coil = 1.8*10**-7                    # Self-inductance of responding  ring
@@ -53,11 +57,12 @@ Rings = Rectangle_packing(Nx, Ny, Nz, Radius)   # List of Rings with their coord
 
 # Adding responding ring to identify resonance frequency
 
-#Rings = np.append(Rings, Ring(0, -4, 0, "y", 2.54/1.5*5))
+Rings = np.append(Rings, Ring(0, -4, 0, "y", 2.54/1.5*5))
 
-Number = len(Rings)                             # Number of Rings
+Number = len(Rings)                         # Number of Rings
 
+name = "MRI"                                # Name of Data file for this parameters
 
-#V = [0 for x in range(Number-1)] + [1]      # Voltage on each ring (only at responding)
+V = [0 for x in range(Number-1)] + [1]      # Voltage on each ring (only at responding)
 
 

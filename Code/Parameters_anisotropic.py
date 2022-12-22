@@ -1,5 +1,5 @@
 # This file contains all parameters for modeling and geometry of rings
-# Special for anistropic structures
+# Special for anisotropic structures and copper rings
 
 from math import pi, log
 from Ring_Class import Ring
@@ -10,43 +10,52 @@ import numpy as np
 # Also middle of structure have zero coordinates
 
 
-# Geometry for our system for MRI lenz - parallelogram without borders at x and z surfaces.
-def Rectangle_packing(nx, ny, nz, r, a, b, orientation = "z"):
+# Geometry for our system for MRI lenz
+
+def Rectangle_packing(nx, ny, nz, r, a, b, orientation = "z", shift_x = 0, shift_y = 0):
     rings = []
 
     for i in range(nx):
         for j in range(ny):
             for k in range(nz):
-                rings.append(Ring(i*a, j*a, k*b, orientation, r))
+                rings.append(
+                    Ring(
+                        # Prevent rings from getting out of the borders
+                        (i*a + shift_x * k)%((nx-1)*a),
+                        (j*a + shift_y * k)%((ny-1)*a),
+                        k*b,
+                        orientation,
+                        r)
+                )
     return np.array(rings, dtype=Ring)
 
-def Hexagonal_packing(nx, ny, nz, r, d, b):
+def Hexagonal_packing(nx, ny, nz, r, a, b, shif_x = 0, shift_y = 0):
     pass
 
 # Parameters for system used in modeling
 
 mu_0 = 4 * pi * 10 ** -7               # Permeability of vacuum
 
-Nx, Ny, Nz = 15, 12, 34                # Number of cell on each row
-a1 = 4.5 * 10 ** -3                     # Length of cell
-b1 = 1 * 10 ** -3
+L = 4*10**-9                           # Self-inductance
+C = "Infinity"                         # Capacitance
+R = 926*10**-6                         # Resistance
+
+Nx, Ny, Nz = 15, 12, 34                # Number of cell on each dimension
+a1 = 4.5 * 10 ** -3                    # Length of cell
+b1 = 1 * 10 ** -3                      # Distance between layers
 a = 9                                  # Length of cell in packing units
-b = 2
-Radius1 = a1/3
-Radius = a/3                           # Mean radius of rings
-w1 = Radius/3
-w = 0.7*Radius/3                       # Width of strip
+b = 2                                  # Distance between layers in packing units
+shift_x = a / 2                        # Shifting of next layer along x axes
+shift_y = a / 2                        # Shifting of next layer along y axes
 
-L = 4*10**-9                 # Self-inductance
-C = "Infinity"                          # Capacitance
-R = 926*10**-6                              # Resistance
+Radius1 = a1/3                         # Mean radius of rings
+Radius = a/3                           # Mean radius of rings in packing units
+w1 = Radius/3                          # Width of strip
+w = 0.7*Radius/3                       # Width of strip in packing units
 
+# List of Rings with their coordinates and its number
 
+Rings = Rectangle_packing(Nx, Ny, Nz, Radius, a, b, "z", shift_x, shift_y)
+Number = len(Rings)
 
-Rings = Rectangle_packing(Nx, Ny, Nz, Radius, a, b)   # List of Rings with their coordinates
-
-# Adding responding ring to identify resonance frequency
-
-#Rings = np.append(Rings, Ring(0, -4, 0, "y", 2.54/1.5*5))
-
-Number = len(Rings)                             # Number of Rings
+name = "Anisotropic-Nonshifted-cube"   # Name of Data file with this parameter set

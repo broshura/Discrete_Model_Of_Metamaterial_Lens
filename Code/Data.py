@@ -5,7 +5,10 @@ from numpy import sqrt, cos, sin, pi
 from scipy import integrate
 from scipy import special
 
-from Parameters_anisotropic import *
+# Choose parameter set for computing
+
+#from Parameters_anisotropic import *
+from Parameters import *
 
 K = special.ellipk       #  Сomplete elliptic integral of the first kind
 E = special.ellipe       #  Сomplete elliptic integral of the second kind
@@ -165,6 +168,11 @@ for n in range(Number):
 
 # Writing table in Data-file, divide string by \n and elements by " "
 
-with open("DATA/Data.txt", "w") as res:
+with open(f"DATA/Data-{name}.txt", "w") as res:
     for i in range(Number):
         res.write(" ".join(map(str, M[i])) + "\n")
+
+# Sum of matrix M elements to calculate permeability
+with open(f"DATA/SumM-{name}.txt", "w") as res:
+    SumM = sum(M)
+    res.write(str(SumM))
