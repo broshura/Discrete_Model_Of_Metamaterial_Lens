@@ -20,7 +20,7 @@ def Z_coil(omega, matrix_M, matrix_I):
 w_max = sqrt(1/L/C)*1.1     # Maximum frequency in MGz
 w_min = sqrt(1/L/C)*0.9    # Minimum frequency in MGz
 
-Omega = np.linspace(w_min, w_max, 300)                            # Frequency for each solving
+Omega = np.linspace(w_min, w_max, 100)                           # Frequency for each solving
 Impedance_real = []                                              # Real part of impedance on responding ring
 Impedance_imag = []                                              # Imaginary part of impedance on responding ring
 
@@ -30,7 +30,7 @@ with open(f"DATA/Data-{name}.txt", "r") as res:
    RES = res.read()
    M = [[k for k in x.split(" ")] for x in RES.split("\n")]
 M = [[float(M[i][k])*(a1/a) ** 1 * mu_0/(4*pi) for k in range(len(M[i]))] for i in range(len(M)-1)]
-print(len(M))
+print(f"Modeling responding ring for {name} set of parameters\n Number of rings: {len(M)}")
 
 for omega in Omega:
     # Solving equation for matrix M instead of impedance
@@ -46,7 +46,15 @@ for omega in Omega:
 
     I = linalg.solve(Mi, Vi)
 
-    Impedance_real.append(real(Z_coil(omega, M, I)))
-    Impedance_imag.append(imag(Z_coil(omega, M, I)))
+    Impedance_real.append(real(Z_coil(omega, M, I))[0])
+    Impedance_imag.append(imag(Z_coil(omega, M, I))[0])
 
+Impedance_real = np.asarray(Impedance_real)
+Impedance_imag = np.asarray(Impedance_imag)
+
+# Add result to Data folder
+
+with open(f"DATA/Responding-{name}.txt", 'w') as res:
+    for i in range(len(Omega)):
+        res.write(f"{Omega[i]} {Impedance_real[i]} {Impedance_imag[i]}\n")
 

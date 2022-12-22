@@ -58,4 +58,4 @@ w = 0.7*Radius/3                       # Width of strip in packing units
 Rings = Rectangle_packing(Nx, Ny, Nz, Radius, a, b, "z", shift_x, shift_y)
 Number = len(Rings)
 
-name = "Anisotropic-Nonshifted-cube"   # Name of Data file with this parameter set
+name = "Anisotropic-shifted-cube"   # Name of Data file with this parameter set

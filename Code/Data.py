@@ -7,8 +7,8 @@ from scipy import special
 
 # Choose parameter set for computing
 
-#from Parameters_anisotropic import *
-from Parameters import *
+from Parameters_anisotropic import *
+#from Parameters import *
 
 K = special.ellipk       #  Сomplete elliptic integral of the first kind
 E = special.ellipe       #  Сomplete elliptic integral of the second kind
@@ -158,9 +158,14 @@ def Mnm(First_ring, Second_ring, Data = {}):
 
 M = np.eye(Number) * 0
 Data = {}
+
+print(f"Modeling impedance matrix for {name} set of parameters")
+print(f"Number of rings: {Number}")
 for n in range(Number):
     for m in range(Number):
         if n > m:
+            if n % (Number*10) == 0:
+                print(f"String number {n}")
             R1 = Rings[n]
             R2 = Rings[m]
             M[n][m] = Mnm(R1, R2, Data)
