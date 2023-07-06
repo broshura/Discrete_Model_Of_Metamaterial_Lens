@@ -12,12 +12,12 @@ import numpy as np
 
 # Geometry for our system for MRI lenz
 
-def Rectangle_packing(nx, ny, nz, r, a, b, orientation = "z", shift_x = 0, shift_y = 0):
+def Rectangle_packing(nx, ny, nz, r, a, b, w,orientation = "z", shift_x = 0, shift_y = 0):
     rings = []
 
     for k in range(nz):
-        for i in range(nx):
-            for j in range(ny):
+        for j in range(ny):
+            for i in range(nx):
                 rings.append(
                     Ring(
                         # Prevent rings from getting out of the borders
@@ -25,7 +25,8 @@ def Rectangle_packing(nx, ny, nz, r, a, b, orientation = "z", shift_x = 0, shift
                         (j*a + shift_y * k) % ((ny)*a),
                         k*b,
                         orientation,
-                        r)
+                        r,
+                        w)
                 )
     return np.array(rings, dtype=Ring)
 
@@ -42,33 +43,38 @@ def Hexagonal_packing(nx, ny, nz, r, a, b, orientation, shift_x = 0, shift_y = 0
                         (sqrt(3)/2*j * a + shift_y * k) % ((ny) * a),
                         k * b,
                         orientation,
-                        r)
+                        r,
+                        w)
                 )
 
 # Parameters for system used in modeling
 
 mu_0 = 4 * pi * 10 ** -7               # Permeability of vacuum
 
-L = 4*10**-9                           # Self-inductance
+L = 7.14*10**-9                           # Self-inductance
 C = "Infinity"                         # Capacitance
-R = 926*10**-6                         # Resistance
+R = 0.0178                         # Resistance
 
 Nx, Ny, Nz = 15, 12, 34                # Number of cell on each dimension
-a1 = 4.5 * 10 ** -3                    # Length of cell
 b1 = 1 * 10 ** -3                      # Distance between layers
-a = 9                                  # Length of cell in packing units
+a1 = 4.5 * b1                         # Length of cell
+n_0 = 1 / (a1 ** 2 * b1)               # Volume concentration per one ring
 b = 1                                  # Distance between layers in packing units
+a = b * (a1/b1)                      # Length of cell in packing units
 shift_x = 0                            # Shifting of next layer along x axes
 shift_y = 0                            # Shifting of next layer along y axes
 
 Radius1 = a1/3                         # Mean radius of rings
 Radius = a/3                           # Mean radius of rings in packing units
-w1 = Radius/3                          # Width of strip
+w1 = 0.7*Radius/3                          # Width of strip
 w = 0.7*Radius/3                       # Width of strip in packing units
 
 # List of Rings with their coordinates and its number
 
-Rings = Rectangle_packing(Nx, Ny, Nz, Radius, a, b, "z", shift_x, shift_y)
+Rings = Rectangle_packing(Nx, Ny, Nz, Radius, a, b, w, "z", shift_x, shift_y)
 Number = len(Rings)
 
 name = "Anisotropic-Nonshifted-cube"   # Name of Data file with this parameter set
+
+H_0z = 10
+E_w = np.ones(Number) * pi * Radius1 ** 2 * H_0z * mu_0
