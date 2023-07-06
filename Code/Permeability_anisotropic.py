@@ -1,21 +1,20 @@
 #Calculating permeability of vacuum for structure
 
 from math import pi
-from Parameters_anisotropic import R, L, mu_0, a1, a, b1, b, Radius1, name
+from Parameters_anisotropic import R, L, mu_0, a1, a, Radius1, name, n_0, Number
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy import real, imag
 import numpy as np
 
-def mu(R, L, SumM, omega, r_0, a, b):
-    Z_0 = R + 1j*omega*L
-    Sigma = SumM/r_0
-    Const = a ** 3 / pi ** 2 / r_0 ** 3
-    print(Z_0)
-    print(Z_0/omega/mu_0/r_0)
-    print(SumM)
-    print(Const * (1j * Z_0/omega/mu_0/r_0 + Sigma))
-    return 1 - (Const * (1j * Z_0/omega/mu_0/r_0 + Sigma) + 1 / 3) ** -1
+def mu(omega):
+    Z_0 = R + 1j * omega * L
+    SumZ = SumM * 1j * omega
+    C = 1j * omega * pi ** 2 * Radius1 ** 4 * n_0 * mu_0
+    print(Z_0, SumZ, C)
+    return (Z_0 + SumZ + 2/3 * C)/(Z_0 + SumZ - 1/3 * C)
+
+
 
 Omega = np.logspace(-1, 10, 1000)
 
@@ -24,11 +23,18 @@ Omega = np.logspace(-1, 10, 1000)
 with open(f"DATA/SumM-{name}.txt", "r") as res:
     SumM = complex(res.read()) * a1/a * mu_0
 
+#with open(f"DATA/Data-{name}.txt", "r") as res:
+#    RES = res.read()
+#    M = [[k for k in x.split(" ")] for x in RES.split("\n")]
+
+#M = np.array([[complex(M[i][k])*(a1/a) ** 1 * mu_0 for k in range(len(M[i]))] for i in range(len(M)-1)])
+
+
 MuReal = []
 MuImag = []
 for omega in Omega:
-    MuReal.append(real(mu(R, L, SumM, omega, Radius1, a1, b1)))
-    MuImag.append(imag(mu(R, L, SumM, omega, Radius1, a1, b1)))
+    MuReal.append(real(mu(omega)))
+    MuImag.append(imag(mu(omega)))
 print(MuReal)
 # Plots of magnetic permeability of system
 

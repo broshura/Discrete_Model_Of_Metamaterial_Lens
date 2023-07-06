@@ -7,6 +7,7 @@ import numpy as np
 from numpy import sqrt, pi
 
 
+
 # Customizing plot and fonts
 rcParams['font.family'] = 'Times New Roman'
 
@@ -62,6 +63,8 @@ plt.show()
 fig, ax = plt.subplots(figsize = (10, 6))
 ax.set_xlabel("Frequency, MGz")
 ax.set_ylabel("Imaginary part of impedance, ohm")
+ax.set_xscale('log')
+
 plt.grid(True)
 
 plt.plot(Omega/2/pi/10 ** 6, Impedance_imag, label=r'Modeling', color='red')
