@@ -1,17 +1,44 @@
-# Calculating currents in each ring on pyfftw way (one dimensional)
+# Calculating currents in each ring for anizotropic system on straight way
 
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.optimize import curve_fit
-from scipy.sparse.linalg import gmres, LinearOperator
-from pyfftw import pyfftw
+from scipy.linalg import solve
 import matplotlib.pyplot as plt
 import json
 
-def Circvec(rings_3d, data):
-    Nz, Ny, Nx = rings_3d.shape
-    nz, ny, nx = 2*Nz-1, 2*Ny-1, 2*Nx-1
-    Z_circvecs = pyfftw.empty_aligned((nz, ny, nx), dtype = 'complex128')
+
+
+
+
+DATA = {}
+
+H_0z = 1
+
+Dimensions = ('z', 'y', 'x')
+Orientation = 'z'
+
+def solvesystem(n, Omega, grad = 0.1):
+    Data = {}
+    CURRENTS = []
+    MaxCurrents = []
+    Polarisation = []
+    MinCurrents = []
+
+    N = {}
+
+    N['x'], N['y'], N['z'] = n, n, n
+
+    nz = N[f"z"] + N[f"z"] - 1
+    ny = N[f"y"] + N[f"y"] - 1
+    nx = N[f"x"] + N[f"x"] - 1
+    dim_old = N['z'] * N['z'] * N['y'] * N['y'] * N['x'] * N['x']
+    dim_new = (N['z'], N['z'], N['y'], N['y'], N['x'], N['x'])
+
+
+    Rings = Rectangle_packing(N["x"], N["y"], N['z'], Radius, a, b, c, w)
+    Number = len(Rings)
+    Rings_3d = Rings.reshape((N['z'], N['y'], N['x']))
+    Z_circvecs = np.zeros((nz, ny, nx), dtype = complex)
     for z in range(nz):
         for y in range(ny):
             for x in range(nx):
@@ -23,42 +50,17 @@ def Circvec(rings_3d, data):
 
                 z_str_id = (nz - z) * (z >= N['z'])
                 z_col_id = z * (z < N['z'])
-                
-                Z_circvecs[z][y][x] = Mnm(rings_3d[z_str_id][y_str_id][x_str_id], rings_3d[z_col_id][y_col_id][x_col_id], data)
-    return Z_circvecs
 
-def fft_dot(I, ZI, FFT_Z_circvecs, i_vecs, ifft_i_vecs):
-    nz, ny, nx = ZI.shape
-    Nz, Ny, Nx = (ZI.shape + 1)// 2
-    i_vecs[:Nz, :Ny, :Nx] = I.reshape((Nz, Ny, Nx))
-
-    pyfftw.FFTW(i_vecs, ifft_i_vecs, axes = (0, 1, 2), direction='FFTW_BACKWARD').execute()
-    pyfftw.FFTW(FFT_Z_circvecs * ifft_i_vecs/nz/ny/nx, ZI, axes = (0, 1, 2)).execute()
-
-    return ZI[:Nz, :Ny, :Nx].reshape(len(I))
-
-def solvesystem(n, Omega, N, grad = 0.1):
-    Data = {}
-    CURRENTS = []
-    MaxCurrents = []
-    Polarisation = []
-    MinCurrents = []
-
-    nz = N[f"z"] + N[f"z"] - 1
-    ny = N[f"y"] + N[f"y"] - 1
-    nx = N[f"x"] + N[f"x"] - 1
-
-    Rings = Rectangle_packing(N["x"], N["y"], N['z'], Radius, a, b, c, w)
-    Rings_3d = Rings.reshape((N['z'], N['y'], N['x']))
-    Z_circvecs = Circvec(Rings_3d, Data) * a1/a * mu_0
-    Number = len(Rings)
+                Z_circvecs[z][y][x] = Mnm(Rings_3d[z_str_id][y_str_id][x_str_id], Rings_3d[z_col_id][y_col_id][x_col_id],DATA) * a1/a * mu_0
     print('circvecs:Done')
     i_vecs = np.zeros((nz, ny, nx), dtype=complex)
-    ZI = pyfftw.empty_aligned((nz, ny, nx), dtype = 'complex128')
-    FFT_Z_circvecs = pyfftw.empty_aligned((nz, ny, nx), dtype = 'complex128')
-    ifft_i_vecs = pyfftw.empty_aligned((nz, ny, nx), dtype = 'complex128')
-    pyfftw.FFTW(Z_circvecs, FFT_Z_circvecs, axes = (0, 1, 2)).execute()
-    
+
+    # def LO(I):
+    #     return dot(I, Z_circvecs=Z_circvecs, i_vecs=i_vecs, Z_0 = Z_0, N = N)
+
+
+    M = Matrix(Rings, Rings, DATA) * a1/a * mu_0
+    print('Matrix: Done')
     Zdiag = np.ones((N['z'], N['y'], N['x']), dtype = complex)
     omega_0 = 1/sqrt(L * C)
     print('Straight solving')
@@ -73,14 +75,8 @@ def solvesystem(n, Omega, N, grad = 0.1):
                     Cgrad = 1/L/omegagrad ** 2
                     Zdiag[z][y][x] = R + 1j * omega * L + 1/(1j * omega * Cgrad)
         Z_0 = np.diag(Zdiag.reshape(Number))
-
-        def LO(I):
-            return fft_dot(I, ZI, FFT_Z_circvecs=FFT_Z_circvecs, i_vecs=i_vecs, ifft_i_vecs=ifft_i_vecs)
-
-        A = LinearOperator((Number, Number), matvec=LO)
         E = H_0z  * np.ones(Number) * 1j * omega * pi * Radius1 ** 2 * mu_0
-        I, info = gmres(A, E)
-
+        I = solve(M*1j*omega + Z_0, E)
         Imax = I.max()
         Imin = I.min()
         Volume = N['x'] * N['y'] * (N['z']-1) * a1 * b1 * c1
@@ -106,4 +102,6 @@ def solvesystem(n, Omega, N, grad = 0.1):
     Data['ImagMinCurrents'] = list(np.imag(MinCurrents))
     Data['RealPolarisation'] = list(np.real(Polarisation))
     Data['ImagPolarisation'] = list(np.imag(Polarisation))
+
     return Data   
+    

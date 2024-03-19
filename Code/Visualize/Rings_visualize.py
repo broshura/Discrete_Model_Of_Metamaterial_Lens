@@ -54,7 +54,7 @@ def plot_circle(ring):
 
 #from Parameters import Rings, name
 
-from Parameters_anisotropic import Rings, a, b, name
+from Parameters_anisotropic import Rings, delta_x, delta_z, name
 
 fig = plt.figure(figsize = (20, 20))
 ax = fig.add_subplot(1, 1, 1, projection = '3d')

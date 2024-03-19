@@ -1,6 +1,6 @@
 # Comparing geometric matrix of metamaterial MRI lenz
 
-from Parameters_MRI import a, a1, Radius, Rings
+from Parameters_MRI import delta_z, Delta_z, radius, Rings
 import numpy as np
 from numpy import sign
 
@@ -38,9 +38,9 @@ for i in range(len(M2)-1):
     for j in range(len(M2[i])-1):
         # Avoid zero division on diagonal
         if i != j:
-            dx, dy, dz = Rings[j].x - Rings[i].x, Rings[j].y - Rings[i].y, Rings[j].z - Rings[i].z
+            dx, dy, delta_z = Rings[j].x - Rings[i].x, Rings[j].y - Rings[i].y, Rings[j].z - Rings[i].z
             m = Rings[i].pos + Rings[j].pos
-            id = M2[i][j]/M1[m][dx//2][dy//2][dz//2]
+            id = M2[i][j]/M1[m][dx//2][dy//2][delta_z//2]
             if not (Ratio_lowest < id < Ratio_highest):
                 cnt_abs += 1
                 print(f"Indexes and ratio :{i, j, nx, ny, nz, id}")
