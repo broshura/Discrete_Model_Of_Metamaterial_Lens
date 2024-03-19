@@ -1,18 +1,14 @@
-# Calculating geometry matrix M and saving as large data file for optimize next computation
+# Calculating geometry matrix M
 import json
 
 import numpy as np
 from numpy import sqrt, cos, sin, pi
 from scipy import integrate
 from scipy import special
-from Parameters_anisotropic import *
 
 K = special.ellipk  # Сomplete elliptic integral of the first kind
 E = special.ellipe  # Сomplete elliptic integral of the second kind
 
-# Choose parameter set for computing
-
-Number = len(Rings)
 
 
 # Computing for parallel-oriented rings
@@ -31,8 +27,8 @@ def L_parallel(dx, dy, dz, r1, r2, width = 0):
     #Considering stripe width
 
     if r1 == r2 and width:
-        R = r1 + w / 2
-        r = r1 - w / 2
+        R = r1 + width / 2
+        r = r1 - width / 2
         L_1, err_1 = integrate.quad(dl, 0, 2 * pi, args=(dx, dy, dz, r, r))
         L_2, err_1 = integrate.quad(dl, 0, 2 * pi, args=(dx, dy, dz, r, R))
         L_3, err_3 = integrate.quad(dl, 0, 2 * pi, args=(dx, dy, dz, R, R))
@@ -60,8 +56,8 @@ def L_orthogonal(dx, dy ,dz, r1, r2, width):
     # Considering stripe width
 
     if r1 == r2 and width:
-        R = r1 + w / 2
-        r = r1 - w / 2
+        R = r1 + width / 2
+        r = r1 - width / 2
         L_1, err_1 = integrate.quad(dl, 0, 2 * pi, args=(dx, dy, dz, r, r))
         L_2, err_1 = integrate.quad(dl, 0, 2 * pi, args=(dx, dy, dz, r, R))
         L_3, err_3 = integrate.quad(dl, 0, 2 * pi, args=(dx, dy, dz, R, R))
@@ -97,6 +93,9 @@ def Mnm(First_ring, Second_ring, Data = {}):
         return Data[id_1]
     elif id_2 in Data:
         return Data[id_2]
+    elif dx == 0 and dy == 0 and dz == 0:
+        Data[id_1] = 0
+        return 0
 
     # Consider all types of parallel orientation and symmetry for x-z axes
 
@@ -131,65 +130,11 @@ def Mnm(First_ring, Second_ring, Data = {}):
 
 # Calculating for each pair
 
-def Matrix(Rings, Data = {}):
-    M = np.eye(len(Rings)) * 0
-    for n in range(Number):
-        for m in range(Number):
-            if n % (Number//10) == 0 and m % (Number) == 0:
-                print(f"Done {n // (Number//10) * 10}%")
-            if n != m:
-                R1 = Rings[n]
-                R2 = Rings[m]
-                M[n][m] = Mnm(R1, R2, Data)
-    return M, Data
-
-#M = np.eye(Number) * 0
-#Data = {}
-
-#print(f"Modeling impedance matrix for {name} set of parameters")
-#print(f"Number of rings: {Number}")
-
-
-for n in range(Number):
-    break
-    for m in range(Number):
-        if n % (Number//10) == 0 and m % (Number) == 0:
-            print(f"Done {n // (Number//10) * 10}%")
-        if n != m:
-            R1 = Rings[n]
-            R2 = Rings[m]
+def Matrix(Rings1, Rings2, Data = {}):
+    M = np.zeros((len(Rings1), len(Rings2)))
+    for n in range(len(Rings1)):
+        for m in range(len(Rings2)):
+            R1 = Rings1[n]
+            R2 = Rings2[m]
             M[n][m] = Mnm(R1, R2, Data)
-
-
-# Writing table in Data-file, divide string by \n and elements by " "
-
-
-
-#print("Saving data...")
-#with open(f"DATA/Data-{name}.txt", "w") as res:
-#    for i in range(Number):
-#        res.write(" ".join(map(str, M[i])) + "\n")
-
-#with open(f"DATA/Data-{name}.json", "w") as res:
-#    res.write(json.dumps(Data))
-
-
-# Sum of matrix M elements to calculate permeability
-#with open(f"DATA/SumM-{name}.txt", "w") as res:
-#    if name.split("-")[0] == "Anisotropic":
-#        SumM = 0
-#        rings = Rings.reshape(Nz, Ny, Nx)
-#        Z, Y, X = Nz//2, Ny // 2, Nx // 2
-#        print(Z, Y, X)
-#        for z in [k for k in range(len(rings))]:
-#            break
-#           for y in [j for j in range(len(rings[z]))]:
-#                for x in [X + i for i in range(-len_x, len_x + 1)]:
-#                    if (Z, Y, X) != (z, y, x):
-#                       SumM += Mnm(rings[Z][Y][X], rings[z][y][x], Data)
-
- #       print(f"Sum of matrix elements:{SumM}")
- #       res.write(str(SumM))
-
-
-print("Ended")
+    return M

@@ -1,3 +1,4 @@
+# Object class for rings
 class Ring():
     def __init__(self, x, y, z, pos, radius, width):
         self.x = x      # x position of the ring
