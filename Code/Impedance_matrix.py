@@ -131,14 +131,27 @@ def Mnm(First_ring, Second_ring, Data = {}):
 
 # Calculating for each pair
 
-M = np.eye(Number) * 0
-Data = {}
+def Matrix(Rings, Data = {}):
+    M = np.eye(len(Rings)) * 0
+    for n in range(Number):
+        for m in range(Number):
+            if n % (Number//10) == 0 and m % (Number) == 0:
+                print(f"Done {n // (Number//10) * 10}%")
+            if n != m:
+                R1 = Rings[n]
+                R2 = Rings[m]
+                M[n][m] = Mnm(R1, R2, Data)
+    return M, Data
 
-print(f"Modeling impedance matrix for {name} set of parameters")
-print(f"Number of rings: {Number}")
+#M = np.eye(Number) * 0
+#Data = {}
+
+#print(f"Modeling impedance matrix for {name} set of parameters")
+#print(f"Number of rings: {Number}")
 
 
 for n in range(Number):
+    break
     for m in range(Number):
         if n % (Number//10) == 0 and m % (Number) == 0:
             print(f"Done {n // (Number//10) * 10}%")
@@ -152,31 +165,31 @@ for n in range(Number):
 
 
 
-print("Saving data...")
-with open(f"DATA/Data-{name}.txt", "w") as res:
-    for i in range(Number):
-        res.write(" ".join(map(str, M[i])) + "\n")
+#print("Saving data...")
+#with open(f"DATA/Data-{name}.txt", "w") as res:
+#    for i in range(Number):
+#        res.write(" ".join(map(str, M[i])) + "\n")
 
-with open(f"DATA/Data-{name}.json", "w") as res:
-    res.write(json.dumps(Data))
+#with open(f"DATA/Data-{name}.json", "w") as res:
+#    res.write(json.dumps(Data))
 
 
 # Sum of matrix M elements to calculate permeability
-with open(f"DATA/SumM-{name}.txt", "w") as res:
-    if name.split("-")[0] == "Anisotropic":
-        SumM = 0
-        rings = Rings.reshape(Nz, Ny, Nx)
-        Z, Y, X = Nz//2, Ny // 2, Nx // 2
-        print(Z, Y, X)
-        for z in [k for k in range(len(rings))]:
-            break
-            for y in [j for j in range(len(rings[z]))]:
-                for x in [X + i for i in range(-len_x, len_x + 1)]:
-                    if (Z, Y, X) != (z, y, x):
-                        SumM += Mnm(rings[Z][Y][X], rings[z][y][x], Data)
+#with open(f"DATA/SumM-{name}.txt", "w") as res:
+#    if name.split("-")[0] == "Anisotropic":
+#        SumM = 0
+#        rings = Rings.reshape(Nz, Ny, Nx)
+#        Z, Y, X = Nz//2, Ny // 2, Nx // 2
+#        print(Z, Y, X)
+#        for z in [k for k in range(len(rings))]:
+#            break
+#           for y in [j for j in range(len(rings[z]))]:
+#                for x in [X + i for i in range(-len_x, len_x + 1)]:
+#                    if (Z, Y, X) != (z, y, x):
+#                       SumM += Mnm(rings[Z][Y][X], rings[z][y][x], Data)
 
-        print(f"Sum of matrix elements:{SumM}")
-        res.write(str(SumM))
+ #       print(f"Sum of matrix elements:{SumM}")
+ #       res.write(str(SumM))
 
 
 print("Ended")
