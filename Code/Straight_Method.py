@@ -7,9 +7,6 @@ from Impedance_matrix import Matrix
 from tqdm import tqdm
 
 
-
-
-
 DATA = {}
 
 H_0z = 1
