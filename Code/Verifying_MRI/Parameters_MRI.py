@@ -44,7 +44,7 @@ mu_0 = 4 * pi * 10 ** -7                # Permeability of vacuum
 L = 13.46 * 10 ** -9                    # Self-inductance
 C = 470 * 10 ** -12                     # Capacitance
 R = 0.0465                              # Resistance
-omega_0 = 63.28 * 10 ** 6               # Frequency of resonance in free space
+omega_0 = 1/np.sqrt(L * C)        # Frequency of resonance in free space
 
 N = {}
 
@@ -109,6 +109,7 @@ Params = {
     # Adding responding ring to identify resonance frequency
 
     'Responding_Ring': Responding_Ring,
-    'name': name
+    'name': name,
+    'Rectangle_packing': Rectangle_packing
 }
 
