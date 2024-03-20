@@ -58,9 +58,9 @@ def Hexagonal_packing(N, r, delta_x, delta_y, delta_z, orientation, shift_x = 0,
 
 mu_0 = 4 * pi * 10 ** -7               # Permeability of vacuum
 L = 7.14*10**-9                        # Self-inductance
-C = "Infinity"                         # Capacitance
+C = 800 * 10 ** -12                    # Capacitance
 R = 0.0178                             # Resistance
-omega_0 = 12 * 10 ** 6                
+omega_0 = 1/np.sqrt(L * C)             # Self-frequence                
 
 N = {'x':15, 'y':12, 'z':34}           # Number of cell on each dimension
 Delta_z = 1.5 * 10 ** -3               # Distance between layers
@@ -82,25 +82,25 @@ w = 0.7*radius/3                       # Width of strip in packing units
 
 name = "Anisotropic-Nonshifted-cube"   # Name of Data file with this parameter set
 
-Params = {'L': L,                  # Self-inductance
-    'C': C,                         # Capacitance
-    'R': R,                             # Resistance
-    'Self-frequence': omega_0,                
-    'N': N,                     # Number of cell on each dimension
-    'Dz': Delta_z,                    # Distance between layers
+Params = {'L': L,                            # Self-inductance
+    'C': C,                                  # Capacitance
+    'R': R,                                  # Resistance
+    'W': 0.7*Radius/3,                       # Width of strip
+    'Radius': Delta_x/3,                     # Mean radius of rings
+    'Dz': Delta_z,                           # Distance between layers
     'Dy': 3 * Delta_z,                       # Length of cell
     'Dx': 3 * Delta_z,                       # y-distance
+    'Rectangle_packing': Rectangle_packing,    
+
+    'N': N,                                  # Number of cell on each dimension
     'dz': 1,                                 # Distance between layers in packing units
     'dy': delta_z * (Delta_y/Delta_z),       # Length of cell in packing units
     'dx': delta_z * (Delta_z/Delta_z),       # y-distance in packing units
     'shift_x': 0,                            # Shifting of next layer along x axes
     'shift_y': 0,                            # Shifting of next layer along y axes
-
-    'Radius': Delta_x/3,                     # Mean radius of rings
     'radius': delta_x/3,                     # Mean radius of rings in packing units
-    'W': 0.7*Radius/3,                       # Width of strip
     'w': 0.7*radius/3,                       # Width of strip in packing units
-
     'name': "Anisotropic-Nonshifted-cube",    # Name of Data file with this parameter set
-    'Orientations': ('z')
+    'Orientations': ('z'),
+    'Self-frequence': omega_0                
 }

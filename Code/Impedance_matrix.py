@@ -9,7 +9,7 @@ from scipy import special
 K = special.ellipk  # Сomplete elliptic integral of the first kind
 E = special.ellipe  # Сomplete elliptic integral of the second kind
 
-
+mu_0 = 4 * pi * 10 ** -7
 
 # Computing for parallel-oriented rings
 def L_parallel(dx, dy, dz, r1, r2, width = 0):
@@ -59,7 +59,7 @@ def L_orthogonal(dx, dy ,dz, r1, r2, width):
         R = r1 + width / 2
         r = r1 - width / 2
         L_1, err_1 = integrate.quad(dl, 0, 2 * pi, args=(dx, dy, dz, r, r))
-        L_2, err_1 = integrate.quad(dl, 0, 2 * pi, args=(dx, dy, dz, r, R))
+        L_2, err_2 = integrate.quad(dl, 0, 2 * pi, args=(dx, dy, dz, r, R))
         L_3, err_3 = integrate.quad(dl, 0, 2 * pi, args=(dx, dy, dz, R, R))
         L = (L_1 + 2 * L_2 + L_3) / 4
     elif width:
@@ -75,13 +75,13 @@ def L_orthogonal(dx, dy ,dz, r1, r2, width):
 # Computing for any pair
 
 def Mnm(First_ring, Second_ring, Data = {}):
-    global cnt_ZY, cnt_YZ, cnt_ZX, cnt_XZ, cnt_XY, cnt_YX
 
     dx = Second_ring.x - First_ring.x
     dy = Second_ring.y - First_ring.y
     dz = Second_ring.z - First_ring.z
     r1 = First_ring.r
     r2 = Second_ring.r
+    w = First_ring.w
 
     # To avoid calculating integrals with same params each time
     # there is a dictionary with all parameters and values
@@ -125,8 +125,8 @@ def Mnm(First_ring, Second_ring, Data = {}):
                 l = L_orthogonal(dy, (dz), (dx), r1, r2, w)
             else:                                           # X-Y oriented pair
                 l = L_orthogonal((dz), dy, (dx), r1, r2, w)
-    Data[id_1], Data[id_2] = l, l
-    return l
+    Data[id_1], Data[id_2] = l * mu_0, l * mu_0
+    return l * mu_0
 
 # Calculating for each pair
 
