@@ -128,7 +128,7 @@ def Mnm(First_ring, Second_ring, Data = {}):
     Data[id_1], Data[id_2] = l * mu_0, l * mu_0
     return l * mu_0
 
-# Calculating for each pair
+# Calculating mutual inductance for each pair
 
 def Matrix(Rings1, Rings2, Data = {}):
     M = np.zeros((len(Rings1), len(Rings2)))
@@ -138,3 +138,59 @@ def Matrix(Rings1, Rings2, Data = {}):
             R2 = Rings2[m]
             M[n][m] = Mnm(R1, R2, Data)
     return M
+
+# Caclulating diagonal of Z matrix using gradient
+
+def Z_0(Params, grad = [0, 0, 0]):
+    L, C, R, N = Params['L'], Params['C'], Params['R'], Params['N']
+    Number = np.sum([N[pos]['nz'] * N[pos]['ny'] * N[pos]['nx'] for pos in N])
+    Cgrad = np.empty(Number)
+
+    # Making start and end points for each orientation
+    start = 0
+    end = 0
+    for pos, i in zip(N, np.arange(len(N))):
+        end += N[pos]['nz'] * N[pos]['ny'] * N[pos]['nx']
+        
+        z, y, x = np.meshgrid(np.arange(N[pos]['nz']),
+                              np.arange(N[pos]['ny']),
+                              np.arange(N[pos]['nx']),
+                              indexing = 'ij')
+        gradx = x * grad[0] / N[pos]['nx']
+        grady = y * grad[1] / N[pos]['ny']
+        gradz = z * grad[2] / N[pos]['nz']
+
+        Omega_0 = (1 + gradz + grady + gradx)/np.sqrt(L * C).ravel()
+        Cgrad[start:end] = 1/L/(Omega_0 ** 2)
+
+        start += N[pos]['nz'] * N[pos]['ny'] * N[pos]['nx']
+    return lambda omega: R + 1j * omega * L + 1 / (1j * omega * Cgrad)
+
+# Caclulating diagonal of M matrix using gradient
+
+def M_0(Params, grad = [0, 0, 0]):
+    L, C, R, N = Params['L'], Params['C'], Params['R'], Params['N']
+    Number = np.sum([N[pos]['nz'] * N[pos]['ny'] * N[pos]['nx'] for pos in N])
+    Cgrad = np.empty(Number)
+
+    # Making start and end points for each orientation
+    start = 0
+    end = 0
+    for pos, i in zip(N, np.arange(len(N))):
+        end += N[pos]['nz'] * N[pos]['ny'] * N[pos]['nx']
+        
+        z, y, x = np.meshgrid(np.arange(N[pos]['nz']),
+                              np.arange(N[pos]['ny']),
+                              np.arange(N[pos]['nx']),
+                              indexing = 'ij')
+        gradx = x * grad[0] / N[pos]['nx']
+        grady = y * grad[1] / N[pos]['ny']
+        gradz = z * grad[2] / N[pos]['nz']
+
+        Omega_0 = (1 + gradz + grady + gradx)/np.sqrt(L * C)
+        print(Omega_0.shape)
+        Cgrad[start:end] = 1/L/(Omega_0.ravel() ** 2)
+
+        start += N[pos]['nz'] * N[pos]['ny'] * N[pos]['nx']
+
+    return lambda omega: R / (1j * omega) + L - 1 / (omega ** 2 * Cgrad)
