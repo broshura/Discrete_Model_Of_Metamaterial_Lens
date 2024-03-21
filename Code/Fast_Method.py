@@ -12,7 +12,7 @@ def Circvec(rings_3d_str, rings_3d_col, data):
     Nz_col, Ny_col, Nx_col = rings_3d_col.shape
     nz, ny, nx = Nz_str + Nz_col - 1, Ny_str + Ny_col - 1, Nx_str + Nx_col - 1
     Z_circvecs = pyfftw.empty_aligned((nz, ny, nx), dtype = 'complex128')
-    for z in range(nz):
+    for z in tqdm(range(nz)):
         for y in range(ny):
             for x in range(nx):
                 x_str_id = (nx - x) * (x >= Nx_col)
@@ -36,9 +36,9 @@ def fft_dot(I, ZI, FFT_Z_circvecs, i_vecs, ifft_i_vecs):
     pyfftw.FFTW(i_vecs, ifft_i_vecs, axes = (0, 1, 2), direction='FFTW_BACKWARD').execute()
     pyfftw.FFTW(FFT_Z_circvecs * ifft_i_vecs/nz/ny/nx, ZI, axes = (0, 1, 2)).execute()
     
-    return ZI[:nz - Nz + 1, :ny - Ny + 1, :nx - Nx + 1].reshape(I.size)
+    return ZI[:nz - Nz + 1, :ny - Ny + 1, :nx - Nx + 1].ravel()
 
-def solvesystem(rings_4d, M_0, Omega, Inductance = {}, phi_0z = 1, tol = 1e-6):
+def solvesystem(rings_4d, M_0, Omega, Inductance = {}, phi_0z = 1, tol = 1e5):
     # Unpacking parameters
 
     orientations = rings_4d.keys()
@@ -50,6 +50,7 @@ def solvesystem(rings_4d, M_0, Omega, Inductance = {}, phi_0z = 1, tol = 1e-6):
     MI_vecs = {}
 
     # Preparing empty arrays for pyfftw
+    print('Cirvecs forming')
     for pos_str in orientations:
         rings_str = rings_4d[pos_str]
         FFT_M_circvecs[pos_str] = {}
@@ -67,11 +68,12 @@ def solvesystem(rings_4d, M_0, Omega, Inductance = {}, phi_0z = 1, tol = 1e-6):
             FFT_M_circvecs[pos_str][pos_col] = pyfftw.empty_aligned(N_circ, dtype = 'complex128')
             ifft_i_vecs[pos_str][pos_col] = pyfftw.empty_aligned(N_circ, dtype = 'complex128')
             pyfftw.FFTW(M_circvecs, FFT_M_circvecs[pos_str][pos_col], axes = (0, 1, 2)).execute()
-    print('circvecs:Done')
+    print('Circvecs: Done')
 
     # Caclulating current in each ring
     CURRENTS = []
-    I_old = np.ones(Number, dtype = np.complex128)
+    I_old = np.ones(Number, dtype = np.complex128)/M_0(Omega[0])
+    print('FFT solving')
     for omega in tqdm(Omega):
         def LO(I):
             MI = M_0(omega) * I
@@ -85,23 +87,29 @@ def solvesystem(rings_4d, M_0, Omega, Inductance = {}, phi_0z = 1, tol = 1e-6):
                 end_col = 0
                 for pos_col in orientations:
                     end_col += rings_4d[pos_col].size
-                    MI[start_str: end_str] += fft_dot(I[start_col:end_col].reshape(rings_4d[pos_col].shape), MI_vecs[pos_str][pos_col], FFT_M_circvecs[pos_str][pos_col], i_vecs[pos_str][pos_col], ifft_i_vecs[pos_str][pos_col])
+                    MI[start_str: end_str] += fft_dot(I[start_col:end_col].reshape(rings_4d[pos_col].shape),
+                                                      MI_vecs[pos_str][pos_col],
+                                                      FFT_M_circvecs[pos_str][pos_col],
+                                                      i_vecs[pos_str][pos_col],
+                                                      ifft_i_vecs[pos_str][pos_col])
                     start_col += rings_4d[pos_col].size
                 start_str += rings_4d[pos_str].size
             return MI
+        
         M = LinearOperator(dtype = np.complex128, shape=(Number, Number), matvec=LO)
-        Phi_0z = np.ones(Number) * M_0(omega)
-        I, info = bicgstab(M, Phi_0z, x0 = I_old, tol = np.linalg.norm(Phi_0z)*tol)
+        Phi_0z = np.ones(Number)
+        I, info = bicgstab(M, Phi_0z, x0 = I_old, tol = tol)
+
         if info != 0:
             print(f'omega = {omega/2/np.pi/1e6} MHz did not converge')
-        CURRENTS.append(I/M_0(omega) * phi_0z)
+        
+        CURRENTS.append(I*phi_0z)
         I_old = I
-    print(f'FFT solving: Done, shape = {((pos, rings_4d[pos].shape) for pos in orientations)}')
+    print(f'FFT solving: Done, shape = {[(pos, rings_4d[pos].shape) for pos in orientations]}')
     Data = {}
 
     Data['Omega'] = list(Omega)
-    Data['Shape'] = [(pos, rings_4d[pos].shape) for pos in orientations]
     Data['RealCurrents'] = [list(np.real(i).reshape(Number)) for i in CURRENTS]
     Data['ImagCurrents'] = [list(np.imag(i).reshape(Number)) for i in CURRENTS]
  
-    return Data   
+    return Data  

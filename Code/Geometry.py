@@ -25,9 +25,9 @@ def Rectangle_packing(Params, r0 = 0, orientation = 'z'):
                 rings.append(
                     Ring(
                         # Prevent rings from getting out of the borders
-                        (i * delta_x + Shift_x) % ((nx) * delta_x) + dx,
-                        (j * delta_y + Shift_y) % ((ny) * delta_y) + dy,
-                        (k * delta_z + Shift_z) % ((nz) * delta_z) + dz,
+                        (i * delta_x + Shift_x) % ((nx) * delta_x) + dx + r0['nx'],
+                        (j * delta_y + Shift_y) % ((ny) * delta_y) + dy + r0['ny'],
+                        (k * delta_z + Shift_z) % ((nz) * delta_z) + dz + r0['nz'],
                         orientation,
                         r, w, L, C, R)
                 )
