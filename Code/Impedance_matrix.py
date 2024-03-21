@@ -5,6 +5,7 @@ import numpy as np
 from numpy import sqrt, cos, sin, pi
 from scipy import integrate
 from scipy import special
+from tqdm import tqdm
 
 K = special.ellipk  # Сomplete elliptic integral of the first kind
 E = special.ellipe  # Сomplete elliptic integral of the second kind
@@ -132,7 +133,7 @@ def Mnm(First_ring, Second_ring, Data = {}):
 
 def Matrix(Rings1, Rings2, Data = {}):
     M = np.zeros((len(Rings1), len(Rings2)))
-    for n in range(len(Rings1)):
+    for n in tqdm(range(len(Rings1))):
         for m in range(len(Rings2)):
             R1 = Rings1[n]
             R2 = Rings2[m]
@@ -188,7 +189,6 @@ def M_0(Params, grad = [0, 0, 0]):
         gradz = z * grad[2] / N[pos]['nz']
 
         Omega_0 = (1 + gradz + grady + gradx)/np.sqrt(L * C)
-        print(Omega_0.shape)
         Cgrad[start:end] = 1/L/(Omega_0.ravel() ** 2)
 
         start += N[pos]['nz'] * N[pos]['ny'] * N[pos]['nx']
