@@ -1,6 +1,6 @@
 # Comparing geometric matrix of metamaterial MRI lenz
 
-from Parameters_MRI import delta_z, Delta_z, radius, Rings
+from Parameters_MRI import delta_z, Dz, radius, Rings
 import numpy as np
 from numpy import sign
 
