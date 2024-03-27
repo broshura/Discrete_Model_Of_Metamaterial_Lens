@@ -89,11 +89,36 @@ def Mnm(First_ring, Second_ring, Data = {}):
 
     id_1 = f"{dx} {dy} {dz} {r1} {r2} {First_ring.pos}{Second_ring.pos}"
     id_2 = f"{-dx} {-dy} {-dz} {r2} {r1} {Second_ring.pos}{First_ring.pos}"
+    # id_3 = f"{dx} {-dz} {dy} {r1} {r2} {First_ring.pos}{Second_ring.pos}"
+    # id_4 = f"{-dz} {dy} {dx} {r1} {r2} {First_ring.pos}{Second_ring.pos}"
+    # id_5 = f"{dx} {dy} {dz} {r1} {r2} {First_ring.pos}{Second_ring.pos}"
+    # id_6 = f"{dy} {dx} {dz} {r1} {r2} {First_ring.pos}{Second_ring.pos}"
+    # id_7 = f"{dx} {dz} {dy} {r1} {r2} {First_ring.pos}{Second_ring.pos}"
+    # id_8 = f"{-dz} {dx} {dy} {r1} {r2} {First_ring.pos}{Second_ring.pos}"
+    # id_9 = f"{dy} {dz} {dx} {r1} {r2} {First_ring.pos}{Second_ring.pos}"
+    # id_10 = f"{dz} {dy} {dx} {r1} {r2} {First_ring.pos}{Second_ring.pos}"
 
     if id_1 in Data:
         return Data[id_1]
     elif id_2 in Data:
         return Data[id_2]
+    # elif id_3 in Data:
+    #     return Data[id_3]
+    # elif id_4 in Data:
+    #     return Data[id_4]
+    # elif id_5 in Data:
+    #     return Data[id_5]
+    # elif id_6 in Data:
+    #     return Data[id_6]
+    # elif id_7 in Data:
+    #     return Data[id_7]
+    # elif id_8 in Data:
+    #     return Data[id_8]
+    # elif id_9 in Data:
+    #     return Data[id_9]
+    # elif id_10 in Data:
+    #     return Data[id_10]
+    
     elif dx == 0 and dy == 0 and dz == 0:
         Data[id_1] = 0
         return 0
@@ -126,18 +151,27 @@ def Mnm(First_ring, Second_ring, Data = {}):
                 l = L_orthogonal(dy, (dz), (dx), r1, r2, w)
             else:                                           # X-Y oriented pair
                 l = L_orthogonal((dz), dy, (dx), r1, r2, w)
-    Data[id_1], Data[id_2] = l * mu_0, l * mu_0
+    # Data[id_1], Data[id_2], Data[id_3], Data[id_4], Data[id_5], Data[id_6], Data[id_7], Data[id_8], Data[id_9], Data[id_10] = [l*mu_0] * 10
+    Data[id_1], Data[id_2] = [l * mu_0] * 2
     return l * mu_0
 
 # Calculating mutual inductance for each pair
 
-def Matrix(Rings1, Rings2, Data = {}):
-    M = np.zeros((len(Rings1), len(Rings2)))
-    for n in tqdm(range(len(Rings1))):
-        for m in range(len(Rings2)):
-            R1 = Rings1[n]
-            R2 = Rings2[m]
+def Matrix_8d(rings_4d, Data = {}):
+    Matrix = np.zeros()
+    for pos_str in rings_4d:
+        for pos_col in rings_4d:
+            pass
+
+
+def Matrix(rings, Data = {}):
+    M = np.zeros((len(rings), len(rings)))
+    for n in tqdm(range(len(rings))):
+        for m in range(n, len(rings)):
+            R1 = rings[n]
+            R2 = rings[m]
             M[n][m] = Mnm(R1, R2, Data)
+            M[m][n] = M[n][m]
     return M
 
 # Caclulating diagonal of Z matrix using gradient

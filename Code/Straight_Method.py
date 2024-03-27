@@ -12,14 +12,14 @@ def solvesystem(rings, M_0, Omega, phi_0z = 1, Inductance = {}):
 
     print('Matrix forming')
     Number = len(rings)
-    M = Matrix(rings, rings, Data = Inductance)
+    M = Matrix(rings, Data = Inductance)
     print('Matrix: Done')
 
     print('Straight solving')
 
     Phi_0z = np.ones(Number)
     for omega in tqdm(Omega):
-        I = solve(M + M_0(omega), Phi_0z)
+        I = solve(M + np.diag(M_0(omega)), Phi_0z)
         CURRENTS.append(I * phi_0z)
     print('Straight solving: Done')
     Data = {}
