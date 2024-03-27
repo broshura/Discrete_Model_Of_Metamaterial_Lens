@@ -1,6 +1,7 @@
 from Ring_Class import Ring
 import numpy as np
 
+
 def Rectangle_packing(Params, r0 = 0, orientation = 'z'):
     N = Params['N'][orientation]
     L, C, R, w = Params['L'], Params['C'], Params['R'], Params['W']
@@ -19,15 +20,12 @@ def Rectangle_packing(Params, r0 = 0, orientation = 'z'):
                 Shift_x = shift_x * (k * (orientation == 'z') + j * (orientation == 'y'))
                 Shift_y = shift_y * (k * (orientation == 'z') + i * (orientation == 'x'))
                 Shift_z = shift_z * (j * (orientation == 'y') + i * (orientation == 'x'))
-                dx = (orientation != 'x') * delta_x/2
-                dy = (orientation != 'y') * delta_y/2
-                dz = (orientation != 'z') * delta_z/2
                 rings.append(
                     Ring(
                         # Prevent rings from getting out of the borders
-                        (i * delta_x + Shift_x) % ((nx) * delta_x) + dx + r0['nx'],
-                        (j * delta_y + Shift_y) % ((ny) * delta_y) + dy + r0['ny'],
-                        (k * delta_z + Shift_z) % ((nz) * delta_z) + dz + r0['nz'],
+                        (i * delta_x + Shift_x) % ((nx) * delta_x) + r0['nx'],
+                        (j * delta_y + Shift_y) % ((ny) * delta_y) + r0['ny'],
+                        (k * delta_z + Shift_z) % ((nz) * delta_z) + r0['nz'],
                         orientation,
                         r, w, L, C, R)
                 )

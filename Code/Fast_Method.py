@@ -12,7 +12,7 @@ def Circvec(rings_3d_str, rings_3d_col, data):
     Nz_col, Ny_col, Nx_col = rings_3d_col.shape
     nz, ny, nx = Nz_str + Nz_col - 1, Ny_str + Ny_col - 1, Nx_str + Nx_col - 1
     Z_circvecs = pyfftw.empty_aligned((nz, ny, nx), dtype = 'complex128')
-    for z in tqdm(range(nz)):
+    for z in range(nz):
         for y in range(ny):
             for x in range(nx):
                 x_str_id = (nx - x) * (x >= Nx_col)
@@ -51,7 +51,7 @@ def solvesystem(rings_4d, M_0, Omega, Inductance = {}, phi_0z = 1, tol = 1e5):
 
     # Preparing empty arrays for pyfftw
     print('Cirvecs forming')
-    for pos_str in orientations:
+    for pos_str in tqdm(orientations):
         rings_str = rings_4d[pos_str]
         FFT_M_circvecs[pos_str] = {}
         i_vecs[pos_str] = {}
@@ -71,9 +71,10 @@ def solvesystem(rings_4d, M_0, Omega, Inductance = {}, phi_0z = 1, tol = 1e5):
     print('Circvecs: Done')
 
     # Caclulating current in each ring
+    print('FFT solving')
     CURRENTS = []
     I_old = np.ones(Number, dtype = np.complex128)/M_0(Omega[0])
-    print('FFT solving')
+    Phi_0z = np.ones(Number)
     for omega in tqdm(Omega):
         def LO(I):
             MI = M_0(omega) * I
@@ -97,7 +98,6 @@ def solvesystem(rings_4d, M_0, Omega, Inductance = {}, phi_0z = 1, tol = 1e5):
             return MI
         
         M = LinearOperator(dtype = np.complex128, shape=(Number, Number), matvec=LO)
-        Phi_0z = np.ones(Number)
         I, info = bicgstab(M, Phi_0z, x0 = I_old, tol = tol)
 
         if info != 0:
