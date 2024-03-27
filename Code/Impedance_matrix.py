@@ -157,13 +157,6 @@ def Mnm(First_ring, Second_ring, Data = {}):
 
 # Calculating mutual inductance for each pair
 
-def Matrix_8d(rings_4d, Data = {}):
-    Matrix = np.zeros()
-    for pos_str in rings_4d:
-        for pos_col in rings_4d:
-            pass
-
-
 def Matrix(rings, Data = {}):
     M = np.zeros((len(rings), len(rings)))
     for n in tqdm(range(len(rings))):
@@ -178,34 +171,7 @@ def Matrix(rings, Data = {}):
 
 def Z_0(Params, grad = [0, 0, 0]):
     L, C, R, N = Params['L'], Params['C'], Params['R'], Params['N']
-    Number = np.sum([N[pos]['nz'] * N[pos]['ny'] * N[pos]['nx'] for pos in N])
-    Cgrad = np.empty(Number)
-
-    # Making start and end points for each orientation
-    start = 0
-    end = 0
-    for pos, i in zip(N, np.arange(len(N))):
-        end += N[pos]['nz'] * N[pos]['ny'] * N[pos]['nx']
-        
-        z, y, x = np.meshgrid(np.arange(N[pos]['nz']),
-                              np.arange(N[pos]['ny']),
-                              np.arange(N[pos]['nx']),
-                              indexing = 'ij')
-        gradx = x * grad[0] / N[pos]['nx']
-        grady = y * grad[1] / N[pos]['ny']
-        gradz = z * grad[2] / N[pos]['nz']
-
-        Omega_0 = (1 + gradz + grady + gradx)/np.sqrt(L * C).ravel()
-        Cgrad[start:end] = 1/L/(Omega_0 ** 2)
-
-        start += N[pos]['nz'] * N[pos]['ny'] * N[pos]['nx']
-    return lambda omega: R + 1j * omega * L + 1 / (1j * omega * Cgrad)
-
-# Caclulating diagonal of M matrix using gradient
-
-def M_0(Params, grad = [0, 0, 0]):
-    L, C, R, N = Params['L'], Params['C'], Params['R'], Params['N']
-    Number = np.sum([N[pos]['nz'] * N[pos]['ny'] * N[pos]['nx'] for pos in N])
+    Number = Params['Number']
     Cgrad = np.empty(Number)
 
     # Making start and end points for each orientation
@@ -226,5 +192,46 @@ def M_0(Params, grad = [0, 0, 0]):
         Cgrad[start:end] = 1/L/(Omega_0.ravel() ** 2)
 
         start += N[pos]['nz'] * N[pos]['ny'] * N[pos]['nx']
+    if Number != end:
+        Responded_ring = Params['Responded_ring']
+        R = np.ones(Number, dtype = np.complex128) * R
+        R[-1] = Responded_ring.R
+        L = np.ones(Number, dtype=np.complex128) * L
+        L[-1] = Responded_ring.L
+        Cgrad[-1] = Responded_ring.C
+    return lambda omega: R + 1j * omega * L + 1 / (1j * omega * Cgrad)
+
+# Caclulating diagonal of M matrix using gradient
+
+def M_0(Params, grad = [0, 0, 0]):
+    L, C, R, N = Params['L'], Params['C'], Params['R'], Params['N']
+    Number = Params['Number']
+    Cgrad = np.empty(Number)
+
+    # Making start and end points for each orientation
+    start = 0
+    end = 0
+    for pos, i in zip(N, np.arange(len(N))):
+        end += N[pos]['nz'] * N[pos]['ny'] * N[pos]['nx']
+        
+        z, y, x = np.meshgrid(np.arange(N[pos]['nz']),
+                              np.arange(N[pos]['ny']),
+                              np.arange(N[pos]['nx']),
+                              indexing = 'ij')
+        gradx = x * grad[0] / N[pos]['nx']
+        grady = y * grad[1] / N[pos]['ny']
+        gradz = z * grad[2] / N[pos]['nz']
+
+        Omega_0 = (1 + gradz + grady + gradx)/np.sqrt(L * C)
+        Cgrad[start:end] = 1/L/(Omega_0.ravel() ** 2)
+
+        start += N[pos]['nz'] * N[pos]['ny'] * N[pos]['nx']
+    if Number != end:
+        Responded_ring = Params['Responded_ring']
+        R = np.ones(Number, dtype = np.complex128) * R
+        R[-1] = Responded_ring.R
+        L = np.ones(Number, dtype=np.complex128) * L
+        L[-1] = Responded_ring.L
+        Cgrad[-1] = Responded_ring.C
 
     return lambda omega: R / (1j * omega) + L - 1 / (omega ** 2 * Cgrad)

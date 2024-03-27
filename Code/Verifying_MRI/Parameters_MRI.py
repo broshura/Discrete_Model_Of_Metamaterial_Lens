@@ -1,5 +1,9 @@
 # This file contains all parameters for modeling and geometry of rings
+import os
+import sys
 
+sys.path.insert(1, os.path.join(sys.path[0], '..'))
+from Ring_Class import Ring
 from numpy import pi
 import numpy as np
 
@@ -12,9 +16,14 @@ R = 0.0465                              # Resistance
 omega_0 = 1/np.sqrt(L * C)              # Self-frequence
 
 N = {}
-N["z"] = {'nz':10, 'ny': 9, 'nx': 9}            # Number of cells on each row for z-oriented rings
-N["y"] = {'nz':9, 'ny': 10, 'nx': 9}            # Number of cells on each row for y-oriented rings
-N["x"] = {'nz':9, 'ny': 9, 'nx': 10}            # Number of cells on each row for x-oriented rings
+N["z"] = {'nz':17, 'ny': 2, 'nx': 18}            # Number of cells on each row for z-oriented rings
+N["y"] = {'nz':18, 'ny': 3, 'nx': 18}            # Number of cells on each row for y-oriented rings
+N["x"] = {'nz':18, 'ny': 2, 'nx': 17}            # Number of cells on each row for x-oriented rings
+
+# N["z"] = {'nz':1, 'ny': 2, 'nx': 2}            # Number of cells on each row for z-oriented rings
+# N["y"] = {'nz':2, 'ny': 3, 'nx': 2}            # Number of cells on each row for y-oriented rings
+# N["x"] = {'nz':2, 'ny': 2, 'nx': 1}            # Number of cells on each row for x-oriented rings
+
 
 Dz = 15 * 10 ** -3                      # Length of cell
 Dy = Dz
@@ -24,8 +33,20 @@ W = 0.7 * 0.15 * Dz                     # Width of strip
 
 R_coil = 1.5                           # Resistance of responding ring
 L_coil = 1.8*10**-7                    # Self-inductance of responding  ring
-Radius_coil = 3 * 2.54 * 10 ** -2      # Radius of responding ring
+C_coil = np.inf                        # Capacitance of responding ring
+Radius_coil = 3 * 2.54 * 10 ** -2/2    # Radius of responding ring
 
+R0 = {                                 # Initial position of the first ring for each orientation
+    'z': {'nz': Dz, 'ny': Dy/2, 'nx': Dx/2},
+    'y': {'nz': Dz/2, 'ny': 0, 'nx': Dx/2},
+    'x': {'nz': Dz/2, 'ny': Dy/2, 'nx': Dx}
+}
+Responded_x = Dx * N['y']['nx']/2
+Responded_y = -Dy
+Responded_z = Dz * N['y']['nz']/2
+
+
+Responded_ring = Ring(Responded_x, Responded_y, Responded_z, 'y', Radius_coil, 0, L_coil, C_coil, R_coil)
 Orientations = ('x', 'y', 'z')
 # Adding responding ring to identify resonance frequency
 
@@ -45,7 +66,8 @@ Params = {
     'shift_y': 0,               # Shifting of next layer along y axes
     'shift_z': 0,               # Shifting of next layer along z axes
     'Orientations': Orientations,
-    'Self-frequence': omega_0  # Frequency of resonance in free space
-    # Adding responding ring to identify resonance frequency
+    'Self-frequence': omega_0,  # Frequency of resonance in free space
+    'Number': np.sum([N[pos]['nz'] * N[pos]['ny'] * N[pos]['nx'] for pos in N])  + 1, # Number of rings in the system
+    'Responded_ring' : Responded_ring
 }
 
