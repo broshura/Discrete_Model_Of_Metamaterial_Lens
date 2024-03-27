@@ -17,15 +17,15 @@ def Rectangle_packing(Params, r0 = 0, orientation = 'z'):
     for k in range(nz):
         for j in range(ny): 
             for i in range(nx):
-                Shift_x = shift_x * (k * (orientation == 'z') + j * (orientation == 'y'))
-                Shift_y = shift_y * (k * (orientation == 'z') + i * (orientation == 'x'))
-                Shift_z = shift_z * (j * (orientation == 'y') + i * (orientation == 'x'))
+                # Shift preventing rings from getting out of the borders
+                Shift_x = shift_x * (k * (orientation == 'z') + j * (orientation == 'y')) % delta_x
+                Shift_y = shift_y * (k * (orientation == 'z') + i * (orientation == 'x')) % delta_y
+                Shift_z = shift_z * (j * (orientation == 'y') + i * (orientation == 'x')) % delta_z
                 rings.append(
                     Ring(
-                        # Prevent rings from getting out of the borders
-                        (i * delta_x + Shift_x) % ((nx) * delta_x) + r0['nx'],
-                        (j * delta_y + Shift_y) % ((ny) * delta_y) + r0['ny'],
-                        (k * delta_z + Shift_z) % ((nz) * delta_z) + r0['nz'],
+                         i * delta_x + Shift_x  + r0['nx'],
+                         j * delta_y + Shift_y  + r0['ny'],
+                         k * delta_z + Shift_z  + r0['nz'],
                         orientation,
                         r, w, L, C, R)
                 )
