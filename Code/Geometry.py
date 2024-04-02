@@ -8,7 +8,7 @@ def Rectangle_packing(Params, r0 = 0, orientation = 'z'):
     r, delta_x, delta_y, delta_z = Params['Radius'], Params['Dx'], Params['Dy'], Params['Dz']
 
     # Case with anisotropic system and shifted layers
-    
+
     shift_x = Params['shift_x']
     shift_y = Params['shift_y']
     shift_z = Params['shift_z']

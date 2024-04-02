@@ -10,7 +10,7 @@ import numpy as np
 
 # Parameters for system used in modeling
 
-L = 13.46 * 10 ** -9                    # Self-inductance
+L = 13.459 * 10 ** -9                   # Self-inductance
 C = 470 * 10 ** -12                     # Capacitance
 R = 0.0465                              # Resistance
 omega_0 = 1/np.sqrt(L * C)              # Self-frequence
@@ -29,7 +29,7 @@ Dz = 15 * 10 ** -3                      # Length of cell
 Dy = Dz
 Dx = Dz
 Radius = 4.935 * 10 ** -3               # Mean radius of rings
-W = 0.7 * 0.15 * Dz                     # Width of strip
+W = 0.7 * 0.15 * Dz * 0                 # Width of strip
 
 R_coil = 1.5                           # Resistance of responding ring
 L_coil = 1.8*10**-7                    # Self-inductance of responding  ring
