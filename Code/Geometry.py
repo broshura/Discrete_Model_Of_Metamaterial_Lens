@@ -37,24 +37,46 @@ def Rectangle_packing(Params, r0 = False, orientation = 'z'):
                 )
     return np.array(rings, dtype=Ring)
 
-def Sphere_packing(Params, Fill = False r0 = False, orientation = 'z'):
-    delta_z, delta_y, delta_x = Params['Dz'], Params['Dy'], Params['Dx']
+def Ellipse_packing(Params, Fill = False, r0 = False, orientation = 'z'):
+    r_z, r_y, r_x = ((Params['N'][orientation][f'nz']-1)*Params['Dz'])/2, (Params['N'][orientation][f'ny']-1)*Params['Dy']/2, (Params['N'][orientation][f'nx']-1)*Params['Dx']/2
+
     if not r0:
         r0 = {
-            'nz': delta_z/2 * (1-(orientation == 'z')), 
-            'ny': delta_y/2 * (1-(orientation == 'y')),
-            'nx': delta_x/2 * (1-(orientation == 'x'))
+            'nz': Params['Dz']/2 * (1-(orientation == 'z')), 
+            'ny': Params['Dy']/2 * (1-(orientation == 'y')),
+            'nx': Params['Dx']/2 * (1-(orientation == 'x'))
               }
-    Sphere_Radius = Params['Structure_Radius']
 
     Rings = Rectangle_packing(Params, r0, orientation).tolist()
-    for Ring in Rings:
-        distance = np.sqrt(Ring.x ** 2 + Ring.y ** 2 + Ring.z ** 2)
-        if distance > Sphere_Radius:
-            if Fill == True:
+
+    for Ring in Rings[:]:
+        distance = (Ring.x-(r_x + r0['nx'])) ** 2/r_x**2 + (Ring.y-(r_y + r0['ny'])) ** 2/r_y **2 + (Ring.z-(r_z+r0['nz'])) ** 2/r_z ** 2
+        if distance > 1.1:
+            if Fill:
                 Ring.R = 1e10 * Ring.R
             else:
-                
+                Rings.remove(Ring)
+    return Rings
+
+def Cilinder_packing(Params, Fill = False, r0 = False, orientation = 'z', axes = 'z'):
+    r_z, r_y, r_x = ((Params['N'][orientation][f'nz']-1)*Params['Dz'])/2, (Params['N'][orientation][f'ny']-1)*Params['Dy']/2, (Params['N'][orientation][f'nx']-1)*Params['Dx']/2
+
+    if not r0:
+        r0 = {
+            'nz': Params['Dz']/2 * (1-(orientation == 'z')), 
+            'ny': Params['Dy']/2 * (1-(orientation == 'y')),
+            'nx': Params['Dx']/2 * (1-(orientation == 'x'))
+              }
+
+    Rings = Rectangle_packing(Params, r0, orientation).tolist()
+
+    for Ring in Rings[:]:
+        distance = (axes !='x')*(Ring.x-(r_x + r0['nx'])) ** 2/r_x**2 + (axes != 'y') * (Ring.y-(r_y + r0['ny'])) ** 2/r_y **2 + (axes != 'z') * (Ring.z-(r_z+r0['nz'])) ** 2/r_z ** 2
+        if distance > 1.1:
+            if Fill:
+                Ring.R = 1e10 * Ring.R
+            else:
+                Rings.remove(Ring)
     return Rings
 
 
