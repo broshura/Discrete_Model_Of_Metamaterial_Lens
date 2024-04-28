@@ -13,7 +13,7 @@ import numpy as np
 L = 13.459 * 10 ** -9                   # Self-inductance
 C = 470 * 10 ** -12                     # Capacitance
 R = 0.0465                              # Resistance
-omega_0 = 1/np.sqrt(L * C)              # Self-frequence
+omega_0 = float(62.46 * 1e6 * 2*np.pi)  # Resounance frequency for effective magnetic permeability
 
 N = {}
 N["z"] = {'nz':17, 'ny': 2, 'nx': 18}            # Number of cells on each row for z-oriented rings
@@ -33,7 +33,7 @@ W = 0.7 * 0.15 * Dz * 0                 # Width of strip
 
 R_coil = 1.5                           # Resistance of responding ring
 L_coil = 1.8*10**-7                    # Self-inductance of responding  ring
-C_coil = np.inf                        # Capacitance of responding ring
+C_coil = 1e10#np.inf                        # Capacitance of responding ring
 Radius_coil = 3 * 2.54 * 10 ** -2/2    # Radius of responding ring
 
 R0 = {                                 # Initial position of the first ring for each orientation
@@ -68,6 +68,14 @@ Params = {
     'Orientations': Orientations,
     'Self-frequence': omega_0,  # Frequency of resonance in free space
     'Number': np.sum([N[pos]['nz'] * N[pos]['ny'] * N[pos]['nx'] for pos in N])  + 1, # Number of rings in the system
-    'Responded_ring' : Responded_ring
+    'Responded_x' : Responded_x,
+    'Responded_y' : Responded_y,
+    'Responded_z' : Responded_z,
+    'Responded_pos': 'y',
+    'Radius_coil': Radius_coil,
+    'L_coil': L_coil,
+    'C_coil': C_coil,
+    'R_coil': R_coil,
+    'W_coil': 0,
 }
 

@@ -33,12 +33,12 @@ def fft_dot(I, ZI, FFT_Z_circvecs, i_vecs, ifft_i_vecs):
 
     i_vecs[:Nz, :Ny, :Nx] = I
 
-    pyfftw.FFTW(i_vecs, ifft_i_vecs, axes = (0, 1, 2), direction='FFTW_BACKWARD').execute()
-    pyfftw.FFTW(FFT_Z_circvecs * ifft_i_vecs/nz/ny/nx, ZI, axes = (0, 1, 2)).execute()
+    pyfftw.FFTW(i_vecs, ifft_i_vecs, axes = (0, 1, 2), direction='FFTW_BACKWARD', threads = 8).execute()
+    pyfftw.FFTW(FFT_Z_circvecs * ifft_i_vecs/nz/ny/nx, ZI, axes = (0, 1, 2), threads = 8).execute()
     
     return ZI[:nz - Nz + 1, :ny - Ny + 1, :nx - Nx + 1].ravel()
 
-def solvesystem(rings_4d, M_0, Omega, Inductance = {}, phi_0z = 1, tol = 1e5):
+def solvesystem(rings_4d, M_0, Omega, Inductance = {}, phi_0z = 1, tol = 1e-5):
     # Unpacking parameters
 
     orientations = rings_4d.keys()
@@ -67,14 +67,14 @@ def solvesystem(rings_4d, M_0, Omega, Inductance = {}, phi_0z = 1, tol = 1e5):
 
             FFT_M_circvecs[pos_str][pos_col] = pyfftw.empty_aligned(N_circ, dtype = 'complex128')
             ifft_i_vecs[pos_str][pos_col] = pyfftw.empty_aligned(N_circ, dtype = 'complex128')
-            pyfftw.FFTW(M_circvecs, FFT_M_circvecs[pos_str][pos_col], axes = (0, 1, 2)).execute()
+            pyfftw.FFTW(M_circvecs, FFT_M_circvecs[pos_str][pos_col], axes = (0, 1, 2), threads = 8).execute()
     print('Circvecs: Done')
 
     # Caclulating current in each ring
     print('FFT solving')
     CURRENTS = []
     I_old = np.ones(Number, dtype = np.complex128)/M_0(Omega[0])
-    Phi_0z = np.ones(Number)
+    Phi_0z = np.ones(Number) * phi_0z/np.max(abs(phi_0z))
     for omega in tqdm(Omega):
         def LO(I):
             MI = M_0(omega) * I
@@ -98,12 +98,12 @@ def solvesystem(rings_4d, M_0, Omega, Inductance = {}, phi_0z = 1, tol = 1e5):
             return MI
         
         M = LinearOperator(dtype = np.complex128, shape=(Number, Number), matvec=LO)
-        I, info = bicgstab(M, Phi_0z, x0 = I_old, tol = tol)
+        I, info = bicgstab(M, -Phi_0z, x0 = I_old, tol = tol)
 
         if info != 0:
             print(f'omega = {omega/2/np.pi/1e6} MHz did not converge')
         
-        CURRENTS.append(I*phi_0z)
+        CURRENTS.append(I*np.max(abs(phi_0z)))
         I_old = I
     print(f'FFT solving: Done, shape = {[(pos, rings_4d[pos].shape) for pos in orientations]}')
     Data = {}

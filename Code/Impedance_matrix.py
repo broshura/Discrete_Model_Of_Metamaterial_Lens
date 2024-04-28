@@ -199,11 +199,11 @@ def Z_0(Params, grad = [0, 0, 0]):
         L = np.ones(Number, dtype=np.complex128) * L
         L[-1] = Responded_ring.L
         Cgrad[-1] = Responded_ring.C
-    return lambda omega: R + 1j * omega * L + 1 / (1j * omega * Cgrad)
+    return lambda omega: R - 1j * omega * L + 1j / (omega * Cgrad)
 
 # Caclulating diagonal of M matrix using gradient
 
-def M_0(Params, grad = [0, 0, 0]):
+def M_grad(Params, grad = [0, 0, 0]):
     L, C, R, N = Params['L'], Params['C'], Params['R'], Params['N']
     Number = Params['Number']
     Cgrad = np.empty(Number)
@@ -211,7 +211,7 @@ def M_0(Params, grad = [0, 0, 0]):
     # Making start and end points for each orientation
     start = 0
     end = 0
-    for pos, i in zip(N, np.arange(len(N))):
+    for pos in N:
         end += N[pos]['nz'] * N[pos]['ny'] * N[pos]['nx']
         
         z, y, x = np.meshgrid(np.arange(N[pos]['nz']),
@@ -226,12 +226,18 @@ def M_0(Params, grad = [0, 0, 0]):
         Cgrad[start:end] = 1/L/(Omega_0.ravel() ** 2)
 
         start += N[pos]['nz'] * N[pos]['ny'] * N[pos]['nx']
-    if Number != end:
-        Responded_ring = Params['Responded_ring']
-        R = np.ones(Number, dtype = np.complex128) * R
-        R[-1] = Responded_ring.R
-        L = np.ones(Number, dtype=np.complex128) * L
-        L[-1] = Responded_ring.L
-        Cgrad[-1] = Responded_ring.C
 
-    return lambda omega: R / (1j * omega) + L - 1 / (omega ** 2 * Cgrad)
+    return lambda omega: R / (1j * omega) - L + 1 / (omega ** 2 * Cgrad)
+
+def M_diag(Rings, same_rings = False):
+    if same_rings == True:
+        L = np.ones(len(Rings)) * Rings[0].L
+        C = np.ones(len(Rings)) * Rings[0].C
+        R = np.ones(len(Rings)) * Rings[0].R
+    else:
+        L, C, R = np.zeros(len(Rings)), np.zeros(len(Rings)), np.zeros(len(Rings))
+        for i, ring in enumerate(Rings):
+            L[i] = ring.L
+            C[i] = ring.C
+            R[i] = ring.R
+    return lambda omega: R / (1j * omega) - L + 1 / (omega ** 2 * C)

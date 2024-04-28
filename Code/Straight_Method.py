@@ -17,10 +17,10 @@ def solvesystem(rings, M_0, Omega, phi_0z = 1, Inductance = {}):
 
     print('Straight solving')
 
-    Phi_0z = np.ones(Number)
+    Phi_0z = np.ones(Number)*phi_0z/np.max(abs(phi_0z))
     for omega in tqdm(Omega):
-        I = solve(M + np.diag(M_0(omega)), Phi_0z)
-        CURRENTS.append(I * phi_0z)
+        I = solve(M + np.diag(M_0(omega)), -Phi_0z)
+        CURRENTS.append(I * np.max(abs(phi_0z)))
     print('Straight solving: Done')
     Data = {}
 
@@ -29,4 +29,28 @@ def solvesystem(rings, M_0, Omega, phi_0z = 1, Inductance = {}):
     Data['ImagCurrents'] = [list(np.imag(i).reshape(Number)) for i in CURRENTS]
  
     return Data
-    
+
+def effective_mu(Params, frequency = False):
+    mu_0 = 4 * np.pi * 10 ** (-7)
+    r = Params['Radius']
+    R = Params['R']
+    C = Params['C']
+    L = Params['L']
+    a = Params['Dz']
+    b = Params['Dy']
+    c = Params['Dx']
+    sigma = -0.06
+
+    Z = lambda Omega : R - 1j * Omega * L + 1j/(Omega * C) - 1j * Omega * mu_0 * r * sigma
+    Const =  lambda Omega: 1j * Omega * mu_0 * np.pi ** 2 * r ** 4 /(a*b*c)
+    if frequency:
+        return lambda w: (Z(w) + 2/3 * Const(w))/(Z(w) - 1/3 * Const(w)) 
+    return lambda w: (Z(w) + 2/3 * Const(w))/(Z(w) - 1/3 * Const(w))
+def spherical_chi(mu):
+    return 3 * (mu - 1)/(mu + 2)
+
+def disk_chi(mu):
+    return 1 - 1/mu
+
+def needle_chi(mu):
+    return mu - 1
