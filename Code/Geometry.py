@@ -1,6 +1,6 @@
 from Ring_Class import Ring
 import numpy as np
-
+eps = np.finfo(float).eps
 
 def Rectangle_packing(Params, r0 = False, orientation = 'z'):
     N = Params['N'][orientation]
@@ -51,7 +51,7 @@ def Ellipse_packing(Params, Fill = False, r0 = False, orientation = 'z'):
 
     for Ring in Rings[:]:
         distance = (Ring.x-(r_x + r0['nx'])) ** 2/r_x**2 + (Ring.y-(r_y + r0['ny'])) ** 2/r_y **2 + (Ring.z-(r_z+r0['nz'])) ** 2/r_z ** 2
-        if distance > 1.1:
+        if distance > 1.0:
             if Fill:
                 Ring.R = 1e10 * Ring.R
             else:
@@ -74,7 +74,7 @@ def Cilinder_packing(Params, Fill = False, r0 = False, orientation = 'z', axes =
         distance = (axes !='x')*(Ring.x-(r_x + r0['nx'])) ** 2/r_x**2 + (axes != 'y') * (Ring.y-(r_y + r0['ny'])) ** 2/r_y **2 + (axes != 'z') * (Ring.z-(r_z+r0['nz'])) ** 2/r_z ** 2
         if distance > 1.1:
             if Fill:
-                Ring.R = 1e10 * Ring.R
+                Ring.R = len(Rings) * Ring.R/eps
             else:
                 Rings.remove(Ring)
     return Rings

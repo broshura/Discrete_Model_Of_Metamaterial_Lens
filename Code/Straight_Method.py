@@ -41,8 +41,8 @@ def effective_mu(Params, frequency = False):
     c = Params['Dx']
     sigma = -0.06
 
-    Z = lambda Omega : R - 1j * Omega * L + 1j/(Omega * C) - 1j * Omega * mu_0 * r * sigma
-    Const =  lambda Omega: 1j * Omega * mu_0 * np.pi ** 2 * r ** 4 /(a*b*c)
+    Z = lambda Omega : R - 1j * Omega * L + 1j/(Omega * C) + 1j * Omega * mu_0 * r * sigma
+    Const =  lambda Omega: -1j * Omega * mu_0 * np.pi ** 2 * r ** 4 /(a*b*c)
     if frequency:
         return lambda w: (Z(w) + 2/3 * Const(w))/(Z(w) - 1/3 * Const(w)) 
     return lambda w: (Z(w) + 2/3 * Const(w))/(Z(w) - 1/3 * Const(w))
