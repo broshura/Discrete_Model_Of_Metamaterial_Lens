@@ -19,7 +19,7 @@ def solvesystem(rings, M_0, Omega, phi_0z = 1, Inductance = {}):
 
     Phi_0z = np.ones(Number)*phi_0z/np.max(abs(phi_0z))
     for omega in tqdm(Omega):
-        I = solve(M + np.diag(M_0(omega)), -Phi_0z)
+        I = solve(np.diag(M_0(omega)) - M, Phi_0z)
         CURRENTS.append(I * np.max(abs(phi_0z)))
     print('Straight solving: Done')
     Data = {}
@@ -39,10 +39,10 @@ def effective_mu(Params, frequency = False):
     a = Params['Dz']
     b = Params['Dy']
     c = Params['Dx']
-    sigma = -0.06
+    Sigma = Params['Sigma']
 
-    Z = lambda Omega : R - 1j * Omega * L + 1j/(Omega * C) + 1j * Omega * mu_0 * r * sigma
-    Const =  lambda Omega: -1j * Omega * mu_0 * np.pi ** 2 * r ** 4 /(a*b*c)
+    Z = lambda Omega : R - 1j * Omega * L + 1j/(Omega * C) - 1j * Omega * mu_0 * r * Sigma
+    Const =  lambda Omega: 1j * Omega * mu_0 * np.pi ** 2 * r ** 4 /(a*b*c)
     if frequency:
         return lambda w: (Z(w) + 2/3 * Const(w))/(Z(w) - 1/3 * Const(w)) 
     return lambda w: (Z(w) + 2/3 * Const(w))/(Z(w) - 1/3 * Const(w))

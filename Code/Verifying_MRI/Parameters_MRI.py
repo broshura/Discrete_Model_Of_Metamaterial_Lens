@@ -30,7 +30,7 @@ Dy = Dz
 Dx = Dz
 Radius = 4.935 * 10 ** -3               # Mean radius of rings
 W = 0.7 * 0.15 * Dz * 0                 # Width of strip
-
+Sigma = -0.06                           # Lattice constant
 R_coil = 1.5                           # Resistance of responding ring
 L_coil = 1.8*10**-7                    # Self-inductance of responding  ring
 C_coil = 1e10#np.inf                        # Capacitance of responding ring
@@ -77,5 +77,6 @@ Params = {
     'C_coil': C_coil,
     'R_coil': R_coil,
     'W_coil': 0,
+    'Sigma': Sigma,
 }
 

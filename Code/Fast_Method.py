@@ -88,7 +88,7 @@ def solvesystem(rings_4d, M_0, Omega, Inductance = {}, phi_0z = 1, tol = 1e-5):
                 end_col = 0
                 for pos_col in orientations:
                     end_col += rings_4d[pos_col].size
-                    MI[start_str: end_str] += fft_dot(I[start_col:end_col].reshape(rings_4d[pos_col].shape),
+                    MI[start_str: end_str] -= fft_dot(I[start_col:end_col].reshape(rings_4d[pos_col].shape),
                                                       MI_vecs[pos_str][pos_col],
                                                       FFT_M_circvecs[pos_str][pos_col],
                                                       i_vecs[pos_str][pos_col],
@@ -98,7 +98,7 @@ def solvesystem(rings_4d, M_0, Omega, Inductance = {}, phi_0z = 1, tol = 1e-5):
             return MI
         
         M = LinearOperator(dtype = np.complex128, shape=(Number, Number), matvec=LO)
-        I, info = bicgstab(M, -Phi_0z, x0 = I_old, tol = tol)
+        I, info = bicgstab(M, Phi_0z, x0 = I_old, tol = tol)
 
         if info != 0:
             print(f'omega = {omega/2/np.pi/1e6} MHz did not converge')

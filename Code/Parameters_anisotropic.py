@@ -24,7 +24,8 @@ shift_z = 0                            # Shifting of next layer along z axes
 Radius = 1.5e-3                         # Mean radius of rings
 
 W = 0.5e-3                              # Width of strip
-
+d = 18e-6                              # Thickness of strip
+Sigma = -0.06                          # Lattice constant 
 
 name = "Anisotropic-Nonshifted-cube"   # Name of Data file with this parameter set
 
@@ -42,4 +43,6 @@ Params = {'L': L,                            # Self-inductance
     'shift_z': 0,                            # Shifting of next layer along z axes
     'Orientations': ('z'),                   # List of orientations for system   
     'Self-frequence': omega_0,               # Self-frequency
+    'Sigma': Sigma,                          # Lattice constant
+    'd': d,                                  # Thickness of strip
 }
