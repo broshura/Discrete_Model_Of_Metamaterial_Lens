@@ -27,18 +27,18 @@ def Circvec(rings_3d_str, rings_3d_col, data):
                 Z_circvecs[z][y][x] = Mnm(rings_3d_str[z_str_id][y_str_id][x_str_id], rings_3d_col[z_col_id][y_col_id][x_col_id], data)
     return Z_circvecs
 
-def fft_dot(I, ZI, FFT_Z_circvecs, i_vecs, ifft_i_vecs):
+def fft_dot(I, ZI, FFT_Z_circvecs, i_vecs, ifft_i_vecs, threads = 1):
     Nz, Ny, Nx = I.shape
     nz, ny, nx = i_vecs.shape
 
     i_vecs[:Nz, :Ny, :Nx] = I
 
-    pyfftw.FFTW(i_vecs, ifft_i_vecs, axes = (0, 1, 2), direction='FFTW_BACKWARD', threads = 8).execute()
-    pyfftw.FFTW(FFT_Z_circvecs * ifft_i_vecs/nz/ny/nx, ZI, axes = (0, 1, 2), threads = 8).execute()
+    pyfftw.FFTW(i_vecs, ifft_i_vecs, axes = (0, 1, 2), direction='FFTW_BACKWARD', threads = threads).execute()
+    pyfftw.FFTW(FFT_Z_circvecs * ifft_i_vecs/nz/ny/nx, ZI, axes = (0, 1, 2), threads = threads).execute()
     
     return ZI[:nz - Nz + 1, :ny - Ny + 1, :nx - Nx + 1].ravel()
 
-def solvesystem(rings_4d, M_0, Omega, Inductance = {}, phi_0z = 1, tol = 1e-5):
+def solvesystem(rings_4d, M_0, Omega, Inductance = {}, phi_0z = 1, tol = 1e-5, threads = 1):
     # Unpacking parameters
 
     orientations = rings_4d.keys()
@@ -67,7 +67,7 @@ def solvesystem(rings_4d, M_0, Omega, Inductance = {}, phi_0z = 1, tol = 1e-5):
 
             FFT_M_circvecs[pos_str][pos_col] = pyfftw.empty_aligned(N_circ, dtype = 'complex128')
             ifft_i_vecs[pos_str][pos_col] = pyfftw.empty_aligned(N_circ, dtype = 'complex128')
-            pyfftw.FFTW(M_circvecs, FFT_M_circvecs[pos_str][pos_col], axes = (0, 1, 2), threads = 8).execute()
+            pyfftw.FFTW(M_circvecs, FFT_M_circvecs[pos_str][pos_col], axes = (0, 1, 2), threads = threads).execute()
     print('Circvecs: Done')
 
     # Caclulating current in each ring
@@ -92,7 +92,7 @@ def solvesystem(rings_4d, M_0, Omega, Inductance = {}, phi_0z = 1, tol = 1e-5):
                                                       MI_vecs[pos_str][pos_col],
                                                       FFT_M_circvecs[pos_str][pos_col],
                                                       i_vecs[pos_str][pos_col],
-                                                      ifft_i_vecs[pos_str][pos_col])
+                                                      ifft_i_vecs[pos_str][pos_col], threads = threads)
                     start_col += rings_4d[pos_col].size
                 start_str += rings_4d[pos_str].size
             return MI

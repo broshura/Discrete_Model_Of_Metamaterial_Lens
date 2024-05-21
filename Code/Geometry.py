@@ -58,9 +58,14 @@ def Ellipse_packing(Params, Fill = False, r0 = False, orientation = 'z'):
                 Rings.remove(Ring)
     return Rings
 
-def Cilinder_packing(Params, Fill = False, r0 = False, orientation = 'z', axes = 'z'):
+def Cylinder_packing(Params, Fill = False, r0 = False, orientation = 'z', axes = 'z'):
     r_z, r_y, r_x = ((Params['N'][orientation][f'nz']-1)*Params['Dz'])/2, (Params['N'][orientation][f'ny']-1)*Params['Dy']/2, (Params['N'][orientation][f'nx']-1)*Params['Dx']/2
-
+    if r_z == 0:
+        r_z = Params['Dz']/2
+    if r_y == 0: 
+        r_y = Params['Dy']/2
+    if r_x == 0:
+        r_x = Params['Dx']/2
     if not r0:
         r0 = {
             'nz': Params['Dz']/2 * (1-(orientation == 'z')), 
@@ -72,7 +77,7 @@ def Cilinder_packing(Params, Fill = False, r0 = False, orientation = 'z', axes =
 
     for Ring in Rings[:]:
         distance = (axes !='x')*(Ring.x-(r_x + r0['nx'])) ** 2/r_x**2 + (axes != 'y') * (Ring.y-(r_y + r0['ny'])) ** 2/r_y **2 + (axes != 'z') * (Ring.z-(r_z+r0['nz'])) ** 2/r_z ** 2
-        if distance > 1.1:
+        if distance > 1.01:
             if Fill:
                 Ring.R = len(Rings) * Ring.R/eps
             else:
