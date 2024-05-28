@@ -5,29 +5,51 @@ from scipy.linalg import solve
 from Impedance_matrix import Matrix
 from tqdm import tqdm
 
-def solvesystem(rings, M_0, Omega, phi_0z = 1, Inductance = {}):    
+def solvesystem(rings, M_0, Omega, phi_0z = 1, Inductance = {}, find = 'Currents'):    
     # Unpacking parameters
+    # Solve system in currents terms and return currents in each ring
+    if find == 'Currents':
+        CURRENTS = []
 
-    CURRENTS = []
+        print('Matrix forming')
+        Number = len(rings)
+        M = Matrix(rings, Data = Inductance)
+        print('Matrix: Done')
 
-    print('Matrix forming')
-    Number = len(rings)
-    M = Matrix(rings, Data = Inductance)
-    print('Matrix: Done')
+        print('Straight solving')
 
-    print('Straight solving')
+        # External field
+        Phi_0z = np.ones(Number)*phi_0z/np.max(abs(phi_0z))
+        for omega in tqdm(Omega):
+            # Solve equation (diag(Z_0)/jw - M)I = Phi_0z
+            I = solve(np.diag(M_0(omega)) - M, Phi_0z)
+            CURRENTS.append(I * np.max(abs(phi_0z)))
+        print('Straight solving: Done')
+        Data = {}
 
-    Phi_0z = np.ones(Number)*phi_0z/np.max(abs(phi_0z))
-    for omega in tqdm(Omega):
-        I = solve(np.diag(M_0(omega)) - M, Phi_0z)
-        CURRENTS.append(I * np.max(abs(phi_0z)))
-    print('Straight solving: Done')
-    Data = {}
+        Data['Omega'] = list(Omega)
+        Data['RealCurrents'] = [list(np.real(i).reshape(Number)) for i in CURRENTS]
+        Data['ImagCurrents'] = [list(np.imag(i).reshape(Number)) for i in CURRENTS]
+    elif find == 'Voltage':
+        sigma_0 = lambda Omega: 1/(M_0(Omega) * 1j * omega)
+        Currents = []
+        print('Matrix forming')
+        Number = len(rings)
+        M = Matrix(rings, Data = Inductance)
+        print('Matrix: Done')
 
-    Data['Omega'] = list(Omega)
-    Data['RealCurrents'] = [list(np.real(i).reshape(Number)) for i in CURRENTS]
-    Data['ImagCurrents'] = [list(np.imag(i).reshape(Number)) for i in CURRENTS]
- 
+        print('Straight solving')
+        # Solve equation 
+        for omega in tqdm(Omega):
+            V = solve(np.ones(Number)/(1j * omega) - M_0@np.diag(sigma_0(omega)), Phi_0z)
+            CURRENTS.append(V/sigma_0(omega))
+        print('Straight solving: Done')
+        Data = {}
+
+        Data['Omega'] = list(Omega)
+        Data['RealCurrents'] = [list(np.real(i).reshape(Number)) for i in CURRENTS]
+        Data['ImagCurrents'] = [list(np.imag(i).reshape(Number)) for i in CURRENTS]
+
     return Data
 
 def effective_mu(Params, frequency = False):

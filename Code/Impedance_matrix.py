@@ -248,3 +248,16 @@ def M_diag(Rings, same_rings = False):
             C[i] = ring.C
             R[i] = ring.R
     return lambda omega: R / (1j * omega) - L + 1 / (omega ** 2 * C)
+
+def sigma_diag(Rings, same_rings = False):
+    if same_rings == True:
+        L = np.ones(len(Rings)) * Rings[0].L
+        C = np.ones(len(Rings)) * Rings[0].C
+        R = np.ones(len(Rings)) * Rings[0].R
+    else:
+        L, C, R = np.zeros(len(Rings)), np.zeros(len(Rings)), np.zeros(len(Rings))
+        for i, ring in enumerate(Rings):
+            L[i] = ring.L
+            C[i] = ring.C
+            R[i] = ring.R
+    return lambda omega: 1/(R - 1j*omega*L + 1j / (omega * C))
