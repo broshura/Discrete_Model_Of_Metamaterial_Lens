@@ -5,22 +5,30 @@ eps = np.finfo(float).eps
 '''
 Turn cell sizes into 3D sizes depending on the type of the cell (based on orientations)
 '''
-def to3D(Nz, Ny, Nx, orientations = 'z'):
+def to3D(Nz, Ny, Nx, orientations = 'z', Type = 'border'):
     N = {}
     shape = f'{Nz}x{Ny}x{Nx}'
-    for orientation in orientations:
-        N[orientation] = {
-            'nz': Nz + (orientation == 'z')*(len(orientations) != 1),
-            'ny': Ny + (orientation == 'y')*(len(orientations) != 1),
-            'nx': Nx + (orientation == 'x')*(len(orientations) != 1)
-        }
+    if Type == 'border':
+        for orientation in orientations:
+            N[orientation] = {
+                'nz': Nz + (orientation == 'z')*(len(orientations) != 1),
+                'ny': Ny + (orientation == 'y')*(len(orientations) != 1),
+                'nx': Nx + (orientation == 'x')*(len(orientations) != 1)
+            }
+    elif Type == 'open':
+        for orientation in orientations:
+            N[orientation] = {
+                'nz': Nz - (orientation == 'z')*(len(orientations) != 1),
+                'ny': Ny - (orientation == 'y')*(len(orientations) != 1),
+                'nx': Nx - (orientation == 'x')*(len(orientations) != 1)
+            }
     return N, shape
 
 '''
 Create a structure of the system: dictionary with keys as orientations and values as lists
 of rings in this orientation
 '''
-def Rectangle_packing(Params):
+def Rectangle_packing(Params, Fill = False):
     # Choosing the type of returned list and stracture of the system
     Params['Packing'] = 'Rectangle'
     orientations = Params['Orientations']
