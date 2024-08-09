@@ -5,31 +5,58 @@ from scipy.linalg import solve
 from Impedance_matrix import Matrix
 from tqdm import tqdm
 
-def solvesystem(rings, M_0, Omega, phi_0z = 1, Inductance = {}, find = 'Currents'):    
+def solvesystem(Params, rings_4d, phi_0z_4d, Inductance = {}, find = 'Currents'):
+    Params['Solver_type'] = 'Straight'
+    Omega = Params['Omega']    
     # Unpacking parameters
     # Solve system in currents terms and return currents in each ring
+    rings = sum([rings_4d[orientation] for orientation in rings_4d], [])
+    phi_0z = sum([phi_0z_4d[orientation] for orientation in phi_0z_4d], [])
     if find == 'Currents':
         CURRENTS = []
 
         print('Matrix forming')
         Number = len(rings)
+
+        # Diagonal part
+        L, C, R = [], [], []
+        for ring in rings:
+            L.append(ring.L)
+            C.append(ring.C)
+            R.append(ring.R)
+        L, C, R = np.array(L), np.array(C), np.array(R)
+        M_0 = lambda Omega: (R - 1j * Omega * L + 1j/(Omega * C))/1j/Omega
+        # Other part
         M = Matrix(rings, Data = Inductance)
+
         print('Matrix: Done')
 
         print('Straight solving')
 
         # External field
-        Phi_0z = np.ones(Number)*phi_0z/np.max(abs(phi_0z))
+        Phi_0z = phi_0z/np.max(abs(phi_0z))
+        P = []
         for omega in tqdm(Omega):
             # Solve equation (diag(Z_0)/jw - M)I = Phi_0z
             I = solve(np.diag(M_0(omega)) - M, Phi_0z)
             CURRENTS.append(I * np.max(abs(phi_0z)))
+            start = 0
+            p = []
+            for pos in Params['Orientations']:
+                end = start + Params['Numbers'][pos]
+                p.append(np.sum(I[start:end])/(end-start))
+                start = end
+            P.append(p)
+        P = np.array(P)*np.max(abs(phi_0z)) * Params['P_0z']
+                
+
         print('Straight solving: Done')
         Data = {}
+        Data['Params'] = Params
+        Data['Currents'] = CURRENTS
+        Data['Polarization'] = P
 
-        Data['Omega'] = list(Omega)
-        Data['RealCurrents'] = [list(np.real(i).reshape(Number)) for i in CURRENTS]
-        Data['ImagCurrents'] = [list(np.imag(i).reshape(Number)) for i in CURRENTS]
+
     elif find == 'Voltage':
         sigma_0 = lambda Omega: 1/(M_0(Omega) * 1j * omega)
         Currents = []
@@ -68,6 +95,7 @@ def effective_mu(Params, frequency = False):
     if frequency:
         return lambda w: (Z(w) + 2/3 * Const(w))/(Z(w) - 1/3 * Const(w)) 
     return lambda w: (Z(w) + 2/3 * Const(w))/(Z(w) - 1/3 * Const(w))
+
 def spherical_chi(mu):
     return 3 * (mu - 1)/(mu + 2)
 

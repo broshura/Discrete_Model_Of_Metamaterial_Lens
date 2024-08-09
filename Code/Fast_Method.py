@@ -2,9 +2,10 @@
 
 import numpy as np
 from Impedance_matrix import Mnm
-from scipy.sparse.linalg import gmres, LinearOperator, bicgstab, minres, lobpcg, cg
+from scipy.sparse.linalg import LinearOperator, bicgstab, gmres, minres, lobpcg, cg
 from pyfftw import pyfftw
 from tqdm import tqdm
+import json
 
 # Function for creating circulant vectors
 def Circvec(rings_3d_str, rings_3d_col, data):
@@ -27,20 +28,23 @@ def Circvec(rings_3d_str, rings_3d_col, data):
                 Z_circvecs[z][y][x] = Mnm(rings_3d_str[z_str_id][y_str_id][x_str_id], rings_3d_col[z_col_id][y_col_id][x_col_id], data)
     return Z_circvecs
 
-def fft_dot(I, ZI, FFT_Z_circvecs, i_vecs, ifft_i_vecs, threads = 1):
+def fft_dot(I, ZI, FFT_Z_circvecs, i_vecs, ifft_i_vecs):
     Nz, Ny, Nx = I.shape
     nz, ny, nx = i_vecs.shape
 
     i_vecs[:Nz, :Ny, :Nx] = I
 
-    pyfftw.FFTW(i_vecs, ifft_i_vecs, axes = (0, 1, 2), direction='FFTW_BACKWARD', threads = threads).execute()
-    pyfftw.FFTW(FFT_Z_circvecs * ifft_i_vecs/nz/ny/nx, ZI, axes = (0, 1, 2), threads = threads).execute()
+    pyfftw.FFTW(i_vecs, ifft_i_vecs, axes = (0, 1, 2), direction='FFTW_BACKWARD').execute()
+    pyfftw.FFTW(FFT_Z_circvecs * ifft_i_vecs/nz/ny/nx, ZI, axes = (0, 1, 2)).execute()
     
     return ZI[:nz - Nz + 1, :ny - Ny + 1, :nx - Nx + 1].ravel()
 
-def solvesystem(rings_4d, M_0, Omega, Inductance = {}, phi_0z = 1, tol = 1e-5, threads = 1):
+def solvesystem(Params, rings_4d, phi_0z_4d, Inductance = {}, find = 'Currents', tol = 1e-5):
     # Unpacking parameters
-
+    Params['Solver_type'] = 'Fast'
+    Omega = Params['Omega']
+    rings = sum([rings_4d[orientation] for orientation in rings_4d], [])
+    phi_0z = sum([phi_0z_4d[orientation] for orientation in phi_0z_4d], [])
     orientations = rings_4d.keys()
     Number = np.sum([value.size for value in rings_4d.values()])
 
@@ -67,17 +71,27 @@ def solvesystem(rings_4d, M_0, Omega, Inductance = {}, phi_0z = 1, tol = 1e-5, t
 
             FFT_M_circvecs[pos_str][pos_col] = pyfftw.empty_aligned(N_circ, dtype = 'complex128')
             ifft_i_vecs[pos_str][pos_col] = pyfftw.empty_aligned(N_circ, dtype = 'complex128')
-            pyfftw.FFTW(M_circvecs, FFT_M_circvecs[pos_str][pos_col], axes = (0, 1, 2), threads = threads).execute()
+            pyfftw.FFTW(M_circvecs, FFT_M_circvecs[pos_str][pos_col], axes = (0, 1, 2)).execute()
     print('Circvecs: Done')
+    # Calculating diagonal of M matrix
+    L, C, R = [], [], []
+    for ring in rings:
+        L.append(ring.L)
+        C.append(ring.C)
+        R.append(ring.R)
+    L, C, R = np.array(L), np.array(C), np.array(R)
+    M_0 = lambda Omega: (R - 1j * Omega * L + 1j/(Omega * C))/1j/Omega
 
     # Caclulating current in each ring
     print('FFT solving')
     CURRENTS = []
     I_old = np.ones(Number, dtype = np.complex128)/M_0(Omega[0])
-    Phi_0z = np.ones(Number) * phi_0z/np.max(abs(phi_0z))
+    Phi_0z = phi_0z/np.max(abs(phi_0z))
+    P = []
     for omega in tqdm(Omega):
+        M_diag = M_0(omega)
         def LO(I):
-            MI = M_0(omega) * I
+            MI = M_diag * I
             # Make start and end indexes for each orientation
             start_str = 0
             end_str = 0
@@ -104,12 +118,23 @@ def solvesystem(rings_4d, M_0, Omega, Inductance = {}, phi_0z = 1, tol = 1e-5, t
             print(f'omega = {omega/2/np.pi/1e6} MHz did not converge')
         
         CURRENTS.append(I*np.max(abs(phi_0z)))
+        start = 0
+        p = []
+        for pos in orientations:
+            end = start + rings_4d[pos].size
+            p.append(np.sum(I[start:end])/(end-start))
+            start = end
+        P.append(p)
+
         I_old = I
+
+    P = np.array(P)*np.max(abs(phi_0z)) * Params['P_0z']
+
     print(f'FFT solving: Done, shape = {[(pos, rings_4d[pos].shape) for pos in orientations]}')
     Data = {}
 
-    Data['Omega'] = list(Omega)
-    Data['RealCurrents'] = [list(np.real(i).reshape(Number)) for i in CURRENTS]
-    Data['ImagCurrents'] = [list(np.imag(i).reshape(Number)) for i in CURRENTS]
- 
-    return Data  
+    Data['Params'] = Params
+    Data['Currents'] = CURRENTS
+    Data['Polarization'] = P
+    
+    return Data
