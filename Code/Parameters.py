@@ -1,6 +1,9 @@
 # This file contains all parameters for modeling and geometry of rings
 
 from Impedance_matrix import M_diag
+from Geometry import Rectangle_packing, Cylinder_packing, Ellipse_packing
+from Straight_Method import solvesystem as straight_solvesystem
+from Fast_Method import solvesystem as fast_solvesystem
 from numpy import pi
 import numpy as np
 
@@ -43,8 +46,7 @@ Params = {
     'Omega': Omega,
     'mu_0': mu_0,
     'omega_0': omega_0,
-    'M_0': M_diag,
-    'Solver_type': 'fast',
+    'Solver_type': "Fast",
     'Packing': 'Rectangle',
     'P_0z': pi * Radius ** 2 /H_0z/Dz/Dy/Dx,
     'N' : {

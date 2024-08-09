@@ -1,6 +1,5 @@
 # Anisotropic cube parameters
 
-from numpy import pi, log, sqrt
 import numpy as np
 
 # Parameters for system used in modeling
@@ -21,9 +20,9 @@ shift_x = 0                            # Shifting of next layer along x axes
 shift_y = 0                            # Shifting of next layer along y axes
 shift_z = 0                            # Shifting of next layer along z axes
 
-Radius = 1.5e-3                         # Mean radius of rings
+Radius = 1.5e-3                        # Mean radius of rings
 
-W = 0.5e-3                              # Width of strip
+W = 0.5e-3                             # Width of strip
 d = 18e-6                              # Thickness of strip
 Sigma = -0.06                          # Lattice constant 
 
