@@ -7,13 +7,14 @@ Turn cell sizes into 3D sizes depending on the type of the cell (based on orient
 '''
 def to3D(Nz, Ny, Nx, orientations = 'z'):
     N = {}
+    shape = f'{Nz}x{Ny}x{Nx}'
     for orientation in orientations:
         N[orientation] = {
-            'nz': Nz + (orientation == 'z'),
-            'ny': Ny + (orientation == 'y'),
-            'nx': Nx + (orientation == 'x')
+            'nz': Nz + (orientation == 'z')*(len(orientations) != 1),
+            'ny': Ny + (orientation == 'y')*(len(orientations) != 1),
+            'nx': Nx + (orientation == 'x')*(len(orientations) != 1)
         }
-    return N
+    return N, shape
 
 '''
 Create a structure of the system: dictionary with keys as orientations and values as lists
