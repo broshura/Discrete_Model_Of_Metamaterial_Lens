@@ -2,57 +2,42 @@ from Ring_Class import Ring
 import numpy as np
 eps = np.finfo(float).eps
 
-def to3D(Nz = False, Ny = False, Nx = False, Number = False, orientations = 'z', Type = 'bordered'):
+'''
+Turn cell sizes into 3D sizes depending on the type of the cell (based on orientations)
+'''
+def to3D(Nz, Ny, Nx, orientations = 'z'):
     N = {}
-    if Type == 'bordered':
-        for orientation in orientations:
-            N[orientation] = {
-                'nz': Nz + (orientation == 'z'),
-                'ny': Ny + (orientation == 'y'),
-                'nx': Nx + (orientation == 'x')
-            }
-    if Type == 'open':
-        for orientation in orientations:
-            N[orientation] = {
-                'nz': Nz - (orientation == 'z'),
-                'ny': Ny - (orientation == 'y'),
-                'nx': Nx - (orientation == 'x') 
-            }
+    for orientation in orientations:
+        N[orientation] = {
+            'nz': Nz + (orientation == 'z'),
+            'ny': Ny + (orientation == 'y'),
+            'nx': Nx + (orientation == 'x')
+        }
     return N
 
-def Rectangle_packing(Params, orientations = 'z', Type = 'border_straight'):
+'''
+Create a structure of the system: dictionary with keys as orientations and values as lists
+of rings in this orientation
+'''
+def Rectangle_packing(Params):
     # Choosing the type of returned list and stracture of the system
-    border_type, list_type = Type.split('_')
-    if list_type == 'straight':
-        rings = []
-    elif list_type == 'fast':
-        Rings = {}
-    
+    Params['Packing'] = 'Rectangle'
+    orientations = Params['Orientations']
+    Rings = {}
+    Numbers = {}
     for orientation in orientations:
-        if list_type == 'fast':
-            rings = []
+        rings = []
         N = Params['N'][orientation]
         L, C, R, w = Params['L'], Params['C'], Params['R'], Params['W']
-        r, delta_x, delta_y, delta_z = Params['Radius'], Params['Dx'], Params['Dy'], Params['Dz']
+        r, delta_x, delta_y, delta_z = Params['Radius'], Params['Dx'], Params['Dy'], Params['Dz'] 
+        
+        # Starting point of the first ring for each orientation
+        r0 = {
+            'nz': delta_z/2 * (1-(orientation == 'z')), 
+            'ny': delta_y/2 * (1-(orientation == 'y')),
+            'nx': delta_x/2 * (1-(orientation == 'x'))
+        }
 
-        if border_type == 'bordered':
-            r0 = {
-                'nz': delta_z/2 * (1-(orientation == 'z')), 
-                'ny': delta_y/2 * (1-(orientation == 'y')),
-                'nx': delta_x/2 * (1-(orientation == 'x'))
-            }
-        elif border_type == 'open':
-            r0 = {
-                'nz': delta_z * (orientation == 'z') + delta_z/2 * (1-(orientation == 'z')), 
-                'ny': delta_y * (orientation == 'y') + delta_y/2 * (1-(orientation == 'y')),
-                'nx': delta_x * (orientation == 'x') + delta_x/2 * (1-(orientation == 'x'))
-            }
-        else: 
-            r0 = {
-                'nz': 0,
-                'ny': 0,
-                'nx': 0 
-            }
 
         # Case with anisotropic system and shifted layers
 
@@ -76,99 +61,72 @@ def Rectangle_packing(Params, orientations = 'z', Type = 'border_straight'):
                             orientation,
                             r, w, L, C, R)
                     )
-        if list_type == 'fast':
-            Rings[orientation] = rings
-    if list_type == 'straight':
-        return rings
-    elif list_type == 'fast':
-        return Rings
+        Numbers[orientation] = len(rings)
+        Rings[orientation] = rings
+    Params['Numbers'] = Numbers
+    return Rings
 
-def Ellipse_packing(Params, Fill = False, orientations = 'z', Type = 'border_straight'):
-    border_type, list_type = Type.split('_') 
-    Rings = Rectangle_packing(Params, orientations, Type = Type)
+def Ellipse_packing(Params, Fill = False):
+    Params['Packing'] = 'Ellipse'
+    orientations = Params['Orientations']
+    Rings = Rectangle_packing(Params, orientations)
     
-    if list_type == 'straight':
-        r_z0 = (max([Ring.z for Ring in Rings]) + min([Ring.z for Ring in Rings]))/2
-        r_y0 = (max([Ring.y for Ring in Rings]) + min([Ring.y for Ring in Rings]))/2
-        r_x0 = (max([Ring.x for Ring in Rings]) + min([Ring.x for Ring in Rings]))/2
+    dz, dy, dx = Params['Dz'], Params['Dy'], Params['Dx']
+    Nz, Ny, Nx = Params['N']['z']['nz'], Params['N']['y']['ny'], Params['N']['x']['nx']
+    R_z, R_y, R_x = (Nz-1)*dz/2, (Ny-1)*dy/2, (Nx-1)*dx/2
 
-        r_z = (max([Ring.z for Ring in Rings]) - min([Ring.z for Ring in Rings]))/2 + Params['Dz'] * (border_type == 'open') / 2
-        r_y = (max([Ring.y for Ring in Rings]) - min([Ring.y for Ring in Rings]))/2 + Params['Dy'] * (border_type == 'open') / 2
-        r_x = (max([Ring.x for Ring in Rings]) - min([Ring.x for Ring in Rings]))/2 + Params['Dx'] * (border_type == 'open') / 2
+    for orientation in orientations:
+        for Ring in Rings[orientation][:]:
+            # Finding middle of the cell position
+            r_x = Ring.x 
+            r_y = Ring.y 
+            r_z = Ring.z 
 
-        for Ring in Rings[:]:
-            distance = (Ring.x-r_x0) ** 2/r_x**2 + (Ring.y-r_y0) ** 2/r_y **2 + (Ring.z-r_z0) ** 2/r_z ** 2
-            if distance > 1.01:
+            distance = (r_x-R_x) ** 2/R_x**2 + (r_y - R_y) ** 2/R_y **2 + (r_z-R_z) ** 2/R_z ** 2
+            if distance > 1.00:
                 if Fill:
                     Ring.R = np.inf
                     Ring.C = np.inf
                     Ring.L = 0
                 else:
-                    Rings.remove(Ring)
-    elif list_type == 'fast':
-        r_z0 = (max([max([Ring.z for Ring in Rings[orientation]]) for orientation in orientations]) + min([min([Ring.z for Ring in Rings[orientation]]) for orientation in orientations]))/2
-        r_y0 = (max([max([Ring.y for Ring in Rings[orientation]]) for orientation in orientations]) + min([min([Ring.y for Ring in Rings[orientation]]) for orientation in orientations]))/2
-        r_x0 = (max([max([Ring.x for Ring in Rings[orientation]]) for orientation in orientations]) + min([min([Ring.x for Ring in Rings[orientation]]) for orientation in orientations]))/2
-
-        r_z = (max([max([Ring.z for Ring in Rings[orientation]]) for orientation in orientations]) - min([min([Ring.z for Ring in Rings[orientation]]) for orientation in orientations]))/2 + Params['Dz'] * (border_type == 'open') / 2
-        r_y = (max([max([Ring.y for Ring in Rings[orientation]]) for orientation in orientations]) - min([min([Ring.y for Ring in Rings[orientation]]) for orientation in orientations]))/2 + Params['Dy'] * (border_type == 'open') / 2
-        r_x = (max([max([Ring.x for Ring in Rings[orientation]]) for orientation in orientations]) - min([min([Ring.x for Ring in Rings[orientation]]) for orientation in orientations]))/2 + Params['Dx'] * (border_type == 'open') / 2
-
-        for orientation in orientations:
-            for Ring in Rings[orientation][:]:
-                distance = (Ring.x-r_x0) ** 2/r_x**2 + (Ring.y-r_y0) ** 2/r_y **2 + (Ring.z-r_z0) ** 2/r_z ** 2
-                if distance > 1.01:
-                    if Fill:
-                        Ring.R = np.inf
-                        Ring.C = np.inf
-                        Ring.L = 0
-                    else:
-                        Rings[orientation].remove(Ring)
+                    Rings[orientation].remove(Ring)
     return Rings
 
-def Cylinder_packing(Params, Fill = False, Type='border_straight', orientations = 'z', axes = 'z'):
-    border_type, list_type = Type.split('_')
-    Rings = Rectangle_packing(Params, orientations = orientation, Type = Type)
+def Cylinder_packing(Params, Fill = False, axis = 'z'):
+    Params['Packing'] = f'Cylinder-{axis}'
+    orientations = Params['Orientations']
+    Rings = Rectangle_packing(Params, orientations)
     
-    if list_type == 'straight':
-        r_z0 = (max([Ring.z for Ring in Rings]) + min([Ring.z for Ring in Rings]))/2
-        r_y0 = (max([Ring.y for Ring in Rings]) + min([Ring.y for Ring in Rings]))/2
-        r_x0 = (max([Ring.x for Ring in Rings]) + min([Ring.x for Ring in Rings]))/2
+    dz, dy, dx = Params['Dz'], Params['Dy'], Params['Dx']
+    Nz, Ny, Nx = Params['N']['z']['nz'], Params['N']['y']['ny'], Params['N']['x']['nx']
+    R_z, R_y, R_x = (Nz-1)*dz/2, (Ny-1)*dy/2, (Nx-1)*dx/2
 
-        r_z = (max([Ring.z for Ring in Rings]) - min([Ring.z for Ring in Rings]))/2 + Params['Dz'] * (border_type == 'open') / 2
-        r_y = (max([Ring.y for Ring in Rings]) - min([Ring.y for Ring in Rings]))/2 + Params['Dy'] * (border_type == 'open') / 2
-        r_x = (max([Ring.x for Ring in Rings]) - min([Ring.x for Ring in Rings]))/2 + Params['Dx'] * (border_type == 'open') / 2
+    for orientation in orientations:
+        for Ring in Rings[orientation][:]:
+            # Finding middle of the cell position
+            r_x = Ring.x 
+            r_y = Ring.y 
+            r_z = Ring.z 
 
-        for Ring in Rings[:]:
-            distance = (Ring.x-r_x0) ** 2/r_x**2 * (axes != 'x') + (Ring.y-r_y0) ** 2/r_y **2 * (axes != 'y') + (Ring.z-r_z0) ** 2/r_z ** 2 * (axes != 'z')
-            if distance > 1.01:
+            distance = (r_x-R_x) ** 2/R_x**2 * (
+                axis != 'x') + (r_y - R_y) ** 2/R_y **2 * (
+                axis != 'y') + (r_z-R_z) ** 2/R_z ** 2 * (
+                axis != 'z')
+            
+            if distance > 1.00:
                 if Fill:
                     Ring.R = np.inf
                     Ring.C = np.inf
                     Ring.L = 0
                 else:
-                    Rings.remove(Ring)
-    
-    elif list_type == 'fast':
-        r_z0 = (max([max([Ring.z for Ring in Rings[orientation]]) for orientation in orientations]) + min([min([Ring.z for Ring in Rings[orientation]]) for orientation in orientations]))/2
-        r_y0 = (max([max([Ring.y for Ring in Rings[orientation]]) for orientation in orientations]) + min([min([Ring.y for Ring in Rings[orientation]]) for orientation in orientations]))/2
-        r_x0 = (max([max([Ring.x for Ring in Rings[orientation]]) for orientation in orientations]) + min([min([Ring.x for Ring in Rings[orientation]]) for orientation in orientations]))/2
-
-        r_z = (max([max([Ring.z for Ring in Rings[orientation]]) for orientation in orientations]) - min([min([Ring.z for Ring in Rings[orientation]]) for orientation in orientations]))/2 + Params['Dz'] * (border_type == 'open') / 2
-        r_y = (max([max([Ring.y for Ring in Rings[orientation]]) for orientation in orientations]) - min([min([Ring.y for Ring in Rings[orientation]]) for orientation in orientations]))/2 + Params['Dy'] * (border_type == 'open') / 2
-        r_x = (max([max([Ring.x for Ring in Rings[orientation]]) for orientation in orientations]) - min([min([Ring.x for Ring in Rings[orientation]]) for orientation in orientations]))/2 + Params['Dx'] * (border_type == 'open') / 2
-
-        for orientation in orientations:
-            for Ring in Rings[orientation][:]:
-                distance = (Ring.x-r_x0) ** 2/r_x**2 * (axes != 'x') + (Ring.y-r_y0) ** 2/r_y **2 * (axes != 'y') + (Ring.z-r_z0) ** 2/r_z ** 2 * (axes != 'z')
-                if distance > 1.01:
-                    if Fill:
-                        Ring.R = np.inf
-                        Ring.C = np.inf
-                        Ring.L = 0
-                    else:
-                        Rings[orientation].remove(Ring)
-
+                    Rings[orientation].remove(Ring)
     return Rings
 
+Packings = {
+    'Rectangle': Rectangle_packing,
+    'Ellipse': Ellipse_packing,
+    'Cylinder-z': lambda Params, Fill = False :Cylinder_packing(Params, Fill, 'z'),
+    'Cylinder-y': lambda Params, Fill = False :Cylinder_packing(Params, Fill, 'y'),
+    'Cylinder-x': lambda Params, Fill = False :Cylinder_packing(Params, Fill, 'x')
+}
 
