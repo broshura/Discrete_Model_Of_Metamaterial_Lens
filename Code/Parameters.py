@@ -55,6 +55,6 @@ Params = {
         'y': 1100,
         'x': 1100
     },
-    'Threads': 8
+    'Threads': 1
 }
 

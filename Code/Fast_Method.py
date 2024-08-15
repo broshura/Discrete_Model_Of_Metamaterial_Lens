@@ -95,7 +95,7 @@ def solvesystem(Params, rings_4d, phi_0z_4d, Inductance = {}, find = 'Currents',
     print('FFT solving')
     CURRENTS = []
     I_old = np.ones(Number, dtype = np.complex128)/M_0(Omega[0])
-    Phi_0z = phi_0z/np.max(abs(phi_0z))
+    Phi_0z = phi_0z
     P = []
     for omega in tqdm(Omega):
         M_diag = M_0(omega)
@@ -126,7 +126,7 @@ def solvesystem(Params, rings_4d, phi_0z_4d, Inductance = {}, find = 'Currents',
         if info != 0:
             print(f'omega = {omega/2/np.pi/1e6} MHz did not converge')
         
-        CURRENTS.append(I*np.max(abs(phi_0z)))
+        CURRENTS.append(I)
         start = 0
         p = []
         for pos in orientations:
@@ -136,8 +136,8 @@ def solvesystem(Params, rings_4d, phi_0z_4d, Inductance = {}, find = 'Currents',
         P.append(p)
 
         I_old = I
-
-    P = np.array(P)*np.max(abs(phi_0z)) * Params['P_0z']
+    
+    P = np.array(P) * Params['P_0z']
 
     print(f'FFT solving: Done, shape = {[(pos, rings_4d[pos].shape) for pos in orientations]}')
     Data = {}
