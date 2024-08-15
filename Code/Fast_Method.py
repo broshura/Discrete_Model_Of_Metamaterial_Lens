@@ -3,8 +3,8 @@
 import numpy as np
 from Impedance_matrix import Mnm
 from scipy.sparse.linalg import LinearOperator, bicgstab, gmres, minres, lobpcg, cg
-from pyfftw import pyfftw
 from tqdm import tqdm
+import pyfftw
 import json
 
 # Function for creating circulant vectors
@@ -12,7 +12,7 @@ def Circvec(rings_3d_str, rings_3d_col, data):
     Nz_str, Ny_str, Nx_str = rings_3d_str.shape
     Nz_col, Ny_col, Nx_col = rings_3d_col.shape
     nz, ny, nx = Nz_str + Nz_col - 1, Ny_str + Ny_col - 1, Nx_str + Nx_col - 1
-    Z_circvecs = pyfftw.empty_aligned((nz, ny, nx), dtype = 'complex128')
+    Z_circvecs = pyfftw.pyfftw.empty_aligned((nz, ny, nx), dtype = 'complex128')
     for z in range(nz):
         for y in range(ny):
             for x in range(nx):
@@ -34,18 +34,27 @@ def fft_dot(I, ZI, FFT_Z_circvecs, i_vecs, ifft_i_vecs):
 
     i_vecs[:Nz, :Ny, :Nx] = I
 
-    pyfftw.FFTW(i_vecs, ifft_i_vecs, axes = (0, 1, 2), direction='FFTW_BACKWARD').execute()
-    pyfftw.FFTW(FFT_Z_circvecs * ifft_i_vecs/nz/ny/nx, ZI, axes = (0, 1, 2)).execute()
+    pyfftw.pyfftw.FFTW(i_vecs, ifft_i_vecs, axes = (0, 1, 2), direction='FFTW_BACKWARD').execute()
+    pyfftw.pyfftw.FFTW(FFT_Z_circvecs * ifft_i_vecs/nz/ny/nx, ZI, axes = (0, 1, 2)).execute()
     
     return ZI[:nz - Nz + 1, :ny - Ny + 1, :nx - Nx + 1].ravel()
 
 def solvesystem(Params, rings_4d, phi_0z_4d, Inductance = {}, find = 'Currents', tol = 1e-5):
     # Unpacking parameters
     Params['Solver_type'] = 'Fast'
-    Omega = Params['Omega']
+    Omegas = Params['Omega']    
+    threads = Params['Threads']
+    pyfftw.config.NUM_THREADS = threads
+    Omega = np.linspace(Omegas[0], Omegas[1], Omegas[2])
+    
     rings = sum([rings_4d[orientation] for orientation in rings_4d], [])
-    phi_0z = sum([phi_0z_4d[orientation] for orientation in phi_0z_4d], [])
+    phi_0z = np.array(sum([phi_0z_4d[orientation] for orientation in phi_0z_4d], []))
+    
     orientations = rings_4d.keys()
+    for orientation in orientations:
+        Nz, Ny, Nx = Params['N'][orientation]['nz'], Params['N'][orientation]['ny'], Params['N'][orientation]['nx']
+        rings_4d[orientation] = np.array(rings_4d[orientation]).reshape(Nz, Ny, Nx)
+        phi_0z_4d[orientation] = np.array(phi_0z_4d[orientation])
     Number = np.sum([value.size for value in rings_4d.values()])
 
     FFT_M_circvecs = {}
@@ -67,11 +76,11 @@ def solvesystem(Params, rings_4d, phi_0z_4d, Inductance = {}, find = 'Currents',
 
             N_circ = np.array(rings_str.shape) + np.array(rings_col.shape) - 1
             i_vecs[pos_str][pos_col] = np.zeros(N_circ, dtype=complex)
-            MI_vecs[pos_str][pos_col] = pyfftw.empty_aligned(N_circ, dtype = 'complex128')
+            MI_vecs[pos_str][pos_col] = pyfftw.pyfftw.empty_aligned(N_circ, dtype = 'complex128')
 
-            FFT_M_circvecs[pos_str][pos_col] = pyfftw.empty_aligned(N_circ, dtype = 'complex128')
-            ifft_i_vecs[pos_str][pos_col] = pyfftw.empty_aligned(N_circ, dtype = 'complex128')
-            pyfftw.FFTW(M_circvecs, FFT_M_circvecs[pos_str][pos_col], axes = (0, 1, 2)).execute()
+            FFT_M_circvecs[pos_str][pos_col] = pyfftw.pyfftw.empty_aligned(N_circ, dtype = 'complex128')
+            ifft_i_vecs[pos_str][pos_col] = pyfftw.pyfftw.empty_aligned(N_circ, dtype = 'complex128')
+            pyfftw.pyfftw.FFTW(M_circvecs, FFT_M_circvecs[pos_str][pos_col], axes = (0, 1, 2)).execute()
     print('Circvecs: Done')
     # Calculating diagonal of M matrix
     L, C, R = [], [], []
@@ -106,7 +115,7 @@ def solvesystem(Params, rings_4d, phi_0z_4d, Inductance = {}, find = 'Currents',
                                                       MI_vecs[pos_str][pos_col],
                                                       FFT_M_circvecs[pos_str][pos_col],
                                                       i_vecs[pos_str][pos_col],
-                                                      ifft_i_vecs[pos_str][pos_col], threads = threads)
+                                                      ifft_i_vecs[pos_str][pos_col])
                     start_col += rings_4d[pos_col].size
                 start_str += rings_4d[pos_str].size
             return MI
@@ -134,7 +143,9 @@ def solvesystem(Params, rings_4d, phi_0z_4d, Inductance = {}, find = 'Currents',
     Data = {}
 
     Data['Params'] = Params
+    Data['Omega'] = Omega
     Data['Currents'] = CURRENTS
     Data['Polarization'] = P
-    
+    Data['Phi_0z'] = list(phi_0z)
+
     return Data

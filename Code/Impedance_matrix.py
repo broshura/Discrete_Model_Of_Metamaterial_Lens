@@ -169,28 +169,28 @@ def Matrix(rings, Data = {}):
 
 # Caclulating diagonal of Z matrix using gradient
 
-def Z_grad(Params, grad = [0, 0, 0]):
-    L, C, R, N = Params['L'], Params['C'], Params['R'], Params['N']
-    Number = Params['Number']
-    Cgrad = np.empty(Number)
+# def Z_grad(Params, grad = [0, 0, 0]):
+#     L, C, R, N = Params['L'], Params['C'], Params['R'], Params['N']
+#     Number = Params['Number']
+#     Cgrad = np.empty(Number)
 
-    # Making start and end points for each orientation
-    start = 0
-    end = 0
-    for pos in N:
-        end += N[pos]['nz'] * N[pos]['ny'] * N[pos]['nx']
+#     # Making start and end points for each orientation
+#     start = 0
+#     end = 0
+#     for pos in N:
+#         end += N[pos]['nz'] * N[pos]['ny'] * N[pos]['nx']
         
-        z, y, x = np.meshgrid(np.arange(N[pos]['nz']),
-                              np.arange(N[pos]['ny']),
-                              np.arange(N[pos]['nx']),
-                              indexing = 'ij')
-        gradx = x * grad[0] / N[pos]['nx']
-        grady = y * grad[1] / N[pos]['ny']
-        gradz = z * grad[2] / N[pos]['nz']
+#         z, y, x = np.meshgrid(np.arange(N[pos]['nz']),
+#                               np.arange(N[pos]['ny']),
+#                               np.arange(N[pos]['nx']),
+#                               indexing = 'ij')
+#         gradx = x * grad[0] / N[pos]['nx']
+#         grady = y * grad[1] / N[pos]['ny']
+#         gradz = z * grad[2] / N[pos]['nz']
 
-        Omega_0 = (1 + gradz + grady + gradx)/np.sqrt(L * C)
-        Cgrad[start:end] = 1/L/(Omega_0.ravel() ** 2)
+#         Omega_0 = (1 + gradz + grady + gradx)/np.sqrt(L * C)
+#         Cgrad[start:end] = 1/L/(Omega_0.ravel() ** 2)
 
-        start += N[pos]['nz'] * N[pos]['ny'] * N[pos]['nx']
+#         start += N[pos]['nz'] * N[pos]['ny'] * N[pos]['nx']
 
-    return lambda omega: R - 1j*omega*L + 1j / (omega * Cgrad)
+#     return lambda omega: R - 1j*omega*L + 1j / (omega * Cgrad)

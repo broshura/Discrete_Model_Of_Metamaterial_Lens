@@ -7,11 +7,12 @@ from tqdm import tqdm
 
 def solvesystem(Params, rings_4d, phi_0z_4d, Inductance = {}, find = 'Currents'):
     Params['Solver_type'] = 'Straight'
-    Omega = Params['Omega']    
+    Omegas = Params['Omega']    
+    Omega = np.linspace(Omegas[0], Omegas[1], Omegas[2])
     # Unpacking parameters
     # Solve system in currents terms and return currents in each ring
     rings = sum([rings_4d[orientation] for orientation in rings_4d], [])
-    phi_0z = sum([phi_0z_4d[orientation] for orientation in phi_0z_4d], [])
+    phi_0z = np.array(sum([phi_0z_4d[orientation] for orientation in phi_0z_4d], []))
     if find == 'Currents':
         CURRENTS = []
 
@@ -53,8 +54,10 @@ def solvesystem(Params, rings_4d, phi_0z_4d, Inductance = {}, find = 'Currents')
         print('Straight solving: Done')
         Data = {}
         Data['Params'] = Params
+        Data['Omega'] = Omega
         Data['Currents'] = CURRENTS
         Data['Polarization'] = P
+        Data['Phi_0z'] = list(phi_0z)
 
 
     elif find == 'Voltage':
