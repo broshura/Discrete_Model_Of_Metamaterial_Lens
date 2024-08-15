@@ -121,7 +121,7 @@ def solvesystem(Params, rings_4d, phi_0z_4d, Inductance = {}, find = 'Currents',
             return MI
         
         M = LinearOperator(dtype = np.complex128, shape=(Number, Number), matvec=LO)
-        I, info = bicgstab(M, Phi_0z, x0 = I_old, tol = tol)
+        I, info = bicgstab(M, Phi_0z, x0 = I_old, rtol = tol)
 
         if info != 0:
             print(f'omega = {omega/2/np.pi/1e6} MHz did not converge')
