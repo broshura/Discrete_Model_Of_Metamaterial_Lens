@@ -2,10 +2,14 @@
 
 import numpy as np
 from Impedance_matrix import Mnm
-from scipy.sparse.linalg import LinearOperator, bicgstab, lgmres, gmres, minres, cgs, cg
+from scipy.sparse.linalg import LinearOperator, bicgstab, lgmres, gmres
 from tqdm import tqdm
 import pyfftw
 import json
+
+solvers = {
+    'lgmres': lgmres,
+}
 
 # Function for creating circulant vectors
 def Circvec(rings_3d_str, rings_3d_col, data):
@@ -42,6 +46,7 @@ def fft_dot(I, ZI, FFT_Z_circvecs, i_vecs, ifft_i_vecs):
 def solvesystem(Params, rings_4d, phi_0z_4d, Inductance = {}, find = 'Currents', tol = 1e-5):
     # Unpacking parameters
     Params['Solver_type'] = 'Fast'
+    solve = solvers[Params['Solver_name']]
     Omegas = Params['Omega']    
     threads = Params['Threads']
     pyfftw.config.NUM_THREADS = threads
@@ -121,8 +126,8 @@ def solvesystem(Params, rings_4d, phi_0z_4d, Inductance = {}, find = 'Currents',
             return MI
         
         M = LinearOperator(dtype = np.complex128, shape=(Number, Number), matvec=LO)
-        I, info = gmres(M, Phi_0z, x0 = I_old, rtol = tol)
-
+        I, info = solve(M, Phi_0z, x0 = I_old, rtol = tol, atol = 0)
+        
         if info != 0:
             print(f'f = {omega/2/np.pi/1e6} MHz did not converge')
         
