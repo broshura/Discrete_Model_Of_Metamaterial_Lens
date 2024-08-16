@@ -47,6 +47,7 @@ def solvesystem(Params, rings_4d, phi_0z_4d, Inductance = {}, find = 'Currents',
     # Unpacking parameters
     Params['Solver_type'] = 'Fast'
     solve = solvers[Params['Solver_name']]
+    solve = solvers[Params['Solver_name']]
     Omegas = Params['Omega']    
     threads = Params['Threads']
     pyfftw.config.NUM_THREADS = threads

@@ -8,6 +8,7 @@ from Geometry import *
 from Straight_Method import solvesystem as straight_solvesystem
 from Fast_Method import solvesystem as fast_solvesystem
 from Fast_Method import solvers
+from Fast_Method import solvers
 
 Solvers = {
     'Straight': straight_solvesystem,
@@ -89,6 +90,7 @@ plt.show()
 
 
 for n in range(1, 101):
+    break
     break
     Params['N'], Params['shape'] = to3D(n, 1, 1, 'zyx')
     save('DATA', Params)
