@@ -1,14 +1,17 @@
 # Calculating currents in each ring on pyfftw way (one dimensional)
 
 import numpy as np
+import scipy.fft
 from Impedance_matrix import Mnm
 from scipy.sparse.linalg import LinearOperator, bicgstab, lgmres, gmres
 from tqdm import tqdm
 import pyfftw
+import scipy
 import json
 
 solvers = {
-    'lgmres': lgmres,
+    'gmres': gmres,
+    'lgmres': lgmres
 }
 
 # Function for creating circulant vectors
@@ -16,7 +19,7 @@ def Circvec(rings_3d_str, rings_3d_col, data):
     Nz_str, Ny_str, Nx_str = rings_3d_str.shape
     Nz_col, Ny_col, Nx_col = rings_3d_col.shape
     nz, ny, nx = Nz_str + Nz_col - 1, Ny_str + Ny_col - 1, Nx_str + Nx_col - 1
-    Z_circvecs = pyfftw.pyfftw.empty_aligned((nz, ny, nx), dtype = 'complex128')
+    Z_circvecs = np.zeros((nz, ny, nx), dtype = complex)
     for z in range(nz):
         for y in range(ny):
             for x in range(nx):
@@ -38,15 +41,14 @@ def fft_dot(I, ZI, FFT_Z_circvecs, i_vecs, ifft_i_vecs):
 
     i_vecs[:Nz, :Ny, :Nx] = I
 
-    pyfftw.pyfftw.FFTW(i_vecs, ifft_i_vecs, axes = (0, 1, 2), direction='FFTW_BACKWARD').execute()
-    pyfftw.pyfftw.FFTW(FFT_Z_circvecs * ifft_i_vecs/nz/ny/nx, ZI, axes = (0, 1, 2)).execute()
-    
+    ifft_i_vecs = scipy.fft.ifftn(i_vecs, axes = (0, 1, 2))
+    ZI = scipy.fft.fftn(FFT_Z_circvecs * ifft_i_vecs, axes = (0, 1, 2))
+
     return ZI[:nz - Nz + 1, :ny - Ny + 1, :nx - Nx + 1].ravel()
 
 def solvesystem(Params, rings_4d, phi_0z_4d, Inductance = {}, find = 'Currents', tol = 1e-5):
     # Unpacking parameters
     Params['Solver_type'] = 'Fast'
-    solve = solvers[Params['Solver_name']]
     solve = solvers[Params['Solver_name']]
     Omegas = Params['Omega']    
     threads = Params['Threads']
@@ -82,12 +84,13 @@ def solvesystem(Params, rings_4d, phi_0z_4d, Inductance = {}, find = 'Currents',
 
             N_circ = np.array(rings_str.shape) + np.array(rings_col.shape) - 1
             i_vecs[pos_str][pos_col] = np.zeros(N_circ, dtype=complex)
-            MI_vecs[pos_str][pos_col] = pyfftw.pyfftw.empty_aligned(N_circ, dtype = 'complex128')
+            MI_vecs[pos_str][pos_col] = np.zeros(N_circ, dtype=complex)
 
-            FFT_M_circvecs[pos_str][pos_col] = pyfftw.pyfftw.empty_aligned(N_circ, dtype = 'complex128')
-            ifft_i_vecs[pos_str][pos_col] = pyfftw.pyfftw.empty_aligned(N_circ, dtype = 'complex128')
-            pyfftw.pyfftw.FFTW(M_circvecs, FFT_M_circvecs[pos_str][pos_col], axes = (0, 1, 2)).execute()
+            FFT_M_circvecs[pos_str][pos_col] = scipy.fft.fftn(M_circvecs, axes = (0, 1, 2))
+            ifft_i_vecs[pos_str][pos_col] = np.zeros(N_circ, dtype=complex)
+
     print('Circvecs: Done')
+
     # Calculating diagonal of M matrix
     L, C, R = [], [], []
     for ring in rings:

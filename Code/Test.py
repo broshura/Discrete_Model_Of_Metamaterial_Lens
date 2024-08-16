@@ -1,3 +1,4 @@
+# ----------------------------------------------
 
 import os 
 import json 
@@ -78,21 +79,22 @@ def open_model(filename, Params, Currents = 'False', Polarization = 'True'):
 
 
 Params['Solver_type'] = 'Fast'
-Params['Solver_name'] = 'lgmres'
 Params['Threads'] = 1
 
-# Modeling for thin structures
-for n in range(1, 101):
-    Params['N'], Params['shape'] = to3D(n, 1, 1, 'zyx')
+Params['N'], Params['shape'] = to3D(8, 8, 8, 'zyx')
+Params['Orientations'] = 'zyx'
+for solver in solvers.keys():
+    Params['Solver_name'] = solver
     save('DATA', Params)
+    data = open_model('DATA', Params, Currents = 'False', Polarization = 'True')
+    plt.plot(data['Omega'], data['Polarization'][:, 0].real, label = solver + ' real')
+    plt.plot(data['Omega'], data['Polarization'][:, 0].imag, label = solver + ' imag')
 
-#Modeling for flat structures
+Params['Solver_type'] = 'Straight'
+save('DATA', Params)
+data = open_model('DATA', Params, Currents = 'False', Polarization = 'True')
+plt.plot(data['Omega'], data['Polarization'][:, 0].real, label = 'Straight real')
+plt.plot(data['Omega'], data['Polarization'][:, 0].imag, label = 'Straight imag')
+plt.legend()
 
-for n in range(1, 101):
-    Params['N'], Params['shape'] = to3D(1, n, n, 'zyx')
-    save('DATA', Params)
-
-#Modeling for Cube structures
-for n in range(1, 101):
-    Params['N'], Params['shape'] = to3D(n, n, n, 'zyx')
-    save('DATA', Params)
+plt.show()
