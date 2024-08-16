@@ -2,7 +2,7 @@
 
 import numpy as np
 from Impedance_matrix import Mnm
-from scipy.sparse.linalg import LinearOperator, bicgstab, gmres, minres, lobpcg, cg
+from scipy.sparse.linalg import LinearOperator, bicgstab, lgmres, gmres, minres, cgs, cg
 from tqdm import tqdm
 import pyfftw
 import json
@@ -124,7 +124,7 @@ def solvesystem(Params, rings_4d, phi_0z_4d, Inductance = {}, find = 'Currents',
         I, info = gmres(M, Phi_0z, x0 = I_old, rtol = tol)
 
         if info != 0:
-            print(f'omega = {omega/2/np.pi/1e6} MHz did not converge')
+            print(f'f = {omega/2/np.pi/1e6} MHz did not converge')
         
         CURRENTS.append(I)
         start = 0
