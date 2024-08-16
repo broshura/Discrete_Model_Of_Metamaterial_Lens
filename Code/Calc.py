@@ -30,10 +30,10 @@ def save(filename, Params):
     Data = solver(Params, rings_4d, phi_0z_4d, tol = 1e-3)
 
     name = f'{Params["Packing"]}_NoGrad_{Params["shape"]}_{Params["Orientations"]}_{Params["Solver_type"]}'
-    os.makedirs(f'./{filename}/{name}', exist_ok=True)
+    os.makedirs(f'Code/{filename}/{name}', exist_ok=True)
 
     # Saving modeling parameters in readable format
-    with open(f'./{filename}/{name}/Params.json', 'w') as f:
+    with open(f'Code/{filename}/{name}/Params.json', 'w') as f:
         json.dump(Params, f)
 
     # Save full calculated data in npz format
@@ -43,7 +43,7 @@ def save(filename, Params):
         'Polarization': Data['Polarization'],
         'Phi_0z': Data['Phi_0z'],
     }
-    np.savez(f'./{filename}/{name}/Currents.npz', **calc_data)
+    np.savez(f'Code/{filename}/{name}/Currents.npz', **calc_data)
     
     # Save neccesary data for plotting in npz format
     pol_data = {
@@ -51,22 +51,22 @@ def save(filename, Params):
         'Omega': Data['Omega'],
         'Phi_0z': Data['Phi_0z'],
     }
-    np.savez(f'./{filename}/{name}/Polarization.npz', **pol_data)
+    np.savez(f'Code/{filename}/{name}/Polarization.npz', **pol_data)
 
 def open_model(filename, Params, Currents = 'False', Polarization = 'True'):
     name = f'{Params["Packing"]}_NoGrad_{Params["shape"]}_{Params["Orientations"]}_{Params["Solver_type"]}'
     data = {}
-    with open(f'./{filename}/{name}/Params.json', 'r') as f:
+    with open(f'Code/{filename}/{name}/Params.json', 'r') as f:
         data['Params'] = json.load(f)
     
     if Currents == 'True':
-        with np.load(f'./{filename}/{name}/Currents.npz') as f:
+        with np.load(f'Code/{filename}/{name}/Currents.npz') as f:
             data['Currents'] = f['Currents']
             data['Omega'] = f['Omega']
             data['Polarization'] = f['Polarization']
             data['Phi_0z'] = f['Phi_0z']
     elif Polarization == 'True':
-        with np.load(f'./{filename}/{name}/Polarization.npz') as f:
+        with np.load(f'Code/{filename}/{name}/Polarization.npz') as f:
             data['Polarization'] = f['Polarization']
             data['Omega'] = f['Omega']
             data['Phi_0z'] = f['Phi_0z']
@@ -76,7 +76,7 @@ def open_model(filename, Params, Currents = 'False', Polarization = 'True'):
 Params['Solver_type'] = 'Fast'
 Params['Threads'] = 1
 
-Params['N'], Params['shape'] = to3D(20, 20, 20, 'zyx')
+Params['N'], Params['shape'] = to3D(2, 2, 2, 'zyx')
 for solver in solvers.keys():
     Params['Solver_name'] = solver
     save('DATA', Params)
