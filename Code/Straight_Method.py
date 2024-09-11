@@ -5,7 +5,7 @@ from scipy.linalg import solve
 from Impedance_matrix import Matrix
 from tqdm import tqdm
 
-def solvesystem(Params, rings_4d, phi_0z_4d, Inductance = {}, find = 'Currents'):
+def solvesystem(Params, rings_4d, phi_0z_4d, Inductance = {}, find = 'Currents', tol = 0):
     Params['Solver_type'] = 'Straight'
     Omegas = Params['Omega']    
     Omega = np.linspace(Omegas[0], Omegas[1], Omegas[2])
