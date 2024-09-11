@@ -56,6 +56,6 @@ Params = {
         'x': 1100
     },
     'Threads': 1,
-    'Solver_name': 'lgmres'
+    'Solver_name': 'gmres'
 }
 
