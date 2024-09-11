@@ -1,5 +1,4 @@
 
-
 import os 
 import json 
 import numpy as np
@@ -7,13 +6,10 @@ import matplotlib.pyplot as plt
 
 from Parameters import *
 from Geometry import *
-from Fast_Method import solvesystem as fast_solvesystem
-from Fast_Method import solvesystem as fast_solvesystem
 from Straight_Method import solvesystem as straight_solvesystem
-#from Fast_Method import solvesystem as fast_solvesystem
-#from Fast_Method import solvers
-#from Fast_Method import solvesystem as fast_solvesystem
-#from Fast_Method import solvers
+from Fast_Method import solvesystem as fast_solvesystem
+from Fast_Method import solvers
+from Fast_Method import solvers
 
 Solvers = {
     'Straight': straight_solvesystem,
@@ -32,14 +28,7 @@ def save(filename, Params):
                                   ) for orientation in Params['Orientations']
         }
     print('Количество колец:', Params['Numbers'])
-    if Params['Solver_type'] == 'Fast':
-        Data = solver(Params, rings_4d, phi_0z_4d, tol = 1e-5)
-    elif Params['Solver_type'] == 'Straight':
-        Data = solver(Params, rings_4d, phi_0z_4d)
-    if Params['Solver_type'] == 'Fast':
-        Data = solver(Params, rings_4d, phi_0z_4d, tol = 1e-5)
-    elif Params['Solver_type'] == 'Straight':
-        Data = solver(Params, rings_4d, phi_0z_4d)
+    Data = solver(Params, rings_4d, phi_0z_4d, tol = 1e-3)
 
     name = f'{Params["Packing"]}_NoGrad_{Params["shape"]}_{Params["Orientations"]}_{Params["Solver_type"]}'
     os.makedirs(f'Code/{filename}/{name}', exist_ok=True)
@@ -86,23 +75,23 @@ def open_model(filename, Params, Currents = 'False', Polarization = 'True'):
 
 
 Params['Solver_type'] = 'Fast'
-Params['Solver_name'] = 'lgmres'
-Params['Solver_name'] = 'lgmres'
 Params['Threads'] = 1
 
-# Modeling for thin structures
-# Modeling for thin structures
+Params['N'], Params['shape'] = to3D(2, 2, 2, 'zyx')
+for solver in solvers.keys():
+    Params['Solver_name'] = solver
+    save('DATA', Params)
+    data = open_model('DATA', Params, Currents = 'False', Polarization = 'True')
+    plt.plot(data['Omega'], data['Polarization'][:, 0].real, label = solver + ' real')
+    plt.plot(data['Omega'], data['Polarization'][:, 0].imag, label = solver + ' imag')
+    plt.legend()
+
+plt.show()
+
+
+
 for n in range(1, 101):
+    break
+    break
     Params['N'], Params['shape'] = to3D(n, 1, 1, 'zyx')
-    save('DATA', Params)
-
-#Modeling for flat structures
-
-for n in range(1, 101):
-    Params['N'], Params['shape'] = to3D(1, n, n, 'zyx')
-    save('DATA', Params)
-
-#Modeling for Cube structures
-for n in range(1, 101):
-    Params['N'], Params['shape'] = to3D(n, n, n, 'zyx')
     save('DATA', Params)
