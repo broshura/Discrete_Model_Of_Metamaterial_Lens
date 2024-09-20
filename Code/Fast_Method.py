@@ -1,19 +1,20 @@
-# Calculating currents in each ring on pyfftw way (one dimensional)
-
-import numpy as np
-import scipy.fft
-from Impedance_matrix import Mnm
-from scipy.sparse.linalg import LinearOperator, bicgstab, lgmres, gmres
-from tqdm import tqdm
-import pyfftw
+# Base voltage method
+import os
 import scipy
-import json
+import numpy as np
+import scipy.linalg
+from tqdm import tqdm 
+from Impedance_matrix import Mnm
+from scipy.sparse.linalg import lgmres, gmres, LinearOperator
 
+
+os.environ["OPENBLAS_NUM_THREADS"] = "16"
+os.environ["MKL_NUM_THREADS"] = "16"
+# Calculating currents in each ring on pyfftw way (one dimensional)
 solvers = {
     'gmres': gmres,
     'lgmres': lgmres
 }
-
 # Function for creating circulant vectors
 def Circvec(rings_3d_str, rings_3d_col, data):
     Nz_str, Ny_str, Nx_str = rings_3d_str.shape
@@ -46,18 +47,28 @@ def fft_dot(I, ZI, FFT_Z_circvecs, i_vecs, ifft_i_vecs):
 
     return ZI[:nz - Nz + 1, :ny - Ny + 1, :nx - Nx + 1].ravel()
 
+def ifft_dot(I, ZI, FFT_Z_circvecs, i_vecs, ifft_i_vecs):
+    Nz, Ny, Nx = I.shape
+    nz, ny, nx = i_vecs.shape
+
+    i_vecs[:Nz, :Ny, :Nx] = I
+
+    ifft_i_vecs = scipy.fft.ifftn(i_vecs, axes = (0, 1, 2))
+    ZI = scipy.fft.fftn(ifft_i_vecs/FFT_Z_circvecs, axes = (0, 1, 2))
+
+    return ZI[:nz - Nz + 1, :ny - Ny + 1, :nx - Nx + 1].ravel()
+
 def solvesystem(Params, rings_4d, phi_0z_4d, Inductance = {}, find = 'Currents', tol = 1e-5):
     # Unpacking parameters
     Params['Solver_type'] = 'Fast'
     solve = solvers[Params['Solver_name']]
     Omegas = Params['Omega']    
-    threads = Params['Threads']
-    pyfftw.config.NUM_THREADS = threads
+
     Omega = np.linspace(Omegas[0], Omegas[1], Omegas[2])
     
     rings = sum([rings_4d[orientation] for orientation in rings_4d], [])
     phi_0z = np.array(sum([phi_0z_4d[orientation] for orientation in phi_0z_4d], []))
-    
+
     orientations = rings_4d.keys()
     for orientation in orientations:
         Nz, Ny, Nx = Params['N'][orientation]['nz'], Params['N'][orientation]['ny'], Params['N'][orientation]['nx']
@@ -98,14 +109,16 @@ def solvesystem(Params, rings_4d, phi_0z_4d, Inductance = {}, find = 'Currents',
         C.append(ring.C)
         R.append(ring.R)
     L, C, R = np.array(L), np.array(C), np.array(R)
+    
     M_0 = lambda Omega: (R - 1j * Omega * L + 1j/(Omega * C))/1j/Omega
 
     # Caclulating current in each ring
-    print('FFT solving')
+    print('FFT solving (voltage)')
     CURRENTS = []
     I_old = np.ones(Number, dtype = np.complex128)/M_0(Omega[0])
     Phi_0z = phi_0z
     P = []
+
     for omega in tqdm(Omega):
         M_diag = M_0(omega)
         def LO(I):
@@ -127,11 +140,13 @@ def solvesystem(Params, rings_4d, phi_0z_4d, Inductance = {}, find = 'Currents',
                                                       ifft_i_vecs[pos_str][pos_col])
                     start_col += rings_4d[pos_col].size
                 start_str += rings_4d[pos_str].size
-            return MI
+            return MI/M_diag
         
         M = LinearOperator(dtype = np.complex128, shape=(Number, Number), matvec=LO)
-        I, info = solve(M, Phi_0z, x0 = I_old, rtol = tol, atol = 0)
+
         
+        I, info = solve(M, Phi_0z/M_diag, x0 = I_old, rtol = tol, atol = 0)
+
         if info != 0:
             print(f'f = {omega/2/np.pi/1e6} MHz did not converge')
         

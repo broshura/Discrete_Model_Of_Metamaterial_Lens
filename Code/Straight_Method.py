@@ -5,7 +5,7 @@ from scipy.linalg import solve
 from Impedance_matrix import Matrix
 from tqdm import tqdm
 
-def solvesystem(Params, rings_4d, phi_0z_4d, Inductance = {}, find = 'Currents', tol = 0):
+def solvesystem(Params, rings_4d, phi_0z_4d, Inductance = {}, find = 'Voltage', tol = 0):
     Params['Solver_type'] = 'Straight'
     Omegas = Params['Omega']    
     Omega = np.linspace(Omegas[0], Omegas[1], Omegas[2])
@@ -13,30 +13,28 @@ def solvesystem(Params, rings_4d, phi_0z_4d, Inductance = {}, find = 'Currents',
     # Solve system in currents terms and return currents in each ring
     rings = sum([rings_4d[orientation] for orientation in rings_4d], [])
     phi_0z = np.array(sum([phi_0z_4d[orientation] for orientation in phi_0z_4d], []))
+
+    Number = len(rings)
+
+    # Diagonal part
+    L, C, R = [], [], []
+    for ring in rings:
+        L.append(ring.L)
+        C.append(ring.C)
+        R.append(ring.R)
+    L, C, R = np.array(L), np.array(C), np.array(R)
+
+    M_0 = lambda Omega: (R - 1j * Omega * L + 1j/(Omega * C))/1j/Omega
+    P = []
+    CURRENTS = []
+    # External field
+    Phi_0z = phi_0z/np.max(abs(phi_0z))
+
+    print('Matrix forming')
+    M = Matrix(rings, Data = Inductance)
+    print('Matrix: Done')
     if find == 'Currents':
-        CURRENTS = []
-
-        print('Matrix forming')
-        Number = len(rings)
-
-        # Diagonal part
-        L, C, R = [], [], []
-        for ring in rings:
-            L.append(ring.L)
-            C.append(ring.C)
-            R.append(ring.R)
-        L, C, R = np.array(L), np.array(C), np.array(R)
-        M_0 = lambda Omega: (R - 1j * Omega * L + 1j/(Omega * C))/1j/Omega
-        # Other part
-        M = Matrix(rings, Data = Inductance)
-
-        print('Matrix: Done')
-
-        print('Straight solving')
-
-        # External field
-        Phi_0z = phi_0z/np.max(abs(phi_0z))
-        P = []
+        print('Straight solving (Currents)')
         for omega in tqdm(Omega):
             # Solve equation (diag(Z_0)/jw - M)I = Phi_0z
             I = solve(np.diag(M_0(omega)) - M, Phi_0z)
@@ -51,35 +49,33 @@ def solvesystem(Params, rings_4d, phi_0z_4d, Inductance = {}, find = 'Currents',
         P = np.array(P)*np.max(abs(phi_0z)) * Params['P_0z']
                 
 
-        print('Straight solving: Done')
-        Data = {}
-        Data['Params'] = Params
-        Data['Omega'] = Omega
-        Data['Currents'] = CURRENTS
-        Data['Polarization'] = P
-        Data['Phi_0z'] = list(phi_0z)
-
+        print('Straight solving (Currents): Done')
 
     elif find == 'Voltage':
-        sigma_0 = lambda Omega: 1/(M_0(Omega) * 1j * omega)
-        Currents = []
-        print('Matrix forming')
-        Number = len(rings)
-        M = Matrix(rings, Data = Inductance)
-        print('Matrix: Done')
-
-        print('Straight solving')
+        print('Straight solving (Voltage)')
         # Solve equation 
         for omega in tqdm(Omega):
-            V = solve(np.ones(Number)/(1j * omega) - M_0@np.diag(sigma_0(omega)), Phi_0z)
-            CURRENTS.append(V/sigma_0(omega))
-        print('Straight solving: Done')
-        Data = {}
-
-        Data['Omega'] = list(Omega)
-        Data['RealCurrents'] = [list(np.real(i).reshape(Number)) for i in CURRENTS]
-        Data['ImagCurrents'] = [list(np.imag(i).reshape(Number)) for i in CURRENTS]
-
+            M_diag = M_0(omega)
+            # Solve equation (1/jw - M/M_diag)I = Phi_0z/M_diag
+            I = solve(np.eye(Number) - np.diag(1/M_diag)@M, Phi_0z/M_diag)
+            CURRENTS.append(I)
+            start = 0
+            p = []
+            for pos in Params['Orientations']:
+                end = start + Params['Numbers'][pos]
+                p.append(np.sum(I[start:end])/(end-start))
+                start = end
+            P.append(p)
+        P = np.array(P)*np.max(abs(phi_0z)) * Params['P_0z']
+                
+        print('Straight solving (Voltage): Done')
+        
+    Data = {}
+    Data['Params'] = Params
+    Data['Omega'] = Omega
+    Data['Currents'] = CURRENTS
+    Data['Polarization'] = P
+    Data['Phi_0z'] = list(phi_0z)
     return Data
 
 def effective_mu(Params, frequency = False):

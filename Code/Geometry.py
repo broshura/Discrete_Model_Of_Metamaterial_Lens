@@ -76,10 +76,10 @@ def Rectangle_packing(Params, Fill = False):
     return Rings
 
 def Ellipse_packing(Params, Fill = False):
-    Params['Packing'] = 'Ellipse'
     orientations = Params['Orientations']
     Rings = Rectangle_packing(Params, orientations)
-    
+    Params['Packing'] = 'Ellipse'
+
     dz, dy, dx = Params['Dz'], Params['Dy'], Params['Dx']
     Nz, Ny, Nx = Params['N']['z']['nz'], Params['N']['y']['ny'], Params['N']['x']['nx']
     R_z, R_y, R_x = (Nz-1)*dz/2, (Ny-1)*dy/2, (Nx-1)*dx/2
@@ -94,11 +94,12 @@ def Ellipse_packing(Params, Fill = False):
             distance = (r_x-R_x) ** 2/R_x**2 + (r_y - R_y) ** 2/R_y **2 + (r_z-R_z) ** 2/R_z ** 2
             if distance > 1.00:
                 if Fill:
-                    Ring.R = np.inf
-                    Ring.C = np.inf
-                    Ring.L = 0
+                    Ring.R = 1e200
+                    Ring.C = 1e200
+                    Ring.L = 1e200
                 else:
                     Rings[orientation].remove(Ring)
+    Params['Numbers'] = {orientation: len(Rings[orientation]) for orientation in orientations}
     return Rings
 
 def Cylinder_packing(Params, Fill = False, axis = 'z'):
@@ -124,8 +125,8 @@ def Cylinder_packing(Params, Fill = False, axis = 'z'):
             
             if distance > 1.00:
                 if Fill:
-                    Ring.R = np.inf
-                    Ring.C = np.inf
+                    Ring.R = 1e20
+                    Ring.C = 1e20
                     Ring.L = 0
                 else:
                     Rings[orientation].remove(Ring)
