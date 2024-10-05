@@ -16,7 +16,26 @@ solvers = {
     'lgmres': lgmres
 }
 # Function for creating circulant vectors
-def Circvec(rings_3d_str, rings_3d_col, data):
+def Circvec(rings_3d_str:list, rings_3d_col:list, data:dict) -> np.ndarray:
+    """Function for creating circulant vectors that fully
+    describe matrix M and allow to calculate M * I
+    using FFT and N * log(N) operations. After circulant multiplication,
+    then we cutoff the result to the size of the original matrix.
+
+    Parameters
+    ----------
+    rings_3d_str : list
+        3d array with rings of the same orientation
+    rings_3d_col : list
+        3d array with rings of the same orientation
+    data : dict
+        dictionary with modeling parameters
+
+    Returns
+    -------
+    np.ndarray
+        3d array with three times circulant vectors
+    """    
     Nz_str, Ny_str, Nx_str = rings_3d_str.shape
     Nz_col, Ny_col, Nx_col = rings_3d_col.shape
     nz, ny, nx = Nz_str + Nz_col - 1, Ny_str + Ny_col - 1, Nx_str + Nx_col - 1
@@ -36,7 +55,28 @@ def Circvec(rings_3d_str, rings_3d_col, data):
                 Z_circvecs[z][y][x] = Mnm(rings_3d_str[z_str_id][y_str_id][x_str_id], rings_3d_col[z_col_id][y_col_id][x_col_id], data)
     return Z_circvecs
 
-def fft_dot(I, ZI, FFT_Z_circvecs, i_vecs, ifft_i_vecs):
+def fft_dot(I:np.ndarray, ZI:np.ndarray, FFT_Z_circvecs:np.ndarray, i_vecs:np.ndarray, ifft_i_vecs:np.ndarray) -> np.ndarray:
+    """Function for calculating dot product of Toeplitz matrix M and vector I
+    using FFT and N * log(N) operations.
+
+    Parameters
+    ----------
+    I : np.ndarray
+        vector with currents for multiplication
+    ZI : np.ndarray
+        vector with result of multiplication
+    FFT_Z_circvecs : np.ndarray
+        3d array with 3d Fourier transform for three times circulant vectors
+    i_vecs : np.ndarray
+        3d array with extra space for circulant vectors
+    ifft_i_vecs : np.ndarray
+        3d array with extra space for inverse Fourier transform
+
+    Returns
+    -------
+    np.ndarray
+        _description_
+    """    
     Nz, Ny, Nx = I.shape
     nz, ny, nx = i_vecs.shape
 
@@ -47,7 +87,28 @@ def fft_dot(I, ZI, FFT_Z_circvecs, i_vecs, ifft_i_vecs):
 
     return ZI[:nz - Nz + 1, :ny - Ny + 1, :nx - Nx + 1].ravel()
 
-def ifft_dot(I, ZI, FFT_Z_circvecs, i_vecs, ifft_i_vecs):
+def ifft_dot(I:np.ndarray, ZI:np.ndarray, FFT_Z_circvecs:np.ndarray, i_vecs:np.ndarray, ifft_i_vecs:np.ndarray) -> np.ndarray:
+    """Function to calculate dot product of inverse circulant matrix based on 
+    Toeplitz matrix M and vector I using FFT and N * log(N) operations.
+
+    Parameters
+    ----------
+    I : np.ndarray
+        vector with currents for multiplication
+    ZI : np.ndarray
+        vector with result of multiplication
+    FFT_Z_circvecs : np.ndarray
+        3d array with 3d Fourier transform for three times circulant vectors
+    i_vecs : np.ndarray
+        3d array with extra space for circulant vectors
+    ifft_i_vecs : np.ndarray
+        3d array with extra space for inverse Fourier transform
+
+    Returns
+    -------
+    np.ndarray
+        _description_
+    """    
     Nz, Ny, Nx = I.shape
     nz, ny, nx = i_vecs.shape
 
@@ -58,7 +119,33 @@ def ifft_dot(I, ZI, FFT_Z_circvecs, i_vecs, ifft_i_vecs):
 
     return ZI[:nz - Nz + 1, :ny - Ny + 1, :nx - Nx + 1].ravel()
 
-def solvesystem(Params, rings_4d, phi_0z_4d, Inductance = {}, find = 'Currents', tol = 1e-5):
+def solvesystem(Params:dict, rings_4d:dict, phi_0z_4d:dict, Inductance:dict = {}, find:str = 'Voltage', tol:float = 1e-5)->dict:
+    """Function for solving system of equations using Toeplitz structure for 
+    impedance matrix M and iterative solver for linear system of equations.
+    Highly recommended to use Voltage method for solving system of equations and 
+    you must use it for non-rectangle structures because of infinitly conditioned
+    matrix for Currents way.
+
+    Parameters
+    ----------
+    Params : dict
+        Dictionary with modeling parameters
+    rings_4d : dict
+        Dictionary with rings for each orientation
+    phi_0z_4d : dict
+        Dictionary with external fluxes for each orientation
+    Inductance : dict, optional
+        Dictionary with mutual inductance, by default {}
+    find : str, optional
+        Which matrix equation to solve, by default 'Currents'
+    tol : float, optional
+        tolerance for residials in iterative methods, by default 1e-5
+
+    Returns
+    -------
+    dict
+        Dictionary with results of solving system of equations
+    """    
     # Unpacking parameters
     Params['Solver_type'] = 'Fast'
     solve = solvers[Params['Solver_name']]
@@ -121,31 +208,53 @@ def solvesystem(Params, rings_4d, phi_0z_4d, Inductance = {}, find = 'Currents',
 
     for omega in tqdm(Omega):
         M_diag = M_0(omega)
-        def LO(I):
-            MI = M_diag * I
-            # Make start and end indexes for each orientation
-            start_str = 0
-            end_str = 0
-            for pos_str in orientations:
-                end_str += rings_4d[pos_str].size
+        if find == 'Voltage':
+            def LO(I):
+                MI = M_diag * I
+                # Make start and end indexes for each orientation
+                start_str = 0
+                end_str = 0
+                for pos_str in orientations:
+                    end_str += rings_4d[pos_str].size
 
-                start_col = 0
-                end_col = 0
-                for pos_col in orientations:
-                    end_col += rings_4d[pos_col].size
-                    MI[start_str: end_str] -= fft_dot(I[start_col:end_col].reshape(rings_4d[pos_col].shape),
-                                                      MI_vecs[pos_str][pos_col],
-                                                      FFT_M_circvecs[pos_str][pos_col],
-                                                      i_vecs[pos_str][pos_col],
-                                                      ifft_i_vecs[pos_str][pos_col])
-                    start_col += rings_4d[pos_col].size
-                start_str += rings_4d[pos_str].size
-            return MI/M_diag
-        
-        M = LinearOperator(dtype = np.complex128, shape=(Number, Number), matvec=LO)
+                    start_col = 0
+                    end_col = 0
+                    for pos_col in orientations:
+                        end_col += rings_4d[pos_col].size
+                        MI[start_str: end_str] -= fft_dot(I[start_col:end_col].reshape(rings_4d[pos_col].shape),
+                                                          MI_vecs[pos_str][pos_col],
+                                                          FFT_M_circvecs[pos_str][pos_col],
+                                                          i_vecs[pos_str][pos_col],
+                                                          ifft_i_vecs[pos_str][pos_col])
+                        start_col += rings_4d[pos_col].size
+                    start_str += rings_4d[pos_str].size
+                return MI/M_diag
+            M = LinearOperator(dtype = np.complex128, shape=(Number, Number), matvec=LO)
+            I, info = solve(M, Phi_0z/M_diag, x0 = I_old, rtol = tol, atol = 0)
+        elif find == 'Currents':
+            def LO(I):
+                MI = M_diag * I
+                # Make start and end indexes for each orientation
+                start_str = 0
+                end_str = 0
+                for pos_str in orientations:
+                    end_str += rings_4d[pos_str].size
 
+                    start_col = 0
+                    end_col = 0
+                    for pos_col in orientations:
+                        end_col += rings_4d[pos_col].size
+                        MI[start_str: end_str] -= fft_dot(I[start_col:end_col].reshape(rings_4d[pos_col].shape),
+                                                          MI_vecs[pos_str][pos_col],
+                                                          FFT_M_circvecs[pos_str][pos_col],
+                                                          i_vecs[pos_str][pos_col],
+                                                          ifft_i_vecs[pos_str][pos_col])
+                        start_col += rings_4d[pos_col].size
+                    start_str += rings_4d[pos_str].size
+                return MI
         
-        I, info = solve(M, Phi_0z/M_diag, x0 = I_old, rtol = tol, atol = 0)
+            M = LinearOperator(dtype = np.complex128, shape=(Number, Number), matvec=LO)
+            I, info = solve(M, Phi_0z, x0 = I_old, rtol = tol, atol = 0)
 
         if info != 0:
             print(f'f = {omega/2/np.pi/1e6} MHz did not converge')

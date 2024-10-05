@@ -6,15 +6,43 @@ from numpy import sqrt, cos, sin, pi
 from scipy import integrate
 from scipy import special
 from tqdm import tqdm
+from typing import List
+from Ring_Class import Ring
 
 K = special.ellipk  # Сomplete elliptic integral of the first kind
 E = special.ellipe  # Сomplete elliptic integral of the second kind
 
 mu_0 = 4 * pi * 10 ** -7
-
+'''
+Here we have a function that calculates mutual inductance between two rings
+The special way to optimize the calculation is represent strip as two
+thin rings with different radiuses, because of experimental data
+proves that current distribution concentrates near the edge of the strip
+'''
 # Computing for parallel-oriented rings
-def L_parallel(dx, dy, dz, r1, r2, width = 0):
+def L_parallel(dx:float, dy:float, dz:float, r1:float, r2:float, width:float = 0) -> float:
+    """Calculates mutual inductance between two parallel-oriented rings
 
+    Parameters
+    ----------
+    dx : float
+        distance between the centers of the rings along the x-axis
+    dy : float
+        distance between the centers of the rings along the y-axis
+    dz : float
+        distance between the centers of the rings along the z-axis
+    r1 : float
+        radius of the first ring
+    r2 : float
+        radius of the second ring
+    width : float, optional
+        width of the strip, by default 0
+
+    Returns
+    -------
+    float
+        mutual inductance between two parallel-oriented rings
+    """    
     # Define function to integrate over first defined parameter
 
     def dl(alpha, dx, dy, dz, r_1, r_2):
@@ -46,7 +74,29 @@ def L_parallel(dx, dy, dz, r1, r2, width = 0):
 
 # Computing for orthogonal-oriented rings
 
-def L_orthogonal(dx, dy ,dz, r1, r2, width):
+def L_orthogonal(dx:float, dy:float ,dz:float, r1:float, r2:float, width:float = 0) -> float:
+    """Calculates mutual inductance between two orthogonal-oriented rings
+
+    Parameters
+    ----------
+    dx : float
+        distance between the centers of the rings along the x-axis
+    dy : float
+        distance between the centers of the rings along the y-axis
+    dz : float
+        distance between the centers of the rings along the z-axis
+    r1 : float
+        radius of the first ring
+    r2 : float
+        radius of the second ring
+    width : float, optional
+        width of the strip, by default 0
+
+    Returns
+    -------
+    float
+        mutual inductance between two orthogonal-oriented rings
+    """    
     def dl(alpha, dx, dy, dz, r_1, r_2):
         dp = sqrt((dx - r_2 * sin(alpha)) ** 2 + dy ** 2)
         kappa_sq = 4 * r_1 * dp / ((dp + r_1) ** 2 + (dz - r_2 * cos(alpha)) ** 2)
@@ -75,8 +125,25 @@ def L_orthogonal(dx, dy ,dz, r1, r2, width):
 
 # Computing for any pair
 
-def Mnm(First_ring, Second_ring, Data = {}):
+def Mnm(First_ring:Ring, Second_ring:Ring, Data:dict = {}) -> float:
+    """Calculates mutual inductance between two rings with both parallel 
+    and orthogonal orientation. Data is a dictionary with all parameters
+    and values to avoid calculating integrals with same params each time.
 
+    Parameters
+    ----------
+    First_ring : Ring
+        first ring
+    Second_ring : Ring
+        second ring
+    Data : dict, optional
+        Dictionary with mutual inductance, by default {}
+
+    Returns
+    -------
+    float
+        mutual inductance between two rings
+    """    
     dx = Second_ring.x - First_ring.x
     dy = Second_ring.y - First_ring.y
     dz = Second_ring.z - First_ring.z
@@ -89,35 +156,11 @@ def Mnm(First_ring, Second_ring, Data = {}):
 
     id_1 = f"{dx} {dy} {dz} {r1} {r2} {First_ring.pos}{Second_ring.pos}"
     id_2 = f"{-dx} {-dy} {-dz} {r2} {r1} {Second_ring.pos}{First_ring.pos}"
-    # id_3 = f"{dx} {-dz} {dy} {r1} {r2} {First_ring.pos}{Second_ring.pos}"
-    # id_4 = f"{-dz} {dy} {dx} {r1} {r2} {First_ring.pos}{Second_ring.pos}"
-    # id_5 = f"{dx} {dy} {dz} {r1} {r2} {First_ring.pos}{Second_ring.pos}"
-    # id_6 = f"{dy} {dx} {dz} {r1} {r2} {First_ring.pos}{Second_ring.pos}"
-    # id_7 = f"{dx} {dz} {dy} {r1} {r2} {First_ring.pos}{Second_ring.pos}"
-    # id_8 = f"{-dz} {dx} {dy} {r1} {r2} {First_ring.pos}{Second_ring.pos}"
-    # id_9 = f"{dy} {dz} {dx} {r1} {r2} {First_ring.pos}{Second_ring.pos}"
-    # id_10 = f"{dz} {dy} {dx} {r1} {r2} {First_ring.pos}{Second_ring.pos}"
 
     if id_1 in Data:
         return Data[id_1]
     elif id_2 in Data:
         return Data[id_2]
-    # elif id_3 in Data:
-    #     return Data[id_3]
-    # elif id_4 in Data:
-    #     return Data[id_4]
-    # elif id_5 in Data:
-    #     return Data[id_5]
-    # elif id_6 in Data:
-    #     return Data[id_6]
-    # elif id_7 in Data:
-    #     return Data[id_7]
-    # elif id_8 in Data:
-    #     return Data[id_8]
-    # elif id_9 in Data:
-    #     return Data[id_9]
-    # elif id_10 in Data:
-    #     return Data[id_10]
     
     elif dx == 0 and dy == 0 and dz == 0:
         Data[id_1] = 0
@@ -151,13 +194,28 @@ def Mnm(First_ring, Second_ring, Data = {}):
                 l = L_orthogonal(dy, (dz), (dx), r1, r2, w)
             else:                                           # X-Y oriented pair
                 l = L_orthogonal((dz), dy, (dx), r1, r2, w)
-    # Data[id_1], Data[id_2], Data[id_3], Data[id_4], Data[id_5], Data[id_6], Data[id_7], Data[id_8], Data[id_9], Data[id_10] = [l*mu_0] * 10
+
     Data[id_1], Data[id_2] = [l * mu_0] * 2
     return l * mu_0
 
 # Calculating mutual inductance for each pair
 
-def Matrix(rings, Data = {}):
+def Matrix(rings:List[Ring], Data:dict = {}) -> np.ndarray:
+    """Calculates mutual inductance matrix for all rings
+    and represents it as a square matrix
+
+    Parameters
+    ----------
+    rings : List[Ring]
+        list of rings
+    Data : dict, optional
+        Dictionary with mutual inductance, by default {}
+
+    Returns
+    -------
+    np.ndarray
+        mutual inductance matrix with zeros on the diagonal
+    """    
     M = np.zeros((len(rings), len(rings)))
     for n in tqdm(range(len(rings))):
         for m in range(n, len(rings)):
@@ -166,31 +224,3 @@ def Matrix(rings, Data = {}):
             M[n][m] = Mnm(R1, R2, Data)
             M[m][n] = M[n][m]
     return M
-
-# Caclulating diagonal of Z matrix using gradient
-
-# def Z_grad(Params, grad = [0, 0, 0]):
-#     L, C, R, N = Params['L'], Params['C'], Params['R'], Params['N']
-#     Number = Params['Number']
-#     Cgrad = np.empty(Number)
-
-#     # Making start and end points for each orientation
-#     start = 0
-#     end = 0
-#     for pos in N:
-#         end += N[pos]['nz'] * N[pos]['ny'] * N[pos]['nx']
-        
-#         z, y, x = np.meshgrid(np.arange(N[pos]['nz']),
-#                               np.arange(N[pos]['ny']),
-#                               np.arange(N[pos]['nx']),
-#                               indexing = 'ij')
-#         gradx = x * grad[0] / N[pos]['nx']
-#         grady = y * grad[1] / N[pos]['ny']
-#         gradz = z * grad[2] / N[pos]['nz']
-
-#         Omega_0 = (1 + gradz + grady + gradx)/np.sqrt(L * C)
-#         Cgrad[start:end] = 1/L/(Omega_0.ravel() ** 2)
-
-#         start += N[pos]['nz'] * N[pos]['ny'] * N[pos]['nx']
-
-#     return lambda omega: R - 1j*omega*L + 1j / (omega * Cgrad)
