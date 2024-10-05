@@ -10,7 +10,7 @@ R = 0.002                               # Resistance
 omega_0 = 1 / np.sqrt(L * C)            # Resonance frequency
 Omega =  np.linspace(omega_0*0.9, omega_0*1.1, 1000) # Frequency range
 H_0z = 1                                # Amplitude of magnetic field
-mu_0 = 4 * np.pi * 10 ** -7                # Magnetic constant
+mu_0 = 4 * np.pi * 10 ** -7             # Magnetic constant
 
 Dz = 15 * 10 ** -3                      # Length of cell
 Dy = Dz

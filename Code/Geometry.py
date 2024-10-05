@@ -1,11 +1,32 @@
 from Ring_Class import Ring
+from typing import List, Dict, Tuple
 import numpy as np
 eps = np.finfo(float).eps
 
-'''
-Turn cell sizes into 3D sizes depending on the type of the cell (based on orientations)
-'''
-def to3D(Nz, Ny, Nx, orientations = 'z', Type = 'border'):
+def to3D(Nz:int, Ny:int, Nx:int, orientations:str = 'z', Type:str = 'border') -> Tuple[Dict[str, Dict[str, int]], str]:
+    """Turn cell sizes into 3D sizes depending on the type of the cell (based on orientations)
+
+    Parameters
+    ----------
+    Nz : int
+        Number of cells in z direction
+    Ny : int
+        Number of cells in y direction
+    Nx : int
+        Number of cells in x direction
+    orientations : str, optional
+        Direction of normal vector for ring, by default 'z'
+    Type : str, optional
+        Could be 'border' if rings on border flat needed in modeling
+        else 'open' and create "sharp" structure., by default 'border'
+
+    Returns
+    -------
+    tuple = (dict, str)
+        return dictionary with keys as orientations and
+          values as dictionaries with keys 'nz', 'ny', 'nx' 
+          and string with shape of the system
+    """    
     N = {}
     shape = f'{Nz}x{Ny}x{Nx}'
     if Type == 'border':
@@ -24,11 +45,22 @@ def to3D(Nz, Ny, Nx, orientations = 'z', Type = 'border'):
             }
     return N, shape
 
-'''
-Create a structure of the system: dictionary with keys as orientations and values as lists
-of rings in this orientation
-'''
-def Rectangle_packing(Params, Fill = False):
+def Rectangle_packing(Params:dict, Fill:bool = False) -> Dict[str, List[Ring]]:
+    """Returns dict for paralellepiped packing of rings in correct
+    order with respect to the orientation of the system (zyx)
+
+    Parameters
+    ----------
+    Params : dict
+        Dictionary with parameters of the system
+    Fill : bool, optional
+        Only to unify with other packing functions, by default False
+
+    Returns
+    -------
+    Dict[str, List[Ring]]
+        Dictionary with keys as orientations and values as lists of rings
+    """     
     # Choosing the type of returned list and stracture of the system
     Params['Packing'] = 'Rectangle'
     orientations = Params['Orientations']
@@ -75,7 +107,23 @@ def Rectangle_packing(Params, Fill = False):
     Params['Numbers'] = Numbers
     return Rings
 
-def Ellipse_packing(Params, Fill = False):
+def Ellipse_packing(Params:dict, Fill:bool = False) -> Dict[str, List[Ring]]:
+    """Returns dict for ellipsoidal packing of rings in correct, where
+    extra rings are removed from the system for straight solver and 
+    kept but with infinite resistance (zero conductivity) for iterative solver
+
+    Parameters
+    ----------
+    Params : dict
+        Dictionary with parameters of the system
+    Fill : bool, optional
+        Remove or fill with infinite-resitance rings, by default False
+
+    Returns
+    -------
+    Dict[str, List[Ring]]
+        Dictionary with keys as orientations and values as lists of rings
+    """    
     orientations = Params['Orientations']
     Rings = Rectangle_packing(Params, orientations)
     Params['Packing'] = 'Ellipse'
@@ -102,7 +150,25 @@ def Ellipse_packing(Params, Fill = False):
     Params['Numbers'] = {orientation: len(Rings[orientation]) for orientation in orientations}
     return Rings
 
-def Cylinder_packing(Params, Fill = False, axis = 'z'):
+def Cylinder_packing(Params:dict, Fill:bool = False, axis:str = 'z') -> Dict[str, List[Ring]]:
+    """Returns dict for cylindrical packing of rings in correct, where
+    extra rings are removed from the system for straight solver and
+    kept but with infinite resistance (zero conductivity) for iterative solver
+
+    Parameters
+    ----------
+    Params : dict
+        Dictionary with parameters of the system
+    Fill : bool, optional
+        Remove or fill with infinite-resitance rings , by default False
+    axis : str, optional
+        axis along which structure is symmetric, by default 'z'
+
+    Returns
+    -------
+    Dict[str, List[Ring]]
+        Dictionary with keys as orientations and values as lists of rings
+    """    
     Params['Packing'] = f'Cylinder-{axis}'
     orientations = Params['Orientations']
     Rings = Rectangle_packing(Params, orientations)
@@ -132,6 +198,7 @@ def Cylinder_packing(Params, Fill = False, axis = 'z'):
                     Rings[orientation].remove(Ring)
     return Rings
 
+# Dictionary with all possible packings
 Packings = {
     'Rectangle': Rectangle_packing,
     'Ellipse': Ellipse_packing,
