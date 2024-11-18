@@ -10,11 +10,23 @@ from Straight_Method import solvesystem as straight_solvesystem
 from Fast_Method import solvesystem as fast_solvesystem
 
 # Allowed types of solvers
+# Allowed types of solvers
 Solvers = {
     'Straight': straight_solvesystem,
     'Fast': fast_solvesystem
 }
 
+def save(filename:str, Params:dict)->None:
+    """Function to save calculated data in npz format
+    in DATA or DATALowTol folder (configurable by filename)
+
+    Parameters
+    ----------
+    filename : str
+        full path to the folder where data will be saved
+    Params : dict
+        dictionary with modeling parameters
+    """    
 def save(filename:str, Params:dict)->None:
     """Function to save calculated data in npz format
     in DATA or DATALowTol folder (configurable by filename)
@@ -90,11 +102,13 @@ def open_model(filename:str, Params:dict, Currents:bool = False, Polarization:bo
         data['Params'] = json.load(f)
     
     if Currents == True:
+    if Currents == True:
         with np.load(f'./{filename}/{name}/Currents.npz') as f:
             data['Currents'] = f['Currents']
             data['Omega'] = f['Omega']
             data['Polarization'] = f['Polarization']
             data['Phi_0z'] = f['Phi_0z']
+    elif Polarization == True:
     elif Polarization == True:
         with np.load(f'./{filename}/{name}/Polarization.npz') as f:
             data['Polarization'] = f['Polarization']
@@ -102,6 +116,7 @@ def open_model(filename:str, Params:dict, Currents:bool = False, Polarization:bo
             data['Phi_0z'] = f['Phi_0z']
     return data
 
+# Modeling for exact strucutres.
 # Modeling for exact strucutres.
 if __name__ == '__main__':
 
