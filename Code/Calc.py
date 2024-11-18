@@ -1,6 +1,6 @@
 # Data functions
 import os
-import sys 
+import shutil
 import json 
 import numpy as np
 
@@ -48,6 +48,7 @@ def save(filename:str, Params:dict)->None:
     
     # Save full calculated data in npz format
     if np.array(Data['Currents']).nbytes < 1024**3 * 5:  # 5 GB limit
+        print('Saving size:', np.array(Data['Currents']).nbytes/1024**2, 'MB')
         calc_data = {
             'Currents': Data['Currents'],
             'Omega': Data['Omega'],
@@ -110,6 +111,6 @@ if __name__ == '__main__':
     Params['Solver_type'] = 'Fast'
     Params['Solver_name'] = 'lgmres'
     
-    for n in [5]:
-        Params['N'], Params['shape'] = to3D(12, 1, 1, 'zyx')
+    for n in [7]:
+        Params['N'], Params['shape'] = to3D(n, n, n, 'zyx')
         save('DATALowTol', Params)
