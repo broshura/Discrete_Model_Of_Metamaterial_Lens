@@ -4,9 +4,15 @@ import scipy
 import numpy as np
 import scipy.linalg
 from tqdm import tqdm 
-from Impedance_matrix import Mnm
+from Impedance_matrix import Mnm as Mnm_Mie_False
+from matrixtest import Mnm as Mnm_Mie_True
+#from Impedance_matrix import Mnm
 from scipy.sparse.linalg import lgmres, gmres, LinearOperator
 
+Mnms = {
+    'Mie_True': Mnm_Mie_True,
+    'Mie_False': Mnm_Mie_False
+}
 
 os.environ["OPENBLAS_NUM_THREADS"] = "16"
 os.environ["MKL_NUM_THREADS"] = "16"
@@ -16,7 +22,7 @@ solvers = {
     'lgmres': lgmres
 }
 # Function for creating circulant vectors
-def Circvec(rings_3d_str:list, rings_3d_col:list, data:dict) -> np.ndarray:
+def Circvec(Params:dict, rings_3d_str:list, rings_3d_col:list, omega, data:dict) -> np.ndarray:
     """Function for creating circulant vectors that fully
     describe matrix M and allow to calculate M * I
     using FFT and N * log(N) operations. After circulant multiplication,
@@ -35,7 +41,10 @@ def Circvec(rings_3d_str:list, rings_3d_col:list, data:dict) -> np.ndarray:
     -------
     np.ndarray
         3d array with three times circulant vectors
-    """    
+    """
+
+    Mnm = Mnms[Params['Scattering']]
+    
     Nz_str, Ny_str, Nx_str = rings_3d_str.shape
     Nz_col, Ny_col, Nx_col = rings_3d_col.shape
     nz, ny, nx = Nz_str + Nz_col - 1, Ny_str + Ny_col - 1, Nx_str + Nx_col - 1
@@ -52,7 +61,7 @@ def Circvec(rings_3d_str:list, rings_3d_col:list, data:dict) -> np.ndarray:
                 z_str_id = (nz - z) * (z >= Nz_col)
                 z_col_id = z * (z < Nz_col)
                 
-                Z_circvecs[z][y][x] = Mnm(rings_3d_str[z_str_id][y_str_id][x_str_id], rings_3d_col[z_col_id][y_col_id][x_col_id], data)
+                Z_circvecs[z][y][x] = Mnm(omega, rings_3d_str[z_str_id][y_str_id][x_str_id], rings_3d_col[z_col_id][y_col_id][x_col_id], data)
     return Z_circvecs
 
 def fft_dot(I:np.ndarray, ZI:np.ndarray, FFT_Z_circvecs:np.ndarray, i_vecs:np.ndarray, ifft_i_vecs:np.ndarray) -> np.ndarray:
@@ -119,90 +128,75 @@ def ifft_dot(I:np.ndarray, ZI:np.ndarray, FFT_Z_circvecs:np.ndarray, i_vecs:np.n
 
     return ZI[:nz - Nz + 1, :ny - Ny + 1, :nx - Nx + 1].ravel()
 
-def solvesystem(Params:dict, rings_4d:dict, phi_0z_4d:dict, Inductance:dict = {}, find:str = 'Voltage', tol:float = 1e-5)->dict:
-    """Function for solving system of equations using Toeplitz structure for 
+def solvesystem(Omega, Params: dict, rings_4d: dict, phi_0z_4d: dict, Inductance: dict = {}, find: str = 'Voltage', tol: float = 1e-5) -> dict:
+    """
+    Function for solving system of equations using Toeplitz structure for 
     impedance matrix M and iterative solver for linear system of equations.
-    Highly recommended to use Voltage method for solving system of equations and 
-    you must use it for non-rectangle structures because of infinitly conditioned
-    matrix for Currents way.
+    """
 
-    Parameters
-    ----------
-    Params : dict
-        Dictionary with modeling parameters
-    rings_4d : dict
-        Dictionary with rings for each orientation
-    phi_0z_4d : dict
-        Dictionary with external fluxes for each orientation
-    Inductance : dict, optional
-        Dictionary with mutual inductance, by default {}
-    find : str, optional
-        Which matrix equation to solve, by default 'Currents'
-    tol : float, optional
-        tolerance for residials in iterative methods, by default 1e-5
-
-    Returns
-    -------
-    dict
-        Dictionary with results of solving system of equations
-    """    
     # Unpacking parameters
     Params['Solver_type'] = 'Fast'
     solve = solvers[Params['Solver_name']]
-    Omegas = Params['Omega']    
-
+    Omegas = Params['Omega']
     Omega = np.linspace(Omegas[0], Omegas[1], Omegas[2])
-    
+
+    # Проверяем ключи в rings_4d
+    print("Проверка ориентаций в rings_4d:", rings_4d.keys())
+    if not all(orientation in rings_4d for orientation in ['z', 'y', 'x']):
+        raise KeyError("Отсутствуют необходимые ориентации 'z', 'y', 'x' в rings_4d")
+
     rings = sum([rings_4d[orientation] for orientation in rings_4d], [])
     phi_0z = np.array(sum([phi_0z_4d[orientation] for orientation in phi_0z_4d], []))
 
     orientations = rings_4d.keys()
+    print("Ориентации:", orientations)  # Проверяем, какие ориентации обрабатываем
     for orientation in orientations:
+        if orientation not in rings_4d:
+            raise KeyError(f"Ориентация {orientation} отсутствует в rings_4d")
+        
         Nz, Ny, Nx = Params['N'][orientation]['nz'], Params['N'][orientation]['ny'], Params['N'][orientation]['nx']
         rings_4d[orientation] = np.array(rings_4d[orientation]).reshape(Nz, Ny, Nx)
         phi_0z_4d[orientation] = np.array(phi_0z_4d[orientation])
+    
     Number = np.sum([value.size for value in rings_4d.values()])
 
     FFT_M_circvecs = {}
     i_vecs = {}
     ifft_i_vecs = {}
     MI_vecs = {}
-
-    # Preparing empty arrays for pyfftw
     print('Cirvecs forming')
     for pos_str in tqdm(orientations):
+        if pos_str not in rings_4d:
+            raise KeyError(f"Ориентация {pos_str} отсутствует в rings_4d в процессе обработки")
         rings_str = rings_4d[pos_str]
         FFT_M_circvecs[pos_str] = {}
         i_vecs[pos_str] = {}
         ifft_i_vecs[pos_str] = {}
         MI_vecs[pos_str] = {}
         for pos_col in orientations:
+            if pos_col not in rings_4d:
+                raise KeyError(f"Ориентация {pos_col} отсутствует в rings_4d в процессе обработки")
             rings_col = rings_4d[pos_col]
-            M_circvecs = Circvec(rings_str, rings_col, Inductance)
-
+            M_circvecs = Circvec(Params, rings_str, rings_col, Omega[0], Inductance)
             N_circ = np.array(rings_str.shape) + np.array(rings_col.shape) - 1
             i_vecs[pos_str][pos_col] = np.zeros(N_circ, dtype=complex)
             MI_vecs[pos_str][pos_col] = np.zeros(N_circ, dtype=complex)
-
-            FFT_M_circvecs[pos_str][pos_col] = scipy.fft.fftn(M_circvecs, axes = (0, 1, 2))
+            FFT_M_circvecs[pos_str][pos_col] = scipy.fft.fftn(M_circvecs, axes=(0, 1, 2))
             ifft_i_vecs[pos_str][pos_col] = np.zeros(N_circ, dtype=complex)
 
-    print('Circvecs: Done')
+    print('Cirvecs: Done')
 
-    # Calculating diagonal of M matrix
     L, C, R = [], [], []
     for ring in rings:
         L.append(ring.L)
         C.append(ring.C)
         R.append(ring.R)
     L, C, R = np.array(L), np.array(C), np.array(R)
-    
-    M_0 = lambda Omega: (R - 1j * Omega * L + 1j/(Omega * C))/1j/Omega
+    M_0 = lambda Omega: (R - 1j * Omega * L + 1j / (Omega * C)) / 1j / Omega
 
-    # Caclulating current in each ring
     print('FFT solving (voltage)')
     CURRENTS = []
-    I_old = np.ones(Number, dtype = np.complex128)/M_0(Omega[0])
+    I_old = np.ones(Number, dtype=np.complex128) / M_0(Omega[0])
     Phi_0z = phi_0z
     P = []
 
@@ -211,7 +205,6 @@ def solvesystem(Params:dict, rings_4d:dict, phi_0z_4d:dict, Inductance:dict = {}
         if find == 'Voltage':
             def LO(I):
                 MI = M_diag * I
-                # Make start and end indexes for each orientation
                 start_str = 0
                 end_str = 0
                 for pos_str in orientations:
@@ -228,13 +221,13 @@ def solvesystem(Params:dict, rings_4d:dict, phi_0z_4d:dict, Inductance:dict = {}
                                                           ifft_i_vecs[pos_str][pos_col])
                         start_col += rings_4d[pos_col].size
                     start_str += rings_4d[pos_str].size
-                return MI/M_diag
-            M = LinearOperator(dtype = np.complex128, shape=(Number, Number), matvec=LO)
-            I, info = solve(M, Phi_0z/M_diag, x0 = I_old, rtol = tol, atol = 0)
+                return MI / M_diag
+
+            M = LinearOperator(dtype=np.complex128, shape=(Number, Number), matvec=LO)
+            I, info = solve(M, Phi_0z / M_diag, x0=I_old, rtol=tol, atol=0)
         elif find == 'Currents':
             def LO(I):
                 MI = M_diag * I
-                # Make start and end indexes for each orientation
                 start_str = 0
                 end_str = 0
                 for pos_str in orientations:
@@ -252,33 +245,33 @@ def solvesystem(Params:dict, rings_4d:dict, phi_0z_4d:dict, Inductance:dict = {}
                         start_col += rings_4d[pos_col].size
                     start_str += rings_4d[pos_str].size
                 return MI
-        
-            M = LinearOperator(dtype = np.complex128, shape=(Number, Number), matvec=LO)
-            I, info = solve(M, Phi_0z, x0 = I_old, rtol = tol, atol = 0)
+
+            M = LinearOperator(dtype=np.complex128, shape=(Number, Number), matvec=LO)
+            I, info = solve(M, Phi_0z, x0=I_old, rtol=tol, atol=0)
 
         if info != 0:
-            print(f'f = {omega/2/np.pi/1e6} MHz did not converge')
-        
+            print(f"f = {omega / (2 * np.pi * 1e6)} MHz did not converge.")
+
         CURRENTS.append(I)
         start = 0
         p = []
         for pos in orientations:
             end = start + rings_4d[pos].size
-            p.append(np.sum(I[start:end])/(end-start))
+            p.append(np.sum(I[start:end]) / (end - start))
             start = end
         P.append(p)
 
         I_old = I
-    
+
     P = np.array(P) * Params['P_0z']
 
-    print(f'FFT solving: Done, shape = {[(pos, rings_4d[pos].shape) for pos in orientations]}')
-    Data = {}
-
-    Data['Params'] = Params
-    Data['Omega'] = Omega
-    Data['Currents'] = CURRENTS
-    Data['Polarization'] = P
-    Data['Phi_0z'] = list(phi_0z)
+    print(f"FFT solving: Done, shape = {[(pos, rings_4d[pos].shape) for pos in orientations]}")
+    Data = {
+        'Params': Params,
+        'Omega': Omega,
+        'Currents': CURRENTS,
+        'Polarization': P,
+        'Phi_0z': list(phi_0z),
+    }
 
     return Data

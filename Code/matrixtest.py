@@ -20,7 +20,7 @@ thin rings with different radiuses, because of experimental data
 proves that current distribution concentrates near the edge of the strip
 '''
 # Computing for parallel-oriented rings
-def L_parallel(dx:float, dy:float, dz:float, r1:float, r2:float, width:float = 0) -> float:
+def L_parallel(omega, dx:float, dy:float, dz:float, r1:float, r2:float, width:float = 0) -> float:
     """Calculates mutual inductance between two parallel-oriented rings
 
     Parameters
@@ -45,6 +45,9 @@ def L_parallel(dx:float, dy:float, dz:float, r1:float, r2:float, width:float = 0
     """    
     # Define function to integrate over first defined parameter
 
+    c=3e8
+    k=omega/c
+
     def dl(alpha, dx, dy, dz, r_1, r_2):
         db = sqrt(dx ** 2 + dy ** 2)
         dp = sqrt(r_2 ** 2 + db ** 2 + 2 * r_2 * db * cos(alpha))
@@ -54,6 +57,9 @@ def L_parallel(dx:float, dy:float, dz:float, r1:float, r2:float, width:float = 0
         return A * r_2 * (r_2 + db * cos(alpha))/dp
 
     #Considering stripe width
+
+    r_mean = sqrt(dx**2+dy**2+dz**2)
+    exp_factor = cos(-k*r_mean)+1j*sin(-k*r_mean)
 
     if r1 == r2 and width:
         R = r1 + width / 2
@@ -67,14 +73,14 @@ def L_parallel(dx:float, dy:float, dz:float, r1:float, r2:float, width:float = 0
         id_r2 = r2 == min(r1, r2)
         L_1, err_1 = integrate.quad(dl, 0, 2 * pi, args=(dx, dy, dz, r1 + id_r1 * width/2, r2 + id_r2*width/2))
         L_2, err_2 = integrate.quad(dl, 0, 2 * pi, args=(dx, dy, dz, r1 - id_r1 * width/2, r2 - id_r2*width/2))
-        return (L_1 + L_2)/2
+        L = (L_1 + L_2)/2
     else:
         L, err = integrate.quad(dl, 0, 2 * pi, args= (dx, dy, dz, r1, r2))
-    return L
+    return L * exp_factor
 
 # Computing for orthogonal-oriented rings
 
-def L_orthogonal(dx:float, dy:float ,dz:float, r1:float, r2:float, width:float = 0) -> float:
+def L_orthogonal(omega, dx:float, dy:float ,dz:float, r1:float, r2:float, width:float = 0) -> float:
     """Calculates mutual inductance between two orthogonal-oriented rings
 
     Parameters
@@ -97,6 +103,9 @@ def L_orthogonal(dx:float, dy:float ,dz:float, r1:float, r2:float, width:float =
     float
         mutual inductance between two orthogonal-oriented rings
     """    
+    c=3e8
+    k=omega/c
+
     def dl(alpha, dx, dy, dz, r_1, r_2):
         dp = sqrt((dx - r_2 * sin(alpha)) ** 2 + dy ** 2)
         kappa_sq = 4 * r_1 * dp / ((dp + r_1) ** 2 + (dz - r_2 * cos(alpha)) ** 2)
@@ -105,6 +114,9 @@ def L_orthogonal(dx:float, dy:float ,dz:float, r1:float, r2:float, width:float =
         return A * r_2 * dy * cos(alpha) / (dp + 10 ** -7)
 
     # Considering stripe width
+
+    r_mean = sqrt(dx**2+dy**2+dz**2)
+    exp_factor = cos(-k*r_mean)+1j*sin(-k*r_mean)
 
     if r1 == r2 and width:
         R = r1 + width / 2
@@ -118,10 +130,10 @@ def L_orthogonal(dx:float, dy:float ,dz:float, r1:float, r2:float, width:float =
         id_r2 = r2 == min(r1, r2)
         L_1, err_1 = integrate.quad(dl, 0, 2 * pi, args=(dx, dy, dz, r1 + id_r1 * width/2, r2 + id_r2*width/2))
         L_2, err_2 = integrate.quad(dl, 0, 2 * pi, args=(dx, dy, dz, r1 - id_r1 * width/2, r2 - id_r2*width/2))
-        return (L_1 + L_2)/2
+        L = (L_1 + L_2)/2
     else:
         L, err = integrate.quad(dl, 0, 2 * pi, args=(dx, dy, dz, r1, r2))
-    return L
+    return L * exp_factor
 
 # Computing for any pair
 
@@ -170,37 +182,37 @@ def Mnm(omega, First_ring:Ring, Second_ring:Ring, Data:dict = {}) -> float:
 
     if First_ring.pos == Second_ring.pos:
         if First_ring.pos == "z":                           # Z-oriented rings
-            l = L_parallel(dx, dy, dz, r1, r2, w)
+            l = L_parallel(omega, dx, dy, dz, r1, r2, w)
         elif First_ring.pos == "y":                         # Y-oriented rings
-            l = L_parallel(dx, -dz, dy, r1, r2, w)
+            l = L_parallel(omega, dx, -dz, dy, r1, r2, w)
         else:                                               # X-oriented rings
-            l = L_parallel(-dz, dy, dx, r1, r2, w)
+            l = L_parallel(omega, -dz, dy, dx, r1, r2, w)
 
     # Consider all types of orthogonal orientation
 
     else:
         if First_ring.pos == "z":
             if Second_ring.pos == "y":                      # Z-Y oriented pair
-                l = L_orthogonal(dx, dy, dz, r1, r2, w)
+                l = L_orthogonal(omega, dx, dy, dz, r1, r2, w)
             else:                                           # Z-X oriented pair
-                l = L_orthogonal((dy), (dx), dz, r1, r2, w)
+                l = L_orthogonal(omega, (dy), (dx), dz, r1, r2, w)
         elif First_ring.pos == "y":
             if Second_ring.pos == "z":                      # Y-Z oriented pair
-                l = L_orthogonal(dx, (dz), (dy), r1, r2, w)
+                l = L_orthogonal(omega, dx, (dz), (dy), r1, r2, w)
             else:                                           # Y-X oriented pair
-                l = L_orthogonal(-dz, (dx), (dy), r1, r2,  w)
+                l = L_orthogonal(omega, -dz, (dx), (dy), r1, r2,  w)
         elif First_ring.pos == "x":
             if Second_ring.pos == "z":                      # X-Z oriented pair
-                l = L_orthogonal(dy, (dz), (dx), r1, r2, w)
+                l = L_orthogonal(omega, dy, (dz), (dx), r1, r2, w)
             else:                                           # X-Y oriented pair
-                l = L_orthogonal((dz), dy, (dx), r1, r2, w)
+                l = L_orthogonal(omega, (dz), dy, (dx), r1, r2, w)
 
     Data[id_1], Data[id_2] = [l * mu_0] * 2
     return l * mu_0
 
 # Calculating mutual inductance for each pair
 
-def Matrix(rings:List[Ring], Data:dict = {}) -> np.ndarray:
+def Matrix(omega, rings:List[Ring], Data:dict = {}) -> np.ndarray:
     """Calculates mutual inductance matrix for all rings
     and represents it as a square matrix
 
@@ -221,6 +233,6 @@ def Matrix(rings:List[Ring], Data:dict = {}) -> np.ndarray:
         for m in range(n, len(rings)):
             R1 = rings[n]
             R2 = rings[m]
-            M[n][m] = Mnm(R1, R2, Data)
+            M[n][m] = Mnm(omega, R1, R2, Data)
             M[m][n] = M[n][m]
     return M

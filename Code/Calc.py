@@ -30,6 +30,10 @@ def save(filename:str, Params:dict)->None:
     packing = Packings[Params['Packing']]
     
     rings_4d = packing(Params, Fill=True)
+
+    Omega_range = Params['Omega']  # [omega_min, omega_max, num_points]
+    Omega = np.linspace(Omega_range[0], Omega_range[1], Omega_range[2])  # Массив частот
+
     phi_0z_4d = {
         orientation: list(np.ones(Params['Numbers'][orientation]
                              ) * (orientation == 'z'
@@ -37,9 +41,9 @@ def save(filename:str, Params:dict)->None:
                                   ) for orientation in Params['Orientations']
         }
     print('Количество колец:', Params['Numbers'])
-    name = f'{Params["Packing"]}_NoGrad_{Params["shape"]}_{Params["Orientations"]}_{Params["Solver_type"]}'
+    name = f'{Params["Packing"]}_NoGrad_{Params["shape"]}_{Params["Orientations"]}_{Params["Solver_type"]}_{Params['Scattering']}'
     print(name)
-    Data = solver(Params, rings_4d, phi_0z_4d, tol = 1e-3)
+    Data = solver(Omega, Params, rings_4d, phi_0z_4d, tol = 1e-3)
     os.makedirs(f'./{filename}/{name}', exist_ok=True)
 
     # Saving modeling parameters in readable format
@@ -64,7 +68,7 @@ def save(filename:str, Params:dict)->None:
     }
     np.savez(f'./{filename}/{name}/Polarization.npz', **pol_data)
 
-def open_model(filename:str, Params:dict, Currents:bool = False, Polarization:bool = True)->dict:
+def open_model(filename:str, Params:dict, Currents:bool = True, Polarization:bool = True)->dict:
     """Function to open saved data in npz format
 
     Parameters
@@ -83,7 +87,7 @@ def open_model(filename:str, Params:dict, Currents:bool = False, Polarization:bo
     dict
         dictionary with modeling parameters and calculated data
     """    
-    name = f'{Params["Packing"]}_NoGrad_{Params["shape"]}_{Params["Orientations"]}_{Params["Solver_type"]}'
+    name = f'{Params["Packing"]}_NoGrad_{Params["shape"]}_{Params["Orientations"]}_{Params["Solver_type"]}_{Params['Scattering']}'
     data = {}
     with open(f'./{filename}/{name}/Params.json', 'r') as f:
         data['Params'] = json.load(f)
@@ -111,5 +115,5 @@ if __name__ == '__main__':
     Params['Solver_name'] = 'lgmres'
     
     for n in [5]:
-        Params['N'], Params['shape'] = to3D(12, 1, 1, 'zyx')
+        Params['N'], Params['shape'] = to3D(3, 3, 3, 'zyx')
         save('DATALowTol', Params)

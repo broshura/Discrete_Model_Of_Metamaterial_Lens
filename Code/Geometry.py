@@ -3,7 +3,7 @@ from typing import List, Dict, Tuple
 import numpy as np
 eps = np.finfo(float).eps
 
-def to3D(Nz:int, Ny:int, Nx:int, orientations:str = 'z', Type:str = 'border') -> Tuple[Dict[str, Dict[str, int]], str]:
+def to3D(Nz:int, Ny:int, Nx:int, orientations:str = 'zyx', Type:str = 'border') -> Tuple[Dict[str, Dict[str, int]], str]:
     """Turn cell sizes into 3D sizes depending on the type of the cell (based on orientations)
 
     Parameters

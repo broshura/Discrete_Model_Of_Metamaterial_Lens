@@ -5,7 +5,7 @@ import numpy as np
 # Parameters for system used in modeling
 
 L = 13.459 * 10 ** -9                   # Self-inductance
-C = 470 * 10 ** -10                     # Capacitance
+C = 470 * 10 ** -11                     # Capacitance
 R = 0.002                               # Resistance
 omega_0 = 1 / np.sqrt(L * C)            # Resonance frequency
 Omega =  np.linspace(omega_0*0.9, omega_0*1.1, 1000) # Frequency range
@@ -30,8 +30,8 @@ Params = {
     'W': W,                     # Width of strip
     'Radius': Radius,           # Mean radius of rings
     'Dz': Dz,                   # Length of cell
-    'Dy': Dz,
-    'Dx': Dz,
+    'Dy': Dy,
+    'Dx': Dx,
     'shift_x': 0,               # Shifting of next layer along x axes
     'shift_y': 0,               # Shifting of next layer along y axes
     'shift_z': 0,               # Shifting of next layer along z axes
@@ -45,17 +45,18 @@ Params = {
     'Packing': 'Rectangle',
     'P_0z': np.pi * Radius ** 2 /H_0z/Dz/Dy/Dx,
     'N' : {
-        'z':{'nz': 11, 'ny': 10, 'nx': 10},
-        'y':{'nz': 10, 'ny': 11, 'nx': 10},
-        'x':{'nz': 10, 'ny': 10, 'nx': 11}
+        'z':{'nz': 3, 'ny': 3, 'nx': 3},
+        'y':{'nz': 3, 'ny': 3, 'nx': 3},
+        'x':{'nz': 3, 'ny': 3, 'nx': 3}
     },
-    'shape': '10x10x10',
+    'shape': '3x3x3',
     'Numbers': {
         'z': 1100,
         'y': 1100,
         'x': 1100
     },
     'Threads': 1,
-    'Solver_name': 'lgmres'
+    'Solver_name': 'lgmres',
+    'Scattering': 'Mie_False'
 }
 
