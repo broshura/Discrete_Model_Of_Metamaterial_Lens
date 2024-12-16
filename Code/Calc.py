@@ -4,7 +4,7 @@ import sys
 import json 
 import numpy as np
 
-from Parameters import mu_0, Radius
+from Parameters import *
 from Geometry import *
 from Straight_Method import solvesystem as straight_solvesystem
 from Fast_Method import solvesystem as fast_solvesystem
@@ -14,6 +14,17 @@ Solvers = {
     'Straight': straight_solvesystem,
     'Fast': fast_solvesystem
 }
+
+def z_coord(rings_4d, orientation):
+    """Extract only z-coordinates of rings for given orientation"""
+    z_coords = []
+    rings = rings_4d[orientation]
+    # Iterate through 3D array of rings
+    for i in range(rings.shape[0]):
+        for j in range(rings.shape[1]):
+            for k in range(rings.shape[2]):
+                z_coords.append(rings[i,j,k].z)
+    return np.array(z_coords)
 
 def save(filename:str, Params:dict)->None:
     """Function to save calculated data in npz format
@@ -32,18 +43,31 @@ def save(filename:str, Params:dict)->None:
     rings_4d = packing(Params, Fill=True)
 
     Omega_range = Params['Omega']  # [omega_min, omega_max, num_points]
-    Omega = np.linspace(Omega_range[0], Omega_range[1], Omega_range[2])  # Массив частот
+    Omega = np.linspace(Omega_range[0], Omega_range[1], Omega_range[2])
+    
 
-    phi_0z_4d = {
-        orientation: list(np.ones(Params['Numbers'][orientation]
-                             ) * (orientation == 'z'
-                                  ) * mu_0*np.pi * Radius ** 2
-                                  ) for orientation in Params['Orientations']
+    if Params['Scattering'] == 'Mie_False':
+
+        phi_0z_calc = lambda omega:{
+            orientation: list(np.ones(Params['Numbers'][orientation]
+                                ) * (orientation == 'z'
+                                    ) * mu_0 * np.pi * Radius ** 2 * H_0z
+                                    ) for orientation in Params['Orientations']
+            }
+        
+    elif Params['Scattering'] == 'Mie_True':
+
+        phi_0z_calc = lambda omega: {
+            orientation: list(np.ones(Params['Numbers'][orientation]) * 
+                            (orientation == 'z') * 
+                            mu_0 * np.pi * Radius**2 * H_0z * 
+                            np.exp(-1j * omega/3e8 * z_coord(rings_4d, orientation)))
+            for orientation in Params['Orientations']
         }
-    print('Количество колец:', Params['Numbers'])
+    
     name = f'{Params["Packing"]}_NoGrad_{Params["shape"]}_{Params["Orientations"]}_{Params["Solver_type"]}_{Params['Scattering']}'
     print(name)
-    Data = solver(Omega, Params, rings_4d, phi_0z_4d, tol = 1e-3)
+    Data = solver(Omega, Params, rings_4d, phi_0z_calc, tol = 1e-3)
     os.makedirs(f'./{filename}/{name}', exist_ok=True)
 
     # Saving modeling parameters in readable format
