@@ -176,7 +176,8 @@ def Ellipse_packing(Params:dict, Fill:bool = False) -> Dict[str, List[Ring]]:
         R_z += dz 
         R_y += dy
         R_x += dx
-
+    
+    NewNumbers = {orientation: len(Rings[orientation]) for orientation in orientations}
     for orientation in orientations:
         for Ring in Rings[orientation][:]:
             # Finding middle of the cell position
@@ -192,7 +193,8 @@ def Ellipse_packing(Params:dict, Fill:bool = False) -> Dict[str, List[Ring]]:
                     Ring.L = 1e200
                 else:
                     Rings[orientation].remove(Ring)
-    Params['Numbers'] = {orientation: len(Rings[orientation]) for orientation in orientations}
+                NewNumbers[orientation] -= 1
+    Params['Numbers'] = NewNumbers
     return Rings
 
 def Cylinder_packing(Params:dict, Fill:bool = False, axis:str = 'z') -> Dict[str, List[Ring]]:
@@ -235,6 +237,7 @@ def Cylinder_packing(Params:dict, Fill:bool = False, axis:str = 'z') -> Dict[str
         R_y += dy
         R_x += dx
 
+    NewNumbers = {orientation: len(Rings[orientation]) for orientation in orientations}
     for orientation in orientations:
         for Ring in Rings[orientation][:]:
             # Finding middle of the cell position
@@ -254,7 +257,8 @@ def Cylinder_packing(Params:dict, Fill:bool = False, axis:str = 'z') -> Dict[str
                     Ring.L = 0
                 else:
                     Rings[orientation].remove(Ring)
-    Params['Numbers'] = {orientation: len(Rings[orientation]) for orientation in orientations}
+                NewNumbers[orientation] -= 1
+    Params['Numbers'] = NewNumbers
     return Rings
 
 # Dictionary with all possible packings
