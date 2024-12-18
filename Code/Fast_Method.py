@@ -264,7 +264,7 @@ def solvesystem(Params:dict, rings_4d:dict, phi_0z_4d:dict, Inductance:dict = {}
         p = []
         for pos in orientations:
             end = start + rings_4d[pos].size
-            p.append(np.sum(I[start:end])/(end-start))
+            p.append(np.sum(I[start:end])/Params['Numbers'][pos])
             start = end
         P.append(p)
 
