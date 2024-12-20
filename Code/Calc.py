@@ -65,7 +65,7 @@ def save(filename:str, Params:dict)->None:
             for orientation in Params['Orientations']
         }
     
-    name = f'{Params["Packing"]}_NoGrad_{Params["shape"]}_{Params["Orientations"]}_{Params["Solver_type"]}_{Params['Scattering']}'
+    name = f'{Params["Packing"]}_NoGrad_{Params["shape"]}_{Params["Orientations"]}_{Params["Solver_type"]}_{Params["Scattering"]}'
     print(name)
     Data = solver(Omega, Params, rings_4d, phi_0z_calc, tol = 1e-3)
     os.makedirs(f'./{filename}/{name}', exist_ok=True)
@@ -111,7 +111,7 @@ def open_model(filename:str, Params:dict, Currents:bool = True, Polarization:boo
     dict
         dictionary with modeling parameters and calculated data
     """    
-    name = f'{Params["Packing"]}_NoGrad_{Params["shape"]}_{Params["Orientations"]}_{Params["Solver_type"]}_{Params['Scattering']}'
+    name = f'{Params["Packing"]}_NoGrad_{Params["shape"]}_{Params["Orientations"]}_{Params["Solver_type"]}_{Params["Scattering"]}'
     data = {}
     with open(f'./{filename}/{name}/Params.json', 'r') as f:
         data['Params'] = json.load(f)
