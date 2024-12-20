@@ -47,23 +47,32 @@ def save(filename:str, Params:dict)->None:
     
 
     if Params['Scattering'] == 'Mie_False':
-
-        phi_0z_calc = lambda omega:{
-            orientation: list(np.ones(Params['Numbers'][orientation]
-                                ) * (orientation == 'z'
-                                    ) * mu_0 * np.pi * Radius ** 2 * H_0z
-                                    ) for orientation in Params['Orientations']
-            }
+        def phi_0z_calc(omega):
+            result = {}
+            for orientation in Params['Orientations']:
+                # Get actual size from rings_4d array
+                size = rings_4d[orientation].size
+                if orientation == 'z':
+                    result[orientation] = list(np.ones(size) * mu_0 * np.pi * Radius**2 * H_0z)
+                else:
+                    result[orientation] = list(np.zeros(size))
+            return result
         
     elif Params['Scattering'] == 'Mie_True':
-
-        phi_0z_calc = lambda omega: {
-            orientation: list(np.ones(Params['Numbers'][orientation]) * 
-                            (orientation == 'z') * 
-                            mu_0 * np.pi * Radius**2 * H_0z * 
-                            np.exp(-1j * omega/3e8 * z_coord(rings_4d, orientation)))
-            for orientation in Params['Orientations']
-        }
+        def phi_0z_calc(omega):
+            result = {}
+            for orientation in Params['Orientations']:
+                # Get actual size from rings_4d array
+                size = rings_4d[orientation].size
+                if orientation == 'z':
+                    z_coords = z_coord(rings_4d, orientation)
+                    # Ensure z_coords matches the actual array size
+                    phase = np.exp(-1j * omega/3e8 * z_coords)
+                    flux = mu_0 * np.pi * Radius**2 * H_0z * phase
+                    result[orientation] = list(flux)
+                else:
+                    result[orientation] = list(np.zeros(size))
+            return result
     
     name = f'{Params["Packing"]}_NoGrad_{Params["shape"]}_{Params["Orientations"]}_{Params["Solver_type"]}_{Params["Scattering"]}'
     print(name)
