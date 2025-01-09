@@ -60,13 +60,15 @@ Params = {
     'Tol' : 1e-5,
     'Type' : 'border',
     'Slices': {
-        'z': {'nz': [0, 0], 'ny': [0, 0], 'nx': [0, 0]},
-        'y': {'nz': [0, 0], 'ny': [0, 0], 'nx': [0, 0]},
-        'x': {'nz': [0, 0], 'ny': [0, 0], 'nx': [0, 0]}
+        "NoSlice": {
+            'z': {'nz': [0, 0], 'ny': [0, 0], 'nx': [0, 0]},
+            'y': {'nz': [0, 0], 'ny': [0, 0], 'nx': [0, 0]},
+            'x': {'nz': [0, 0], 'ny': [0, 0], 'nx': [0, 0]}
+        }
     }
 }
 '''
-'Slices' dictionary contains information about slices
+'Slices' dict contain dictionary with information about slices
 for each orientation for each axis. It is used to save only 
 selected slices of data for visualization with extra large 
 systems.
