@@ -37,10 +37,10 @@ def save(filename:str, Params:dict)->None:
                                   ) * mu_0*np.pi * Radius ** 2
                                   ) for orientation in Params['Orientations']
         }
-    print('Количество колец:', Params['Numbers'])
-    name = f'{Params["Packing"]}_NoGrad_{Params["shape"]}_{Params["Orientations"]}_{Params["Solver_type"]}'
+    print('Number of rings:', Params['Numbers'])
+    name = f'{Params["Packing"]}_NoGrad_{Params["Shape"]}_{Params["Orientations"]}_{Params["Solver_type"]}'
     print(name)
-    Data = solver(Params, rings_4d, phi_0z_4d, tol = 1e-3)
+    Data = solver(Params, rings_4d, phi_0z_4d, tol = Params['tol'])
     os.makedirs(f'./{filename}/{name}', exist_ok=True)
 
     # Saving modeling parameters in readable format
@@ -108,10 +108,44 @@ if __name__ == '__main__':
 
     from Parameters import Params
 
+    '''
+    Configure solver parameters
+
+    Params['Packing']: base structure is parallelepiped 
+    with Nz x Ny x Nx cells, then for removing other rings for 
+    ellipse and cylinder along chosen axes.
+    Possible values: 
+    'Rectangle', 'Ellipse', 'Cylinder-z,
+    'Cylinder-y', 'Cylinder-x'
+
+    Params['Solver_type']: the way to solve matrix equation
+    'Fast' for iterative solver with Params['tol'] absolutre tolerance
+    Has linear dependency of total number of rings for memory and 
+    NlogN for solving
+
+    'Straight' for straight solving with machine exactness.
+    Takes N^2 memory and N^3 for solving equatiion 
+
+    Params['solver_name'] is for different iterative methods, lgmres 
+    is highly recommened for best time and stability results.
+
+    Params['N'] and Params['shape'] needed to create numbers for each 
+    orientation along each axis and remember shape.
+    Params['Orientations'] describes rings with wheech orientation 
+    will be in structure (so is there isotropic or anisotropic structure)
+    Params['Type'] describes way to create metacell and border conditions 
+    (is there border layers or not, for more check Rings_visualize.ipynb)
+    '''
+
     Params['Packing'] = 'Rectangle'
     Params['Solver_type'] = 'Fast'
     Params['Solver_name'] = 'lgmres'
-    
+    Params['Tol'] = 1e-5
+    Params['Type'] = 'border'
+    Params['Orientations'] = 'zyx'
+
     for n in [7]:
-        Params['N'], Params['shape'] = to3D(n, n, n, 'zyx')
-        save('DATALowTol', Params)
+        Params['N'], Params['Shape'] = to3D(n, n, n,
+                                            Params['Orientations'],
+                                            Params['Type'])
+        save(f'DATA_{Params["Type"]}', Params)

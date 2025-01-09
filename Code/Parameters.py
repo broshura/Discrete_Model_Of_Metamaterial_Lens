@@ -32,15 +32,15 @@ Params = {
     'Dz': Dz,                   # Length of cell
     'Dy': Dz,
     'Dx': Dz,
-    'shift_x': 0,               # Shifting of next layer along x axes
-    'shift_y': 0,               # Shifting of next layer along y axes
-    'shift_z': 0,               # Shifting of next layer along z axes
+    'Shift_x': 0,               # Shifting of next layer along x axes
+    'Shift_y': 0,               # Shifting of next layer along y axes
+    'Shift_z': 0,               # Shifting of next layer along z axes
     'Orientations': Orientations,
     'Sigma': Sigma,
     'H_0z': H_0z,
     'Omega': [Omega[0], Omega[-1], len(Omega)],
-    'mu_0': mu_0,
-    'omega_0': omega_0,
+    'Mu_0': mu_0,
+    'Omega_0': omega_0,
     'Solver_type': "Fast",
     'Packing': 'Rectangle',
     'P_0z': np.pi * Radius ** 2 /H_0z/Dz/Dy/Dx,
@@ -49,13 +49,29 @@ Params = {
         'y':{'nz': 10, 'ny': 11, 'nx': 10},
         'x':{'nz': 10, 'ny': 10, 'nx': 11}
     },
-    'shape': '10x10x10',
+    'Shape': '10x10x10',
     'Numbers': {
         'z': 1100,
         'y': 1100,
         'x': 1100
     },
     'Threads': 1,
-    'Solver_name': 'lgmres'
+    'Solver_name': 'lgmres',
+    'Tol' : 1e-5,
+    'Type' : 'border',
+    'Slices': {
+        'z': {'nz': [0, 0], 'ny': [0, 0], 'nx': [0, 0]},
+        'y': {'nz': [0, 0], 'ny': [0, 0], 'nx': [0, 0]},
+        'x': {'nz': [0, 0], 'ny': [0, 0], 'nx': [0, 0]}
+    }
 }
+'''
+'Slices' dictionary contains information about slices
+for each orientation for each axis. It is used to save only 
+selected slices of data for visualization with extra large 
+systems.
+
+First key is orientation, second key is axis, and value is list of 
+two integers which represent start and end of slice.
+'''
 
