@@ -5,8 +5,6 @@ METAvenv*
 Code/DATA*
 Code/Images*
 Code/Testing_Debug*
-Code/Calc.py
-Code/Rings_visualize.ipynb
 
 # Some macsystem files
 *.DS_Store*
