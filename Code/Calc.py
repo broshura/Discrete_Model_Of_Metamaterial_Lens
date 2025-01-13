@@ -1,4 +1,9 @@
 # Data functions
+'''
+
+ADD THIS FILE TO .gitignore 
+
+'''
 import os
 import shutil
 import json 
@@ -40,7 +45,7 @@ def save(filename:str, Params:dict)->None:
     print('Number of rings:', Params['Numbers'])
     name = f'{Params["Packing"]}_NoGrad_{Params["Shape"]}_{Params["Orientations"]}_{Params["Solver_type"]}'
     print(name)
-    Data = solver(Params, rings_4d, phi_0z_4d, tol = Params['tol'])
+    Data = solver(Params, rings_4d, phi_0z_4d, tol = Params['Tol'])
     os.makedirs(f'./{filename}/{name}', exist_ok=True)
 
     # Saving modeling parameters in readable format
@@ -135,6 +140,14 @@ if __name__ == '__main__':
     will be in structure (so is there isotropic or anisotropic structure)
     Params['Type'] describes way to create metacell and border conditions 
     (is there border layers or not, for more check Rings_visualize.ipynb)
+
+    Params['MemLim'] are necessary to avoid extra-large current files 
+    for modeling with more then 100.000 rings. You shold be shure that there 
+    is enough place for saving. 
+    Possible values:
+    string type: 'All_free' - no limit (except possible)
+    int type: nummber of bytes for limit, if zero - no Currents will be saved 
+    even in process of modeling.
     '''
 
     Params['Packing'] = 'Rectangle'
@@ -143,8 +156,10 @@ if __name__ == '__main__':
     Params['Tol'] = 1e-5
     Params['Type'] = 'border'
     Params['Orientations'] = 'zyx'
+    Params['MemLim'] = 1024 ** 3 * 5 # 5 Gb limit
 
-    for n in [7]:
+    # Example way to use
+    for n in [3, 5, 7]:
         Params['N'], Params['Shape'] = to3D(n, n, n,
                                             Params['Orientations'],
                                             Params['Type'])
