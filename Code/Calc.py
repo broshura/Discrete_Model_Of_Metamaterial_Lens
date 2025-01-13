@@ -1,7 +1,16 @@
 # Data functions
 '''
+Please, before edditing this file run this command in shell
 
-ADD THIS FILE TO .gitignore 
+git update-index --skip-worktree Code/Calc.py
+
+It's necessary to avoid adding changes, based on 
+calculations for different structures
+
+If there is neccessary changes in open of save functions,
+you could run this command in shell:
+
+git update-index --no-skip-worktree Code/Calc.py
 
 '''
 import os
@@ -159,7 +168,7 @@ if __name__ == '__main__':
     Params['MemLim'] = 1024 ** 3 * 5 # 5 Gb limit
 
     # Example way to use
-    for n in [3, 5, 7]:
+    for n in [3, 5, 8]:
         Params['N'], Params['Shape'] = to3D(n, n, n,
                                             Params['Orientations'],
                                             Params['Type'])
