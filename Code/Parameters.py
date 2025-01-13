@@ -65,7 +65,9 @@ Params = {
             'y': {'nz': [0, 0], 'ny': [0, 0], 'nx': [0, 0]},
             'x': {'nz': [0, 0], 'ny': [0, 0], 'nx': [0, 0]}
         }
-    }
+    },
+    'IsSlices': False,
+    'MemLim': 0
 }
 '''
 'Slices' dict contain dictionary with information about slices

@@ -114,9 +114,9 @@ def Rectangle_packing(Params:dict, Fill:bool = False) -> Dict[str, List[Ring]]:
 
         # Case with anisotropic system and shifted layers
 
-        shift_x = Params['shift_x']
-        shift_y = Params['shift_y']
-        shift_z = Params['shift_z']
+        shift_x = Params['Shift_x']
+        shift_y = Params['Shift_y']
+        shift_z = Params['Shift_z']
 
         nz, ny, nx = N['nz'], N['ny'], N['nx']
         for k in range(nz):
