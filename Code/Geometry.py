@@ -43,6 +43,13 @@ def to3D(Nz:int, Ny:int, Nx:int, orientations:str = 'z', Type:str = 'border') ->
                 'ny': Ny - (orientation == 'y')*(len(orientations) != 1),
                 'nx': Nx - (orientation == 'x')*(len(orientations) != 1)
             }
+    elif Type == 'center':
+        for orientation in orientations:
+            N[orientation] = {
+                'nz': Nz, 
+                'ny': Ny,
+                'nx': Nx
+            }
     return N, shape
 
 def Rectangle_packing(Params:dict, Fill:bool = False) -> Dict[str, List[Ring]]:
@@ -73,18 +80,43 @@ def Rectangle_packing(Params:dict, Fill:bool = False) -> Dict[str, List[Ring]]:
         r, delta_x, delta_y, delta_z = Params['Radius'], Params['Dx'], Params['Dy'], Params['Dz'] 
         
         # Starting point of the first ring for each orientation
-        r0 = {
-            'nz': delta_z/2 * (1-(orientation == 'z')), 
-            'ny': delta_y/2 * (1-(orientation == 'y')),
-            'nx': delta_x/2 * (1-(orientation == 'x'))
-        }
+        
+        # Packing for single orientation
+        if len(orientations) == 1:
+            r0 = {
+                'nz': delta_z/2 * (1-(orientation == 'z')), 
+                'ny': delta_y/2 * (1-(orientation == 'y')),
+                'nx': delta_x/2 * (1-(orientation == 'x'))
+            }
+        # Packing for multiple orientations and center system
+        if Params['N']['z']['nz'] == Params['N']['y']['nz']:
+            r0 = {
+                'nz': delta_z/2,
+                'ny': delta_y/2,
+                'nx': delta_x/2,
+            }
+        # Packing for multiple orientations and open system
+
+        elif Params['N']['z']['nz'] < Params['N']['y']['nz']:
+            r0 = {
+                'nz': delta_z/2 * (1-(orientation == 'z')) + (orientation == 'z') * delta_z, 
+                'ny': delta_y/2 * (1-(orientation == 'y')) + (orientation == 'y') * delta_y,
+                'nx': delta_x/2 * (1-(orientation == 'x')) + (orientation == 'x') * delta_x
+            }
+        # Packing for multiple orientations and border system
+        else:
+            r0 = {
+                'nz': delta_z/2 * (1-(orientation == 'z')), 
+                'ny': delta_y/2 * (1-(orientation == 'y')),
+                'nx': delta_x/2 * (1-(orientation == 'x'))
+            }
 
 
         # Case with anisotropic system and shifted layers
 
-        shift_x = Params['shift_x']
-        shift_y = Params['shift_y']
-        shift_z = Params['shift_z']
+        shift_x = Params['Shift_x']
+        shift_y = Params['Shift_y']
+        shift_z = Params['Shift_z']
 
         nz, ny, nx = N['nz'], N['ny'], N['nx']
         for k in range(nz):
@@ -153,8 +185,8 @@ def Ellipse_packing(Params:dict, Fill:bool = False) -> Dict[str, List[Ring]]:
             r_y = Ring.y 
             r_z = Ring.z 
 
-            distance = (r_x-R_x) ** 2/R_x**2 + (r_y - R_y) ** 2/R_y **2 + (r_z-R_z) ** 2/R_z ** 2
-            if distance > 1.00:
+            distance = (r_x-R_x) ** 2/R_x**2 + (r_y - R_y) ** 2/R_y **2 + (r_z - R_z) ** 2/R_z ** 2
+            if distance > 1.01:
                 if Fill:
                     Ring.R = 1e200
                     Ring.C = 1e200
@@ -214,11 +246,11 @@ def Cylinder_packing(Params:dict, Fill:bool = False, axis:str = 'z') -> Dict[str
             r_z = Ring.z 
 
             distance = (r_x-R_x) ** 2/R_x**2 * (
-                axis != 'x') + (r_y - R_y) ** 2/R_y **2 * (
-                axis != 'y') + (r_z-R_z) ** 2/R_z ** 2 * (
+                axis != 'x') + (r_y - R_y) ** 2/R_y ** 2 * (
+                axis != 'y') + (r_z - R_z) ** 2/R_z ** 2 * (
                 axis != 'z')
             
-            if distance > 1.00:
+            if distance > 1.01:
                 if Fill:
                     Ring.R = 1e20
                     Ring.C = 1e20

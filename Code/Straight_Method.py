@@ -54,7 +54,7 @@ def solvesystem(Params:dict, rings_4d:dict, phi_0z_4d:dict, Inductance:dict = {}
     P = []
     CURRENTS = []
     # External field
-    Phi_0z = phi_0z/np.max(abs(phi_0z))
+    Phi_0z = phi_0z
 
     print('Matrix forming')
     M = Matrix(rings, Data = Inductance)
@@ -64,15 +64,15 @@ def solvesystem(Params:dict, rings_4d:dict, phi_0z_4d:dict, Inductance:dict = {}
         for omega in tqdm(Omega):
             # Solve equation (diag(Z_0)/jw - M)I = Phi_0z
             I = solve(np.diag(M_0(omega)) - M, Phi_0z)
-            CURRENTS.append(I * np.max(abs(phi_0z)))
+            CURRENTS.append(I)
             start = 0
             p = []
             for pos in Params['Orientations']:
                 end = start + Params['Numbers'][pos]
-                p.append(np.sum(I[start:end])/(end-start))
+                p.append(np.sum(I[start:end])/Params['Numbers'][pos])
                 start = end
             P.append(p)
-        P = np.array(P)*np.max(abs(phi_0z)) * Params['P_0z']
+        P = np.array(P) * Params['P_0z']
                 
 
         print('Straight solving (Currents): Done')
@@ -89,10 +89,10 @@ def solvesystem(Params:dict, rings_4d:dict, phi_0z_4d:dict, Inductance:dict = {}
             p = []
             for pos in Params['Orientations']:
                 end = start + Params['Numbers'][pos]
-                p.append(np.sum(I[start:end])/(end-start))
+                p.append(np.sum(I[start:end])/Params['Numbers'][pos])
                 start = end
             P.append(p)
-        P = np.array(P)*np.max(abs(phi_0z)) * Params['P_0z']
+        P = np.array(P) * Params['P_0z']
                 
         print('Straight solving (Voltage): Done')
         
