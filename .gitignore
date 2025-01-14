@@ -1,6 +1,7 @@
 # Ignore virtual environment
 METAvenv*
 *__pycache__*
+.idea*
 # Ignore large calculation data, images and testing data
 Code/DATA*
 Code/Images*
