@@ -51,9 +51,10 @@ def save(filename:str, Params:dict)->None:
                                   ) * mu_0*np.pi * Radius ** 2
                                   ) for orientation in Params['Orientations']
         }
+    print("Start Modeling")
     print('Number of rings:', Params['Numbers'])
     name = f'{Params["Packing"]}_NoGrad_{Params["Shape"]}_{Params["Orientations"]}_{Params["Solver_type"]}'
-    print(name)
+    print(name, '\n')
     Data = solver(Params, rings_4d, phi_0z_4d, tol = Params['Tol'])
     os.makedirs(f'./{filename}/{name}', exist_ok=True)
 
@@ -62,15 +63,18 @@ def save(filename:str, Params:dict)->None:
         json.dump(Params, f)
     
     # Save full calculated data in npz format
-    if np.array(Data['Currents']).nbytes < 1024**3 * 5:  # 5 GB limit
-        print('Saving size:', np.array(Data['Currents']).nbytes/1024**2, 'MB')
-        calc_data = {
-            'Currents': Data['Currents'],
-            'Omega': Data['Omega'],
-            'Polarization': Data['Polarization'],
-            'Phi_0z': Data['Phi_0z'],
-        }
-        np.savez(f'./{filename}/{name}/Currents.npz', **calc_data)
+
+    calc_data = {
+        'Currents': Data['Currents'],
+        'Omega': Data['Omega'],
+        'Polarization': Data['Polarization'],
+        'Phi_0z': Data['Phi_0z'],
+    }
+    size = sum([np.array(calc_data[key]).nbytes for key in calc_data])
+    Degrees = ['B', 'kB', 'MB', 'GB', 'TB']
+    degree = min(int(np.log(size)/np.log(1024)), 4)
+    print('\nSaving currents, size:', round(size/1024**degree, 1), f'{Degrees[degree]}')
+    np.savez(f'./{filename}/{name}/Currents.npz', **calc_data)
     
     # Save neccesary data for plotting in npz format
     pol_data = {
@@ -78,6 +82,13 @@ def save(filename:str, Params:dict)->None:
         'Omega': Data['Omega'],
         'Phi_0z': Data['Phi_0z'],
     }
+    # Adding sliced currents dict to pol_data
+    if Params['IsSlices']:
+        pol_data.update(Data['SlicedCurrents'])
+    size = sum([np.array(pol_data[key]).nbytes for key in pol_data])
+    Degrees = ['B', 'kB', 'MB', 'GB', 'TB']
+    degree = min(int(np.log(size)/np.log(1024)), 4)
+    print('Saving polarization, size:', round(size/1024**degree, 1), f'{Degrees[degree]}\n')
     np.savez(f'./{filename}/{name}/Polarization.npz', **pol_data)
 
 def open_model(filename:str, Params:dict, Currents:bool = False, Polarization:bool = True)->dict:
@@ -106,15 +117,10 @@ def open_model(filename:str, Params:dict, Currents:bool = False, Polarization:bo
     
     if Currents == True:
         with np.load(f'./{filename}/{name}/Currents.npz') as f:
-            data['Currents'] = f['Currents']
-            data['Omega'] = f['Omega']
-            data['Polarization'] = f['Polarization']
-            data['Phi_0z'] = f['Phi_0z']
+            data.update({key: f[key] for key in f})
     elif Polarization == True:
         with np.load(f'./{filename}/{name}/Polarization.npz') as f:
-            data['Polarization'] = f['Polarization']
-            data['Omega'] = f['Omega']
-            data['Phi_0z'] = f['Phi_0z']
+            data.update({key: f[key] for key in f})
     return data
 
 # Modeling for exact strucutres.
@@ -165,11 +171,41 @@ if __name__ == '__main__':
     Params['Tol'] = 1e-5
     Params['Type'] = 'border'
     Params['Orientations'] = 'zyx'
-    Params['MemLim'] = 1024 ** 3 * 5 # 5 Gb limit
+    Params['MemLim'] = 1024 ** 2 * 5 # 5 Gb limit
+    Params['IsSlices'] = True
 
     # Example way to use
-    for n in [3, 5, 8]:
+    for n in [3, 5, 7]:
         Params['N'], Params['Shape'] = to3D(n, n, n,
                                             Params['Orientations'],
                                             Params['Type'])
+        Params['Slices'] = {
+            'MiddleZZ': {
+                'z': {'nz': [Params['N']['z']['nz']//2, Params['N']['z']['nz']//2 +1],
+                      'ny': [0, Params['N']['z']['ny']],
+                      'nx': [0, Params['N']['z']['nx']]
+                }
+            },
+            'MiddleZY': {
+                'z': {
+                    'nz': [0, Params['N']['z']['nz']],
+                    'ny': [Params['N']['z']['ny']//2, Params['N']['z']['ny']//2 +1],
+                    'nx': [0, Params['N']['z']['nx']]
+                }
+            },
+            'BottomZZ': {
+                'z': {'nz': [0, 1],
+                      'ny': [0, Params['N']['z']['ny']],
+                      'nx': [0, Params['N']['z']['nx']]
+                }
+            },
+            'BottomZY': {
+                'z': {
+                    'nz': [0, Params['N']['z']['nz']],
+                    'ny': [0, 1],
+                    'nx': [0, Params['N']['z']['nx']]
+                }
+            }
+        }
+        
         save(f'DATA_{Params["Type"]}', Params)
