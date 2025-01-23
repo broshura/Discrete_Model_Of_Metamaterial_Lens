@@ -89,7 +89,7 @@ def Rectangle_packing(Params:dict, Fill:bool = False) -> Dict[str, List[Ring]]:
                 'nx': delta_x/2 * (1-(orientation == 'x'))
             }
         # Packing for multiple orientations and center system
-        if Params['N']['z']['nz'] == Params['N']['y']['nz']:
+        elif Params['N']['z']['nz'] == Params['N']['y']['nz']:
             r0 = {
                 'nz': delta_z/2,
                 'ny': delta_y/2,
