@@ -59,7 +59,7 @@ def L_parallel(omega, dx:float, dy:float, dz:float, r1:float, r2:float, width:fl
     #Considering stripe width
 
     r_mean = sqrt(dx**2+dy**2+dz**2)
-    exp_factor = cos(-k*r_mean)+1j*sin(-k*r_mean)
+    exp_factor = (cos(-k*r_mean)+1j*sin(-k*r_mean))
 
     if r1 == r2 and width:
         R = r1 + width / 2
@@ -76,7 +76,7 @@ def L_parallel(omega, dx:float, dy:float, dz:float, r1:float, r2:float, width:fl
         L = (L_1 + L_2)/2
     else:
         L, err = integrate.quad(dl, 0, 2 * pi, args= (dx, dy, dz, r1, r2))
-    return L * exp_factor
+    return L * exp_factor*(-1j*k*r_mean)
 
 # Computing for orthogonal-oriented rings
 
@@ -116,7 +116,7 @@ def L_orthogonal(omega, dx:float, dy:float ,dz:float, r1:float, r2:float, width:
     # Considering stripe width
 
     r_mean = sqrt(dx**2+dy**2+dz**2)
-    exp_factor = cos(-k*r_mean)+1j*sin(-k*r_mean)
+    exp_factor = (cos(-k*r_mean)+1j*sin(-k*r_mean))
 
     if r1 == r2 and width:
         R = r1 + width / 2
@@ -133,7 +133,7 @@ def L_orthogonal(omega, dx:float, dy:float ,dz:float, r1:float, r2:float, width:
         L = (L_1 + L_2)/2
     else:
         L, err = integrate.quad(dl, 0, 2 * pi, args=(dx, dy, dz, r1, r2))
-    return L * exp_factor
+    return L * exp_factor*(-1j*k*r_mean)
 
 # Computing for any pair
 

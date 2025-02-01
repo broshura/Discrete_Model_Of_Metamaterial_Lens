@@ -58,7 +58,7 @@ def save(filename:str, Params:dict)->None:
                     result[orientation] = list(np.zeros(size))
             return result
         
-    elif Params['Scattering'] == 'Mie_True':
+    elif Params['Scattering'] == 'Mie_True' or Params['Scattering'] == 'Mie_Pseudo':
         def phi_0z_calc(omega):
             result = {}
             for orientation in Params['Orientations']:

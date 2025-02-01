@@ -5,12 +5,14 @@ import numpy as np
 import scipy.linalg
 from tqdm import tqdm 
 from Impedance_matrix import Mnm as Mnm_Mie_False
-from matrixtest import Mnm as Mnm_Mie_True
+from Pseudo_matrix import Mnm as Mnm_Mie_Pseudo
+from Retr_matrix import Mnm as Mnm_Mie_Retr
 from scipy.sparse.linalg import lgmres, gmres, LinearOperator
 
 Mnms = {
-    'Mie_True': Mnm_Mie_True,
-    'Mie_False': Mnm_Mie_False
+    'Mie_Pseudo': Mnm_Mie_Pseudo,
+    'Mie_False': Mnm_Mie_False,
+    'Mie_True': Mnm_Mie_Retr
 }
 
 os.environ["OPENBLAS_NUM_THREADS"] = "16"
