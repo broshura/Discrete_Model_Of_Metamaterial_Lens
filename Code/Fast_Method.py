@@ -165,27 +165,6 @@ def solvesystem(Params:dict, rings_4d:dict, phi_0z_4d:dict, Inductance:dict = {}
     ifft_i_vecs = {}
     MI_vecs = {}
 
-    # Preparing empty arrays for pyfftw
-    print('Cirvecs forming')
-    for pos_str in tqdm(orientations):
-        rings_str = rings_4d[pos_str]
-        FFT_M_circvecs[pos_str] = {}
-        i_vecs[pos_str] = {}
-        ifft_i_vecs[pos_str] = {}
-        MI_vecs[pos_str] = {}
-        for pos_col in orientations:
-            rings_col = rings_4d[pos_col]
-            M_circvecs = Circvec(rings_str, rings_col, Inductance)
-
-            N_circ = np.array(rings_str.shape) + np.array(rings_col.shape) - 1
-            i_vecs[pos_str][pos_col] = np.zeros(N_circ, dtype=complex)
-            MI_vecs[pos_str][pos_col] = np.zeros(N_circ, dtype=complex)
-
-            FFT_M_circvecs[pos_str][pos_col] = scipy.fft.fftn(M_circvecs, axes = (0, 1, 2))
-            ifft_i_vecs[pos_str][pos_col] = np.zeros(N_circ, dtype=complex)
-
-    print('Circvecs: Done')
-
     # Calculating diagonal of M matrix
     L, C, R = [], [], []
     for ring in rings:
@@ -224,6 +203,7 @@ def solvesystem(Params:dict, rings_4d:dict, phi_0z_4d:dict, Inductance:dict = {}
         IfCurrents = False
     
     # Check if we need to save sliced currents
+    IfSlicedCurrents = False
     if Params['IsSlices']:
         Sliced_I_old = {}
         for name in Params['Slices']:
@@ -239,7 +219,7 @@ def solvesystem(Params:dict, rings_4d:dict, phi_0z_4d:dict, Inductance:dict = {}
             
 
         PreCalcSlicedMemory = len(Omega) * np.sum([[Sliced_I_old[name][pos].nbytes for pos in Params['Slices'][name]] for name in Params['Slices']])
-        IfSlicedCurrents = True
+        
         if PreCalcSlicedMemory > Params['MemLim']:
             print("Warning: Memory for Exact Currents is too large, please increase MemLim in Params")
             print("Warning: Exact Currents will be calculated without saving")
@@ -247,6 +227,31 @@ def solvesystem(Params:dict, rings_4d:dict, phi_0z_4d:dict, Inductance:dict = {}
             degree = min(int(np.log(PreCalcSlicedMemory)/np.log(1024)), 4)
             print("Memory for Exact Currents: ", round(PreCalcSlicedMemory/1024**degree, 1), Degrees[degree%5])
             print("Memory limit: ", round(Params['MemLim']/1024**degree, Degrees[degree%5], 1))
+        else:
+            IfSlicedCurrents = True
+
+
+    # Preparing empty arrays for pyfftw
+    print('Cirvecs forming')
+    for pos_str in tqdm(orientations):
+        rings_str = rings_4d[pos_str]
+        FFT_M_circvecs[pos_str] = {}
+        i_vecs[pos_str] = {}
+        ifft_i_vecs[pos_str] = {}
+        MI_vecs[pos_str] = {}
+        for pos_col in orientations:
+            rings_col = rings_4d[pos_col]
+            M_circvecs = Circvec(rings_str, rings_col, Inductance)
+
+            N_circ = np.array(rings_str.shape) + np.array(rings_col.shape) - 1
+            i_vecs[pos_str][pos_col] = np.zeros(N_circ, dtype=complex)
+            MI_vecs[pos_str][pos_col] = np.zeros(N_circ, dtype=complex)
+
+            FFT_M_circvecs[pos_str][pos_col] = scipy.fft.fftn(M_circvecs, axes = (0, 1, 2))
+            ifft_i_vecs[pos_str][pos_col] = np.zeros(N_circ, dtype=complex)
+
+    print('Circvecs: Done')
+
 
     '''
     Main loop for solving system of equations
@@ -335,7 +340,7 @@ def solvesystem(Params:dict, rings_4d:dict, phi_0z_4d:dict, Inductance:dict = {}
         I_old = I
     
     P = np.array(P) * Params['P_0z']
-    Sliced_CURRENTS = {name: np.concatenate([Sliced_CURRENTS[name][pos] for pos in Params['Slices'][name]], axis=1) for name in Sliced_CURRENTS}
+    Sliced_CURRENTS = {name: np.concatenate([Sliced_CURRENTS[name][pos] for pos in Params['Slices'][name]]) for name in Sliced_CURRENTS}
     print(f'FFT solving: Done, shape = {[(pos, rings_4d[pos].shape) for pos in orientations]}')
     Data = {}
 

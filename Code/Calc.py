@@ -85,6 +85,7 @@ def save(filename:str, Params:dict)->None:
     # Adding sliced currents dict to pol_data
     if Params['IsSlices']:
         pol_data.update(Data['SlicedCurrents'])
+        print('Sliced currents are saved')
     size = sum([np.array(pol_data[key]).nbytes for key in pol_data])
     Degrees = ['B', 'kB', 'MB', 'GB', 'TB']
     degree = min(int(np.log(size)/np.log(1024)), 4)
@@ -110,7 +111,7 @@ def open_model(filename:str, Params:dict, Currents:bool = False, Polarization:bo
     dict
         dictionary with modeling parameters and calculated data
     """    
-    name = f'{Params["Packing"]}_NoGrad_{Params["shape"]}_{Params["Orientations"]}_{Params["Solver_type"]}'
+    name = f'{Params["Packing"]}_NoGrad_{Params["Shape"]}_{Params["Orientations"]}_{Params["Solver_type"]}'
     data = {}
     with open(f'./{filename}/{name}/Params.json', 'r') as f:
         data['Params'] = json.load(f)
@@ -171,11 +172,11 @@ if __name__ == '__main__':
     Params['Tol'] = 1e-5
     Params['Type'] = 'border'
     Params['Orientations'] = 'zyx'
-    Params['MemLim'] = 1024 ** 2 * 5 # 5 Gb limit
+    Params['MemLim'] = 1024 ** 3 * 1 # 1 Gb limit
     Params['IsSlices'] = True
 
     # Example way to use
-    for n in [3, 5, 7]:
+    for n in [3, 5]:
         Params['N'], Params['Shape'] = to3D(n, n, n,
                                             Params['Orientations'],
                                             Params['Type'])
