@@ -149,15 +149,15 @@ def solvesystem(Params:dict, rings_4d:dict, phi_0z_4d:dict, Inductance:dict = {}
     Omegas = Params['Omega']    
 
     Omega = np.linspace(Omegas[0], Omegas[1], Omegas[2])
-    
+
     rings = sum([rings_4d[orientation] for orientation in rings_4d], [])
-    phi_0z = np.array(sum([phi_0z_4d[orientation] for orientation in phi_0z_4d], []))
+    Phi_0z = np.concatenate([phi_0z_4d[orientation] for orientation in phi_0z_4d])
 
     orientations = rings_4d.keys()
     for orientation in orientations:
         Nz, Ny, Nx = Params['N'][orientation]['nz'], Params['N'][orientation]['ny'], Params['N'][orientation]['nx']
         rings_4d[orientation] = np.array(rings_4d[orientation]).reshape(Nz, Ny, Nx)
-        phi_0z_4d[orientation] = np.array(phi_0z_4d[orientation])
+
     Number = np.sum([value.size for value in rings_4d.values()])
 
     FFT_M_circvecs = {}
@@ -186,8 +186,7 @@ def solvesystem(Params:dict, rings_4d:dict, phi_0z_4d:dict, Inductance:dict = {}
         end += rings_4d[pos].size
         I_old4d[pos] = I_old[start:end].reshape(rings_4d[pos].shape)
         start = end
-    
-    Phi_0z = phi_0z
+
     P = []
     
     # Check if we need to save currents
@@ -349,6 +348,6 @@ def solvesystem(Params:dict, rings_4d:dict, phi_0z_4d:dict, Inductance:dict = {}
     Data['Omega'] = Omega
     Data['Currents'] = CURRENTS
     Data['Polarization'] = P
-    Data['Phi_0z'] = list(phi_0z)
+    Data['Phi_0z'] = list(Phi_0z)
 
     return Data

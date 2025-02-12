@@ -43,14 +43,23 @@ def save(filename:str, Params:dict)->None:
     """    
     solver = Solvers[Params['Solver_type']]
     packing = Packings[Params['Packing']]
-    
-    rings_4d = packing(Params, Fill=True)
-    phi_0z_4d = {
-        orientation: list(np.ones(Params['Numbers'][orientation]
-                             ) * (orientation == 'z'
-                                  ) * mu_0*np.pi * Radius ** 2
-                                  ) for orientation in Params['Orientations']
+    if Params['Solver_type'] == 'Fast':
+        rings_4d = packing(Params, Fill=True)
+        phi_0z_4d = {
+            orientation: np.ones(
+                np.prod(list(Params['N'][orientation].values()))
+                ) * (orientation == 'z') * mu_0*np.pi * Radius ** 2
+                for orientation in Params['Orientations']
         }
+    else:
+        rings_4d = packing(Params, Fill=False)
+        phi_0z_4d = {
+            orientation: np.ones(Params['Numbers'][orientation]\
+                                  * (orientation == 'z'
+                                      ) * mu_0*np.pi * Radius ** 2
+                                      ) for orientation in Params['Orientations']
+        }
+
     print("Start Modeling")
     print('Number of rings:', Params['Numbers'])
     name = f'{Params["Packing"]}_NoGrad_{Params["Shape"]}_{Params["Orientations"]}_{Params["Solver_type"]}'
@@ -166,7 +175,7 @@ if __name__ == '__main__':
     even in process of modeling.
     '''
 
-    Params['Packing'] = 'Rectangle'
+    Params['Packing'] = 'Ellipse'
     Params['Solver_type'] = 'Fast'
     Params['Solver_name'] = 'lgmres'
     Params['Tol'] = 1e-5
@@ -180,33 +189,6 @@ if __name__ == '__main__':
         Params['N'], Params['Shape'] = to3D(n, n, n,
                                             Params['Orientations'],
                                             Params['Type'])
-        Params['Slices'] = {
-            'MiddleZZ': {
-                'z': {'nz': [Params['N']['z']['nz']//2, Params['N']['z']['nz']//2 +1],
-                      'ny': [0, Params['N']['z']['ny']],
-                      'nx': [0, Params['N']['z']['nx']]
-                }
-            },
-            'MiddleZY': {
-                'z': {
-                    'nz': [0, Params['N']['z']['nz']],
-                    'ny': [Params['N']['z']['ny']//2, Params['N']['z']['ny']//2 +1],
-                    'nx': [0, Params['N']['z']['nx']]
-                }
-            },
-            'BottomZZ': {
-                'z': {'nz': [0, 1],
-                      'ny': [0, Params['N']['z']['ny']],
-                      'nx': [0, Params['N']['z']['nx']]
-                }
-            },
-            'BottomZY': {
-                'z': {
-                    'nz': [0, Params['N']['z']['nz']],
-                    'ny': [0, 1],
-                    'nx': [0, Params['N']['z']['nx']]
-                }
-            }
-        }
+        Params['Slices']=usual_slices(Params)
         
         save(f'DATA_{Params["Type"]}', Params)
