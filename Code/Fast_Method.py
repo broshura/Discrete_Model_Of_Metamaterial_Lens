@@ -187,9 +187,58 @@ def solvesystem(Omega, Params: dict, rings_4d: dict, phi_0z_calc, Inductance: di
 
     print('FFT solving (voltage)')
     CURRENTS = []
-    I_old = np.ones(Number, dtype=np.complex128) / M_0(Omega[0])
+    Sliced_CURRENTS = {name: {pos : [] for pos in orientations} for name in Params['Slices']}
+    I_old = np.ones(Number, dtype = np.complex128)/M_0(Omega[0])
+    I_old4d = {}
+    start, end = 0, 0
+    for pos in orientations:
+        end += rings_4d[pos].size
+        I_old4d[pos] = I_old[start:end].reshape(rings_4d[pos].shape)
+        start = end
+    
+    Phi_0z = phi_0z
     P = []
+    
+    # Check if we need to save currents
+    PreCalcMemory = len(Omega) * I_old.nbytes 
+    IfCurrents = True
+    if PreCalcMemory > Params['MemLim']:
+        print("Warning: Memory for Currents is too large, please increase MemLim in Params")
+        print("Warning: Currents will be calculated without saving")
+        Degrees = ['B', 'KB', 'MB', 'GB', 'TB']
+        degree = min(int(np.log(PreCalcMemory)/np.log(1024)), 5)
+        print("Memory for Currents: ", round(PreCalcMemory/1024**degree, 1), Degrees[degree%5])
+        print("Memory limit: ", round(Params['MemLim']/1024**degree, 1), Degrees[degree%5])
+        IfCurrents = False
+    
+    # Check if we need to save sliced currents
+    if Params['IsSlices']:
+        Sliced_I_old = {}
+        for name in Params['Slices']:
+            Sliced_I_old[name] = {}
+            for pos in Params['Slices'][name]:
+                Slice = Params['Slices'][name][pos]
+                rslice = [
+                    slice(Slice[axis][0],
+                          Slice[axis][1],
+                          1) for axis in Slice
+                ]
+                Sliced_I_old[name][pos] = I_old4d[pos][*rslice]
+            
 
+        PreCalcSlicedMemory = len(Omega) * np.sum([[Sliced_I_old[name][pos].nbytes for pos in Params['Slices'][name]] for name in Params['Slices']])
+        IfSlicedCurrents = True
+        if PreCalcSlicedMemory > Params['MemLim']:
+            print("Warning: Memory for Exact Currents is too large, please increase MemLim in Params")
+            print("Warning: Exact Currents will be calculated without saving")
+            Degrees = ['B', 'kB', 'MB', 'GB', 'TB']
+            degree = min(int(np.log(PreCalcSlicedMemory)/np.log(1024)), 4)
+            print("Memory for Exact Currents: ", round(PreCalcSlicedMemory/1024**degree, 1), Degrees[degree%5])
+            print("Memory limit: ", round(Params['MemLim']/1024**degree, Degrees[degree%5], 1))
+
+    '''
+    Main loop for solving system of equations
+    '''
     for omega in tqdm(Omega):
         phi_0z_4d = phi_0z_calc(omega)
         phi_0z = np.array(sum([phi_0z_4d[orientation] for orientation in phi_0z_4d], []))
@@ -245,28 +294,48 @@ def solvesystem(Omega, Params: dict, rings_4d: dict, phi_0z_calc, Inductance: di
             I, info = solve(M, Phi_0z, x0=I_old, rtol=tol, atol=0)
 
         if info != 0:
-            print(f"f = {omega / (2 * np.pi * 1e6)} MHz did not converge.")
-
-        CURRENTS.append(I)
+            print(f'f = {omega/2/np.pi/1e6} MHz did not converge')
+        
         start = 0
         p = []
+        I_4d = {}
+        Sliced_I4d = {name: {pos : np.array([]) for pos in Params['Slices'][name]} for name in Params['Slices']}
         for pos in orientations:
             end = start + rings_4d[pos].size
-            p.append(np.sum(I[start:end])/Params['Numbers'][pos])
+            I_4d[pos] = I[start:end].reshape(rings_4d[pos].shape)
+            p.append(np.sum(I[start:end])/Params['Numbers'][pos]) 
             start = end
+        if Params['IsSlices']:
+            for slice_name in Params['Slices']:
+                Slice = Params['Slices'][slice_name]
+                for pos in Slice:
+                    rslice = [
+                        slice(Slice[pos][axis][0],
+                              Slice[pos][axis][1],
+                              1) for axis in Slice[pos]
+                    ]
+                    Sliced_I4d[slice_name][pos] = I_4d[pos][*rslice]
+        if IfCurrents:
+            CURRENTS.append(I)
+        if IfSlicedCurrents:
+            for name in Params['Slices']:
+                for pos in Params['Slices'][name]:
+                    Sliced_CURRENTS[name][pos].append(Sliced_I4d[name][pos].ravel())
+        
         P.append(p)
 
         I_old = I
 
     P = np.array(P) * Params['P_0z']
+    Sliced_CURRENTS = {name: np.concatenate([Sliced_CURRENTS[name][pos] for pos in Params['Slices'][name]], axis=1) for name in Sliced_CURRENTS}
+    print(f'FFT solving: Done, shape = {[(pos, rings_4d[pos].shape) for pos in orientations]}')
+    Data = {}
 
-    print(f"FFT solving: Done, shape = {[(pos, rings_4d[pos].shape) for pos in orientations]}")
-    Data = {
-        'Params': Params,
-        'Omega': Omega,
-        'Currents': CURRENTS,
-        'Polarization': P,
-        'Phi_0z': list(phi_0z),
-    }
+    Data['SlicedCurrents'] = Sliced_CURRENTS
+    Data['Params'] = Params
+    Data['Omega'] = Omega
+    Data['Currents'] = CURRENTS
+    Data['Polarization'] = P
+    Data['Phi_0z'] = list(phi_0z)
 
     return Data

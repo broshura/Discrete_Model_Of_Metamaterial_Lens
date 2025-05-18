@@ -1,5 +1,7 @@
 Metavenv/
-Code/DATA
+Code/DATA*
+Code/Images*
+Code/Testing_Debug*
 *__pycache__/
 Code/TestingFile.ipynb
 Code/Mutual_inductance.ipynb
