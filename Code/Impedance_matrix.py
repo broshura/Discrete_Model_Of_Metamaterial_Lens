@@ -100,9 +100,10 @@ def L_orthogonal(dx:float, dy:float ,dz:float, r1:float, r2:float, width:float =
     def dl(alpha, dx, dy, dz, r_1, r_2):
         dp = sqrt((dx - r_2 * sin(alpha)) ** 2 + dy ** 2)
         kappa_sq = 4 * r_1 * dp / ((dp + r_1) ** 2 + (dz - r_2 * cos(alpha)) ** 2)
-        kappa = sqrt(kappa_sq) + 10 ** -7
-        A = 1 / (2 * pi) * sqrt(r_1 / (dp + 10 ** -7)) * ((2 / kappa - kappa) * K(kappa_sq) - 2 * E(kappa_sq) / kappa)
-        return A * r_2 * dy * cos(alpha) / (dp + 10 ** -7)
+        kappa = sqrt(kappa_sq)
+
+        A = 1 / (2 * pi) * sqrt(r_1 / (dp)) * ((2 / kappa - kappa) * K(kappa_sq) - 2 * E(kappa_sq) / kappa)
+        return A * r_2 * dy * cos(alpha) / (dp)
 
     # Considering stripe width
 

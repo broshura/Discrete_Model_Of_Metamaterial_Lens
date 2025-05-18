@@ -67,7 +67,7 @@ def save(filename:str, Params:dict)->None:
                 if orientation == 'z':
                     z_coords = z_coord(rings_4d, orientation)
                     # Ensure z_coords matches the actual array size
-                    phase = np.exp(-1j * omega/3e8 * z_coords)
+                    phase = np.exp(1j * omega/3e8 * z_coords)
                     flux = mu_0 * np.pi * Radius**2 * H_0z * phase
                     result[orientation] = list(flux)
                 else:

@@ -77,7 +77,7 @@ def L_orthogonal(omega, dx:float, dy:float, dz:float, r1:float, r2:float, width:
 
         def dA_x(phi_1):
             dR = np.sqrt((dx + r_2 * np.cos(phi_2)) ** 2 + \
-            (dy + r_2 * np.sin(phi_2) + r_1 * np.sin(phi_1)) ** 2 + (dz+r_2 * np.cos(phi_2)) ** 2) #для ортогональный копируй всю функцию и вот эту переменную перенеси ьиз файлика с формулой
+            (dy + r_2 * np.sin(phi_2) + r_1 * np.sin(phi_1)) ** 2 + (dz+r_2 * np.cos(phi_2)) ** 2)
             return mu_0 / 4 /np.pi * r_1  * np.cos(phi_1) * np.cos(k*dR) / dR
 
         def dA_y(phi_1):
@@ -170,30 +170,30 @@ def Mnm(omega, First_ring:Ring, Second_ring:Ring, Data:dict = {}) -> float:
 
     if First_ring.pos == Second_ring.pos:
         if First_ring.pos == "z":                           # Z-oriented rings
-            l = L_parallel(omega, dx, dy, dz, r1, r2, w)
+            l = L_parallel(dx, dy, dz, r1, r2, w)
         elif First_ring.pos == "y":                         # Y-oriented rings
-            l = L_parallel(omega, dx, dz, dy, r1, r2, w)
+            l = L_parallel(dx, -dz, dy, r1, r2, w)
         else:                                               # X-oriented rings
-            l = L_parallel(omega, dz, dy, dx, r1, r2, w)
+            l = L_parallel(-dz, dy, dx, r1, r2, w)
 
     # Consider all types of orthogonal orientation
 
-    else:
+    else:  
         if First_ring.pos == "z":
-            if Second_ring.pos == "x":                      # Z-X oriented pair
-                l = L_orthogonal(omega, dy, (dx), dz, r1, r2, w)
-            else:                                           # Z-Y oriented pair
-                l = L_orthogonal(omega, (dx), (dy), dz, r1, r2, w)
+            if Second_ring.pos == "y":                      # Z-Y oriented pair
+                l = L_orthogonal(dx, dy, dz, r1, r2, w)
+            else:                                           # Z-X oriented pair
+                l = L_orthogonal((dy), (dx), dz, r1, r2, w)
         elif First_ring.pos == "y":
             if Second_ring.pos == "z":                      # Y-Z oriented pair
-                l = L_orthogonal(omega, dx, (dz), (dy), r1, r2, w)
+                l = L_orthogonal(dx, (dz), (dy), r1, r2, w)
             else:                                           # Y-X oriented pair
-                l = L_orthogonal(omega, (dz), (dx), (dy), r1, r2,  w)
+                l = L_orthogonal(-dz, (dx), (dy), r1, r2,  w)
         elif First_ring.pos == "x":
             if Second_ring.pos == "z":                      # X-Z oriented pair
-                l = L_orthogonal(omega, dy, (dz), (dx), r1, r2, w)
+                l = L_orthogonal(dy, (dz), (dx), r1, r2, w)
             else:                                           # X-Y oriented pair
-                l = L_orthogonal(omega, (dz), dy, (dx), r1, r2, w)
+                l = L_orthogonal((dz), dy, (dx), r1, r2, w)
 
     Data[id_1], Data[id_2] = [l * mu_0] * 2
     return l * mu_0

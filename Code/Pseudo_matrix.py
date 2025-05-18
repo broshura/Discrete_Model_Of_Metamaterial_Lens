@@ -59,7 +59,7 @@ def L_parallel(omega, dx:float, dy:float, dz:float, r1:float, r2:float, width:fl
     #Considering stripe width
 
     r_mean = sqrt(dx**2+dy**2+dz**2)
-    exp_factor = (cos(-k*r_mean)+1j*sin(-k*r_mean))
+    exp_factor = np.exp(1j*k*r_mean)
 
     if r1 == r2 and width:
         R = r1 + width / 2
@@ -76,7 +76,7 @@ def L_parallel(omega, dx:float, dy:float, dz:float, r1:float, r2:float, width:fl
         L = (L_1 + L_2)/2
     else:
         L, err = integrate.quad(dl, 0, 2 * pi, args= (dx, dy, dz, r1, r2))
-    return L * exp_factor*(-1j*k*r_mean)
+    return L * exp_factor*(1j*k*r_mean)
 
 # Computing for orthogonal-oriented rings
 
@@ -116,7 +116,7 @@ def L_orthogonal(omega, dx:float, dy:float ,dz:float, r1:float, r2:float, width:
     # Considering stripe width
 
     r_mean = sqrt(dx**2+dy**2+dz**2)
-    exp_factor = (cos(-k*r_mean)+1j*sin(-k*r_mean))
+    exp_factor = np.exp(1j*k*r_mean)
 
     if r1 == r2 and width:
         R = r1 + width / 2
@@ -133,7 +133,7 @@ def L_orthogonal(omega, dx:float, dy:float ,dz:float, r1:float, r2:float, width:
         L = (L_1 + L_2)/2
     else:
         L, err = integrate.quad(dl, 0, 2 * pi, args=(dx, dy, dz, r1, r2))
-    return L * exp_factor*(-1j*k*r_mean)
+    return L * exp_factor*(1j*k*r_mean)
 
 # Computing for any pair
 
@@ -182,30 +182,30 @@ def Mnm(omega, First_ring:Ring, Second_ring:Ring, Data:dict = {}) -> float:
 
     if First_ring.pos == Second_ring.pos:
         if First_ring.pos == "z":                           # Z-oriented rings
-            l = L_parallel(omega, dx, dy, dz, r1, r2, w)
+            l = L_parallel(dx, dy, dz, r1, r2, w)
         elif First_ring.pos == "y":                         # Y-oriented rings
-            l = L_parallel(omega, dx, -dz, dy, r1, r2, w)
+            l = L_parallel(dx, -dz, dy, r1, r2, w)
         else:                                               # X-oriented rings
-            l = L_parallel(omega, -dz, dy, dx, r1, r2, w)
+            l = L_parallel(-dz, dy, dx, r1, r2, w)
 
     # Consider all types of orthogonal orientation
 
     else:
         if First_ring.pos == "z":
             if Second_ring.pos == "y":                      # Z-Y oriented pair
-                l = L_orthogonal(omega, dx, dy, dz, r1, r2, w)
+                l = L_orthogonal(dx, dy, dz, r1, r2, w)
             else:                                           # Z-X oriented pair
-                l = L_orthogonal(omega, (dy), (dx), dz, r1, r2, w)
+                l = L_orthogonal((dy), (dx), dz, r1, r2, w)
         elif First_ring.pos == "y":
             if Second_ring.pos == "z":                      # Y-Z oriented pair
-                l = L_orthogonal(omega, dx, (dz), (dy), r1, r2, w)
+                l = L_orthogonal(dx, (dz), (dy), r1, r2, w)
             else:                                           # Y-X oriented pair
-                l = L_orthogonal(omega, -dz, (dx), (dy), r1, r2,  w)
+                l = L_orthogonal(-dz, (dx), (dy), r1, r2,  w)
         elif First_ring.pos == "x":
             if Second_ring.pos == "z":                      # X-Z oriented pair
-                l = L_orthogonal(omega, dy, (dz), (dx), r1, r2, w)
+                l = L_orthogonal(dy, (dz), (dx), r1, r2, w)
             else:                                           # X-Y oriented pair
-                l = L_orthogonal(omega, (dz), dy, (dx), r1, r2, w)
+                l = L_orthogonal((dz), dy, (dx), r1, r2, w)
 
     Data[id_1], Data[id_2] = [l * mu_0] * 2
     return l * mu_0
