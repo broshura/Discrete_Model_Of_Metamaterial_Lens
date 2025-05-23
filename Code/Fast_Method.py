@@ -196,7 +196,6 @@ def solvesystem(Omega, Params: dict, rings_4d: dict, phi_0z_calc, Inductance: di
         I_old4d[pos] = I_old[start:end].reshape(rings_4d[pos].shape)
         start = end
     
-    Phi_0z = phi_0z
     P = []
     
     # Check if we need to save currents
@@ -212,6 +211,7 @@ def solvesystem(Omega, Params: dict, rings_4d: dict, phi_0z_calc, Inductance: di
         IfCurrents = False
     
     # Check if we need to save sliced currents
+    IfSlicedCurrents = False
     if Params['IsSlices']:
         Sliced_I_old = {}
         for name in Params['Slices']:
@@ -327,7 +327,7 @@ def solvesystem(Omega, Params: dict, rings_4d: dict, phi_0z_calc, Inductance: di
         I_old = I
 
     P = np.array(P) * Params['P_0z']
-    Sliced_CURRENTS = {name: np.concatenate([Sliced_CURRENTS[name][pos] for pos in Params['Slices'][name]], axis=1) for name in Sliced_CURRENTS}
+    Sliced_CURRENTS = {name: np.concatenate([Sliced_CURRENTS[name][pos] for pos in Params['Slices'][name]]) for name in Sliced_CURRENTS}
     print(f'FFT solving: Done, shape = {[(pos, rings_4d[pos].shape) for pos in orientations]}')
     Data = {}
 
