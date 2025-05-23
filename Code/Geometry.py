@@ -52,6 +52,63 @@ def to3D(Nz:int, Ny:int, Nx:int, orientations:str = 'zyx', Type:str = 'border') 
             }
     return N, shape
 
+# Function to create slices for each orientation
+def usual_slices(Params:dict) -> dict:
+    if Params['Packing'] == 'Rectangle':
+        Params['Slices'] = {
+            'MiddleZZ': {
+                'z': {'nz': [Params['N']['z']['nz']//2, Params['N']['z']['nz']//2 +1],
+                      'ny': [0, Params['N']['z']['ny']],
+                      'nx': [0, Params['N']['z']['nx']]
+                }
+            },
+            'MiddleZY': {
+                'z': {
+                    'nz': [0, Params['N']['z']['nz']],
+                    'ny': [Params['N']['z']['ny']//2, Params['N']['z']['ny']//2 +1],
+                    'nx': [0, Params['N']['z']['nx']]
+                }
+            },
+            'BottomZZ': {
+                'z': {'nz': [0, 1],
+                      'ny': [0, Params['N']['z']['ny']],
+                      'nx': [0, Params['N']['z']['nx']]
+                }
+            },
+            'BottomZY': {
+                'z': {
+                    'nz': [0, Params['N']['z']['nz']],
+                    'ny': [0, 1],
+                    'nx': [0, Params['N']['z']['nx']]
+                }
+            }
+        }
+    # For ellipse packing is now bottom and top slices
+    elif Params['Packing'] == 'Ellipse':
+        if Params['Solver_type'] != 'Fast':
+            print('Warning: Ellipse packing without Fast solver not allow slices')
+            Params['IsSlices'] = False 
+            Params['Slices'] = {}
+            return {}
+        Params['Slices'] = {
+            'MiddleZZ': {
+                'z': {'nz': [Params['N']['z']['nz']//2, Params['N']['z']['nz']//2 +1],
+                      'ny': [0, Params['N']['z']['ny']],
+                      'nx': [0, Params['N']['z']['nx']]
+                }
+            },
+            'MiddleZY': {
+                'z': {
+                    'nz': [0, Params['N']['z']['nz']],
+                    'ny': [Params['N']['z']['ny']//2, Params['N']['z']['ny']//2 +1],
+                    'nx': [0, Params['N']['z']['nx']]
+                }
+            },
+        }
+    return Params['Slices']
+            
+        
+
 def Rectangle_packing(Params:dict, Fill:bool = False) -> Dict[str, List[Ring]]:
     """Returns dict for paralellepiped packing of rings in correct
     order with respect to the orientation of the system (zyx)
@@ -89,7 +146,7 @@ def Rectangle_packing(Params:dict, Fill:bool = False) -> Dict[str, List[Ring]]:
                 'nx': delta_x/2 * (1-(orientation == 'x'))
             }
         # Packing for multiple orientations and center system
-        if Params['N']['z']['nz'] == Params['N']['y']['nz']:
+        elif Params['N']['z']['nz'] == Params['N']['y']['nz']:
             r0 = {
                 'nz': delta_z/2,
                 'ny': delta_y/2,

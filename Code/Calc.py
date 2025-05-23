@@ -121,6 +121,7 @@ def save(filename:str, Params:dict)->None:
     # Adding sliced currents dict to pol_data
     if Params['IsSlices']:
         pol_data.update(Data['SlicedCurrents'])
+        print('Sliced currents are saved')
     size = sum([np.array(pol_data[key]).nbytes for key in pol_data])
     Degrees = ['B', 'kB', 'MB', 'GB', 'TB']
     degree = min(int(np.log(size)/np.log(1024)), 4)
@@ -201,47 +202,20 @@ if __name__ == '__main__':
     even in process of modeling.
     '''
 
-    Params['Packing'] = 'Rectangle'
+    Params['Packing'] = 'Ellipse'
     Params['Solver_type'] = 'Fast'
     Params['Solver_name'] = 'lgmres'
     Params['Tol'] = 1e-5
     Params['Type'] = 'border'
     Params['Orientations'] = 'zyx'
-    Params['MemLim'] = 1024 ** 2 * 5 # 5 Gb limit
+    Params['MemLim'] = 1024 ** 3 * 1 # 1 Gb limit
     Params['IsSlices'] = True
 
     # Example way to use
-    for n in [3, 5, 7]:
+    for n in [3, 5]:
         Params['N'], Params['Shape'] = to3D(n, n, n,
                                             Params['Orientations'],
                                             Params['Type'])
-        Params['Slices'] = {
-            'MiddleZZ': {
-                'z': {'nz': [Params['N']['z']['nz']//2, Params['N']['z']['nz']//2 +1],
-                      'ny': [0, Params['N']['z']['ny']],
-                      'nx': [0, Params['N']['z']['nx']]
-                }
-            },
-            'MiddleZY': {
-                'z': {
-                    'nz': [0, Params['N']['z']['nz']],
-                    'ny': [Params['N']['z']['ny']//2, Params['N']['z']['ny']//2 +1],
-                    'nx': [0, Params['N']['z']['nx']]
-                }
-            },
-            'BottomZZ': {
-                'z': {'nz': [0, 1],
-                      'ny': [0, Params['N']['z']['ny']],
-                      'nx': [0, Params['N']['z']['nx']]
-                }
-            },
-            'BottomZY': {
-                'z': {
-                    'nz': [0, Params['N']['z']['nz']],
-                    'ny': [0, 1],
-                    'nx': [0, Params['N']['z']['nx']]
-                }
-            }
-        }
+        Params['Slices']=usual_slices(Params)
         
         save(f'DATA_{Params["Type"]}', Params)

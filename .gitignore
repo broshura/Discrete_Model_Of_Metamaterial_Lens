@@ -1,4 +1,8 @@
-Metavenv/
+# Ignore virtual environment
+*venv*
+*__pycache__*
+.idea*
+# Ignore large calculation data, images and testing data
 Code/DATA*
 Code/Images*
 Code/Testing_Debug*
