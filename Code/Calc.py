@@ -114,6 +114,7 @@ def save(filename:str, Params:dict)->None:
     
     # Save neccesary data for plotting in npz format
     pol_data = {
+        'Currents': Data['Currents'],
         'Polarization': Data['Polarization'],
         'Omega': Data['Omega'],
         'Phi_0z': Data['Phi_0z'],

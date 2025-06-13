@@ -252,7 +252,7 @@ def solvesystem(Omega, Params: dict, rings_4d: dict, phi_0z_calc, Inductance: di
         MI_vecs[pos_str] = {}
         for pos_col in orientations:
             rings_col = rings_4d[pos_col]
-            M_circvecs = Circvec(rings_str, rings_col, Inductance)
+            M_circvecs = Circvec(Params, rings_str, rings_col, Omega[0], Inductance)
 
             N_circ = np.array(rings_str.shape) + np.array(rings_col.shape) - 1
             i_vecs[pos_str][pos_col] = np.zeros(N_circ, dtype=complex)
